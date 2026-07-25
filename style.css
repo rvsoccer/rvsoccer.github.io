@@ -388,3 +388,83 @@ textarea {
     overflow: hidden;
     transition: max-height 0.3s ease-out;
 }
+/* Estilos para el nuevo panel de Guardado Multi-Torneo */
+        .save-manager-panel {
+            background: #2c3e50; 
+            color: white; 
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            margin-bottom: 25px; 
+            display: flex; 
+            gap: 20px; 
+            align-items: flex-end; 
+            flex-wrap: wrap;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .save-manager-section {
+            flex: 1;
+            min-width: 250px;
+        }
+        .save-manager-label {
+            display: block; 
+            font-size: 13px; 
+            margin-bottom: 8px; 
+            color: #bdc3c7;
+            font-weight: bold;
+        }
+        .save-manager-controls {
+            display: flex; 
+            gap: 8px;
+        }
+        .save-manager-input, .save-manager-select {
+            flex: 1; 
+            padding: 10px; 
+            border-radius: 4px; 
+            border: 1px solid #34495e;
+            background: #ecf0f1;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        .save-btn { background: #27ae60; margin: 0; padding: 10px 15px; white-space: nowrap; }
+        .save-btn:hover { background: #219653; }
+        .load-btn { background: #f39c12; margin: 0; padding: 10px 15px; white-space: nowrap; }
+        .load-btn:hover { background: #e67e22; }
+        .del-torneo-btn { background: #c0392b; margin: 0; padding: 10px 15px; }
+        .del-torneo-btn:hover { background: #a93226; }
+        .divider { width: 2px; background: #34495e; align-self: stretch; }
+
+/* PANTALLA DE AUTENTICACIÓN (LOGIN) */
+        .auth-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #2c3e50; z-index: 9999; display: flex;
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+        .auth-box {
+            background: #fff; padding: 40px; border-radius: 10px;
+            width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .auth-box h2 { color: #2c3e50; margin-top: 0; margin-bottom: 25px; }
+        .auth-input {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 2px solid #bdc3c7; border-radius: 6px; font-size: 16px; box-sizing: border-box;
+        }
+        .auth-btn-primary {
+            background: #2980b9; color: white; width: 100%; padding: 12px;
+            border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold;
+        }
+        .auth-btn-primary:hover { background: #1f618d; }
+        .auth-switch {
+            margin-top: 20px; font-size: 14px; color: #7f8c8d; cursor: pointer;
+        }
+        .auth-switch span { color: #2980b9; font-weight: bold; text-decoration: underline; }
+
+        /* Encabezado del usuario logueado */
+        .user-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #fff; padding: 10px 20px; border-radius: 8px;
+            margin-bottom: 20px; border: 1px solid #ecf0f1;
+        }
+        .user-header .user-info { font-weight: bold; color: #2980b9; }
+        .logout-btn { background: #e74c3c; padding: 8px 15px; border-radius: 4px; color: white; border: none; cursor: pointer; }
+        .logout-btn:hover { background: #c0392b; }

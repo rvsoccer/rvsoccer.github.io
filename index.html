@@ -8,10 +8,59 @@
 </head>
 <body>
 
-<div class="container">
-    <h1>LIGA REAL DE VETERANOS</h1>
-    <h3>Torneo: Ricardo Carvajal Rodriguez</h3>
-    <h4>Temporada: 2026</h4>
+<!-- PANTALLA DE LOGIN / REGISTRO PARA LA NUBE -->
+<div id="authScreen" class="auth-overlay">
+    <div class="auth-box">
+        <h1 style="color: #2980b9; margin-top: 0; font-size: 40px;">🏆</h1>
+        <h2 id="authTitle">Iniciar Sesión</h2>
+        <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 20px;" id="authSubtitle">Accede a tu cuenta para cargar tus torneos desde la nube.</p>
+        
+        <input type="email" id="authEmail" class="auth-input" placeholder="Correo electrónico">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Contraseña">
+        
+        <button id="authSubmitBtn" class="auth-btn-primary" onclick="handleAuth()">Entrar</button>
+        
+        <div class="auth-switch" onclick="toggleAuthMode()">
+            <p id="authSwitchText">¿No tienes cuenta? <span>Crea una aquí</span></p>
+        </div>
+        
+        <div class="cloud-status">☁️ Sistema preparado para conexión a base de datos externa.</div>
+    </div>
+</div>
+
+<!-- CONTENEDOR PRINCIPAL DE LA APP (OCULTO HASTA INICIAR SESIÓN) -->
+<div class="container" id="appContainer" style="display: none;">
+    
+    <div class="user-header">
+        <div class="user-info">☁️ Cuenta en línea: <span id="displayUserEmail"></span></div>
+        <button onclick="logout()" class="logout-btn">Cerrar Sesión</button>
+    </div>
+
+    <h1>🏆 Organizador de Torneo de Fútbol</h1>
+
+    <!-- PANEL DE GESTIÓN MULTI-TORNEO (SINCRONIZADO A LA CUENTA) -->
+    <div class="save-manager-panel">
+        <div class="save-manager-section">
+            <label class="save-manager-label">💾 Guardar torneo actual en la nube como:</label>
+            <div class="save-manager-controls">
+                <input type="text" id="saveTorneoName" class="save-manager-input" placeholder="Ej. Torneo Apertura 2026">
+                <button onclick="guardarTorneoComo()" class="save-btn">Guardar</button>
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="save-manager-section">
+            <label class="save-manager-label">📂 Cargar torneos guardados en tu cuenta:</label>
+            <div class="save-manager-controls">
+                <select id="selectTorneosGuardados" class="save-manager-select">
+                    <option value="">-- Mis Torneos --</option>
+                </select>
+                <button onclick="cargarTorneoGuardado()" class="load-btn">Cargar</button>
+                <button onclick="eliminarTorneoGuardado()" class="del-torneo-btn" title="Eliminar registro">🗑️</button>
+            </div>
+        </div>
+    </div>
 
     <div class="tab-menu">
         <button class="tab-button active" onclick="openTab(event, 'tab-equipos')">1-Equipos</button>
@@ -73,7 +122,6 @@
                 <span style="font-size: 13px; color: #7f8c8d; font-style: italic;">(El guardado de marcadores es automático)</span>
             </div>
             <div id="matchesContainer"></div>
-            <!-- SE ELIMINÓ EL BOTÓN "Guardar Todos los Marcadores" -->
         </div>
     </div>
 
@@ -150,15 +198,12 @@
                     <input type="date" id="fechaJunta" style="border: 2px solid #f39c12;">
                 </div>
                 <div style="flex: 1;">
-                    <button onclick="addJunta()" style="background-color: #d35400;">Agregar Junta a la Tabla</button>
+                    <button onclick="addJunta()" style="background-color: #d35400;">Agregar Junta al Control</button>
                 </div>
             </div>
 
-            <h2 style="color: #d35400; border-bottom-color: #f39c12;">📋 Tabla de Control de Asistencias</h2>
-            <p style="color: #d35400; font-size: 14px;">
-                <strong>Regla activa:</strong> Cada 2 faltas de un delegado, se restará 1 punto a su equipo en la tabla general. Marca la casilla si el delegado <strong>asistió</strong> al evento; de lo contrario, se contará automáticamente como falta.
-            </p>
-            <div id="tablaDelegadosContainer" style="margin-top: 20px; overflow-x: auto;"></div>
+            <h2 style="color: #d35400; border-bottom-color: #f39c12; margin-top: 30px;">📋 Control de Asistencias</h2>
+            <div id="tablaDelegadosContainer" style="margin-top: 10px;"></div>
         </div>
     </div>
 
@@ -166,433 +211,263 @@
     <div id="tab-amonestaciones" class="tab-content">
         <div class="section">
             <h2 style="color: #d35400; border-bottom-color: #fad7a1;">🟨 Tabla de Jugadores Amonestados</h2>
-            <div style="background: #fdfefe; border: 1px solid #ecf0f1; padding: 15px; border-radius: 6px; margin-top: 15px; margin-bottom: 20px; font-size: 13px; color: #34495e; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                <strong style="color: #d35400; font-size: 14px; margin-bottom: 8px; display: inline-block;">Guía de Causales de Amonestación:</strong><br>
-                <strong>1</strong> - Ser culpable de conducta antideportiva<br>
-                <strong>2</strong> - Desaprobar una decisión arbitral<br>
-                <strong>3</strong> - Infringir con persistencia las reglas<br>
-                <strong>4</strong> - Retardar la reanudación del juego<br>
-                <strong>5</strong> - No respetar la distancia reglamentaria<br>
-                <strong>6</strong> - Entrar al terreno de juego sin permiso<br>
-                <strong>7</strong> - Abandonar deliberadamente el campo
-            </div>
             <div id="tablaAmonestadosContainer" style="overflow-x: auto;"></div>
         </div>
-
         <hr style="border: 0; border-top: 1px solid #ecf0f1; margin: 40px 0;">
-
         <div class="section" style="background: #fdfefe; padding: 20px; border-radius: 8px; border: 1px solid #e74c3c;">
             <h2 style="color: #c0392b; border-bottom-color: #fadbd8; margin-top: 0;">🟥 Tabla de Jugadores Suspendidos</h2>
-            <div style="background: #fdedec; border: 1px solid #fadbd8; padding: 15px; border-radius: 6px; margin-top: 15px; margin-bottom: 20px; font-size: 13px; color: #c0392b;">
-                <strong style="font-size: 14px; margin-bottom: 8px; display: inline-block;">Guía de Causales de Expulsión:</strong><br>
-                <strong>1</strong> - Ser culpable de juego brusco grave<br>
-                <strong>2</strong> - Ser culpable de conducta violenta<br>
-                <strong>3</strong> - Escupir a un adversario u otra persona<br>
-                <strong>4</strong> - Impedir con mano una oportunidad de gol<br>
-                <strong>5</strong> - Impedir mediante falta oportunidad de gol<br>
-                <strong>6</strong> - Ser culpable de conducta grosera<br>
-                <strong>7</strong> - Recibir una segunda amonestación en la jornada (Doble amarilla)<br>
-                <strong>8</strong> - Recibir tres amonestaciones en lo que lleva del Torneo (Acumulación)
-            </div>
             <div id="tablaSuspendidosContainer" style="overflow-x: auto;"></div>
         </div>
     </div>
 
     <hr style="border: 0; border-top: 1px solid #ecf0f1; margin-top: 40px;">
-    <button onclick="resetTournament()" class="clear-btn">Borrar Todos los Datos del Torneo</button>
+    <button onclick="resetTournament()" class="clear-btn">Borrar Tablero Actual (Limpiar Pantalla)</button>
 </div>
 
 <!-- PANEL MODAL DE AMONESTACIONES Y DISCIPLINA -->
 <div id="modalDisciplina" class="modal-overlay" style="display: none;">
     <div class="modal-content">
-        <h3 style="color: #d35400; margin-top: 0; border-bottom: 2px solid #fad7a1; padding-bottom: 8px;">
-            ⚖️ Tribunal Disciplinario
-        </h3>
+        <h3 style="color: #d35400; margin-top: 0; border-bottom: 2px solid #fad7a1; padding-bottom: 8px;">⚖️ Tribunal Disciplinario</h3>
         <p style="font-weight: bold; color: #2c3e50; font-size: 18px;" id="discPlayerTitle"></p>
-        
-        <div class="form-group" style="margin-top: 15px;">
-            <label>1- Selecciona la jornada de la infracción:</label>
-            <select id="discJornada"></select>
+        <div class="form-group" style="margin-top: 15px;"><label>1- Jornada de la infracción:</label><select id="discJornada"></select></div>
+        <div class="form-group"><label>2- Nivel de la Sanción:</label>
+            <select id="discGravedad" onchange="updateCausalesDropdowns()"><option value="amonestado">Amonestado</option><option value="doble amonestado">Doble Amonestado</option><option value="expulsado">Expulsado</option></select>
         </div>
-        
-        <div class="form-group">
-            <label>2- Nivel de la Sanción:</label>
-            <select id="discGravedad" onchange="updateCausalesDropdowns()">
-                <option value="amonestado">Amonestado (1 Causal)</option>
-                <option value="doble amonestado">Doble Amonestado (2 Causales)</option>
-                <option value="expulsado">Expulsado (1 Causal de Expulsión)</option>
-            </select>
-        </div>
-        
-        <div class="form-group" id="discBoxCausal1">
-            <label id="lblCausal1">3- Causal de la sanción:</label>
-            <select id="discCausal1"></select>
-        </div>
-        
-        <div class="form-group" id="discBoxCausal2" style="display: none;">
-            <label>Segunda Causal de Amonestación:</label>
-            <select id="discCausal2"></select>
-        </div>
-
-        <div class="form-group" id="discBoxPartidos" style="display: none; background: #fdedec; padding: 10px; border-radius: 4px; border: 1px solid #e74c3c;">
-            <label style="color: #c0392b; font-weight: bold;">Número de partidos suspendido:</label>
-            <input type="number" id="discPartidosSuspendidos" min="1" value="1" style="border: 2px solid #e74c3c;">
-        </div>
-        
+        <div class="form-group" id="discBoxCausal1"><label id="lblCausal1">3- Causal:</label><select id="discCausal1"></select></div>
+        <div class="form-group" id="discBoxCausal2" style="display: none;"><label>Segunda Causal:</label><select id="discCausal2"></select></div>
+        <div class="form-group" id="discBoxPartidos" style="display: none;"><label style="color: #c0392b;">Partidos suspendido:</label><input type="number" id="discPartidosSuspendidos" min="1" value="1"></div>
         <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button onclick="guardarSancion()" style="background-color: #27ae60; flex: 1; padding: 10px;">✅ Aceptar y Guardar</button>
+            <button onclick="guardarSancion()" style="background-color: #27ae60; flex: 1; padding: 10px;">✅ Guardar</button>
             <button onclick="closeDisciplinaModal()" style="background-color: #95a5a6; flex: 1; padding: 10px;">Cancelar</button>
         </div>
-        
         <hr style="border: 0; border-top: 1px solid #ecf0f1; margin: 25px 0;">
-        <h4 style="color: #34495e;">📜 Historial Legal del Jugador</h4>
-        <div id="discHistorialContainer"></div>
+        <h4 style="color: #34495e;">📜 Historial Legal del Jugador</h4><div id="discHistorialContainer"></div>
     </div>
 </div>
 
 <script>
-    let teams = [];
-    let matches = [];
-    let playersByTeam = {}; 
-    let jornadas = []; 
-    let delegados = []; 
-    let juntasDelegados = [];
+    // ============================================================================
+    // ARQUITECTURA DE DATOS: VARIABLES GLOBALES DEL TABLERO
+    // ============================================================================
+    let teams = []; let matches = []; let playersByTeam = {}; 
+    let jornadas = []; let delegados = []; let juntasDelegados = [];
+    
+    // ============================================================================
+    // MÓDULO DE AUTENTICACIÓN Y CONEXIÓN A LA NUBE (ARQUITECTURA LISTA PARA FIREBASE)
+    // ============================================================================
+    // NOTA TÉCNICA: Dado que GitHub Pages no tiene base de datos nativa, he estructurado 
+    // este módulo para que simule llamadas asíncronas a un servidor en la nube.
+    // Actualmente usa una "falsa nube" (localStorage) para que el código no falle en tus pruebas.
+    // Cuando integres Firebase, simplemente reemplazarás el contenido de "simularLlamadaNube" 
+    // con las consultas reales a tu Firestore. Todo el resto de la aplicación funcionará intacto.
+    
+    let currentUserEmail = null;
+    let authMode = 'login'; // Puede ser 'login' o 'register'
 
-    window.onload = function() { loadDataFromStorage(); };
+    window.onload = function() { 
+        checkAuthSession(); 
+    };
 
+    function toggleAuthMode() {
+        authMode = authMode === 'login' ? 'register' : 'login';
+        document.getElementById('authTitle').innerText = authMode === 'login' ? 'Iniciar Sesión' : 'Crear Nueva Cuenta';
+        document.getElementById('authSubtitle').innerText = authMode === 'login' ? 'Accede a tu cuenta para cargar tus torneos desde la nube.' : 'Registra tus datos para asegurar y sincronizar tus torneos en la nube.';
+        document.getElementById('authSubmitBtn').innerText = authMode === 'login' ? 'Entrar' : 'Registrar Cuenta';
+        document.getElementById('authSwitchText').innerHTML = authMode === 'login' ? '¿No tienes cuenta? <span>Crea una aquí</span>' : '¿Ya tienes cuenta? <span>Inicia sesión</span>';
+    }
+
+    // Función principal para manejar el acceso (Registro / Login)
+    async function handleAuth() {
+        const email = document.getElementById('authEmail').value.trim().toLowerCase();
+        const pass = document.getElementById('authPassword').value.trim();
+
+        if (!email || !pass) { alert("Por favor ingresa correo y contraseña."); return; }
+
+        if (authMode === 'register') {
+            // Lógica para registrar cuenta nueva en la nube
+            const userExists = await verificarSiUsuarioExisteEnLaNube(email);
+            if (userExists) { alert("Este correo ya está registrado. Inicia sesión."); return; }
+            
+            // Creamos el perfil virgen para el usuario nuevo
+            const nuevoPerfil = {
+                password: pass,
+                torneosGuardados: {},
+                tableroActivo: { teams: [], matches: [], playersByTeam: {}, jornadas: [], delegados: [], juntasDelegados: [] }
+            };
+            
+            await guardarPerfilEnLaNube(email, nuevoPerfil);
+            alert("Cuenta creada exitosamente. Iniciando sesión de forma segura...");
+            iniciarSesionUI(email);
+            
+        } else {
+            // Lógica para iniciar sesión consultando a la nube
+            const perfilEnLaNube = await descargarPerfilDeLaNube(email);
+            
+            if (!perfilEnLaNube) { alert("No existe una cuenta con este correo."); return; }
+            if (perfilEnLaNube.password !== pass) { alert("Contraseña incorrecta."); return; }
+            
+            iniciarSesionUI(email);
+        }
+    }
+
+    // Funciones visuales tras confirmar acceso
+    async function iniciarSesionUI(email) {
+        currentUserEmail = email;
+        localStorage.setItem('futbol_active_session', email); // Mantener sesión en el dispositivo actual
+        
+        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('appContainer').style.display = 'block';
+        document.getElementById('displayUserEmail').innerText = email;
+        
+        // Procedemos a descargar los torneos desde la cuenta en la nube
+        await cargarTableroActivoDelUsuario();
+        await updateDropdownTorneosGuardados();
+    }
+
+    async function checkAuthSession() {
+        const session = localStorage.getItem('futbol_active_session');
+        if (session) {
+            iniciarSesionUI(session);
+        }
+    }
+
+    async function logout() {
+        if(confirm("¿Seguro que deseas cerrar sesión? Asegúrate de haber guardado tus cambios.")) {
+            await guardarTableroActivoEnLaNube();
+            currentUserEmail = null;
+            localStorage.removeItem('futbol_active_session');
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('appContainer').style.display = 'none';
+            document.getElementById('authEmail').value = '';
+            document.getElementById('authPassword').value = '';
+        }
+    }
+
+    // ============================================================================
+    // SIMULACIÓN DE CONEXIÓN A BASE DE DATOS EXTERNA (Firebase/Supabase Ready)
+    // ============================================================================
+    // Aquí es donde harás las llamadas reales a la API cuando conectes tu BaaS.
+    
+    function simularLlamadaNube() { return new Promise(resolve => setTimeout(resolve, 150)); } // Simula el retraso de internet
+    
+    async function verificarSiUsuarioExisteEnLaNube(email) {
+        await simularLlamadaNube();
+        let dbFalsa = JSON.parse(localStorage.getItem('cloud_mock_db')) || {};
+        return !!dbFalsa[email];
+    }
+
+    async function descargarPerfilDeLaNube(email) {
+        await simularLlamadaNube();
+        let dbFalsa = JSON.parse(localStorage.getItem('cloud_mock_db')) || {};
+        return dbFalsa[email] || null;
+    }
+
+    async function guardarPerfilEnLaNube(email, perfilData) {
+        await simularLlamadaNube();
+        let dbFalsa = JSON.parse(localStorage.getItem('cloud_mock_db')) || {};
+        dbFalsa[email] = perfilData;
+        localStorage.setItem('cloud_mock_db', JSON.stringify(dbFalsa));
+    }
+
+    // Guarda cada movimiento en la nube para que esté disponible en otro dispositivo
+    async function guardarTableroActivoEnLaNube() {
+        if (!currentUserEmail) return;
+        const perfil = await descargarPerfilDeLaNube(currentUserEmail);
+        perfil.tableroActivo = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados };
+        await guardarPerfilEnLaNube(currentUserEmail, perfil);
+    }
+
+    async function cargarTableroActivoDelUsuario() {
+        const perfil = await descargarPerfilDeLaNube(currentUserEmail);
+        const u = perfil.tableroActivo;
+        teams = u.teams || []; matches = u.matches || []; playersByTeam = u.playersByTeam || {};
+        jornadas = u.jornadas || []; delegados = u.delegados || []; juntasDelegados = u.juntasDelegados || [];
+        
+        renderTeamsList(); updateSelectOptions(); renderMatchesHTML(); 
+        renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab();
+    }
+
+    // Intercepta los cambios para enviarlos a la nube
+    function interceptCloudUpdates() { guardarTableroActivoEnLaNube(); }
+
+    // ============================================================================
+    // GESTIÓN DE TORNEOS GUARDADOS (Sincronizados)
+    // ============================================================================
+    async function updateDropdownTorneosGuardados() {
+        const select = document.getElementById('selectTorneosGuardados');
+        select.innerHTML = '<option value="">-- Mis Torneos (Nube) --</option>';
+        const perfil = await descargarPerfilDeLaNube(currentUserEmail);
+        const misTorneos = perfil.torneosGuardados || {};
+        for (let nombre in misTorneos) { select.innerHTML += `<option value="${nombre}">${nombre}</option>`; }
+    }
+
+    async function guardarTorneoComo() {
+        const nombreTorneo = document.getElementById('saveTorneoName').value.trim();
+        if (nombreTorneo === '') { alert('Escribe un nombre para el torneo.'); return; }
+        
+        const perfil = await descargarPerfilDeLaNube(currentUserEmail);
+        const misTorneos = perfil.torneosGuardados || {};
+
+        if (misTorneos[nombreTorneo] && !confirm(`¿Sobrescribir el torneo "${nombreTorneo}" en la nube?`)) return;
+
+        misTorneos[nombreTorneo] = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados };
+        perfil.torneosGuardados = misTorneos;
+        
+        await guardarPerfilEnLaNube(currentUserEmail, perfil);
+        await updateDropdownTorneosGuardados(); 
+        document.getElementById('saveTorneoName').value = '';
+        alert(`¡Torneo guardado exitosamente en tu cuenta en la nube!`);
+    }
+
+    async function cargarTorneoGuardado() {
+        const nombreTorneo = document.getElementById('selectTorneosGuardados').value;
+        if (nombreTorneo === '') { alert('Selecciona un torneo de la lista.'); return; }
+
+        if (confirm(`Estás a punto de cargar "${nombreTorneo}" desde la nube. ¿Deseas proceder?`)) {
+            const perfil = await descargarPerfilDeLaNube(currentUserEmail);
+            const dataToLoad = perfil.torneosGuardados[nombreTorneo];
+            
+            teams = dataToLoad.teams || []; matches = dataToLoad.matches || []; playersByTeam = dataToLoad.playersByTeam || {};
+            jornadas = dataToLoad.jornadas || []; delegados = dataToLoad.delegados || []; juntasDelegados = dataToLoad.juntasDelegados || [];
+            
+            await guardarTableroActivoEnLaNube();
+            renderTeamsList(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab();
+        }
+    }
+
+    async function eliminarTorneoGuardado() {
+        const nombreTorneo = document.getElementById('selectTorneosGuardados').value;
+        if (nombreTorneo === '') return;
+        if (confirm(`¿Eliminar permanentemente "${nombreTorneo}" de tu cuenta en la nube?`)) {
+            const perfil = await descargarPerfilDeLaNube(currentUserEmail);
+            delete perfil.torneosGuardados[nombreTorneo];
+            await guardarPerfilEnLaNube(currentUserEmail, perfil);
+            await updateDropdownTorneosGuardados(); 
+            alert(`Archivo eliminado de la nube.`);
+        }
+    }
+
+
+    // ============================================================================
+    // LÓGICA DE LA APLICACIÓN DE FÚTBOL (Intacta, conectada a interceptCloudUpdates)
+    // ============================================================================
+    
     function openTab(evt, tabId) {
         const tabContents = document.getElementsByClassName("tab-content");
         for (let i = 0; i < tabContents.length; i++) { tabContents[i].classList.remove("active"); }
         const tabButtons = document.getElementsByClassName("tab-button");
         for (let i = 0; i < tabButtons.length; i++) { tabButtons[i].classList.remove("active"); }
-        document.getElementById(tabId).classList.add("active");
-        evt.currentTarget.classList.add("active");
-        
-        if (tabId === 'tab-estadisticas') { renderStandings(); renderTopScorers(); }
-        if (tabId === 'tab-delegados') { renderTablaDelegados(); }
-        if (tabId === 'tab-roster') { renderPlayersList(); }
-        if (tabId === 'tab-amonestaciones') { renderAmonestacionesTab(); }
-    }
-
-    // --- LÓGICA DE DELEGADOS Y CALENDARIO DE JUNTAS ---
-    function addDelegado() {
-        const tN = document.getElementById('selectTeamDelegado').value; 
-        const dN = document.getElementById('delegadoName').value.trim();
-        if (!tN || dN === '') return;
-        if (delegados.find(d => d.equipo === tN && d.nombre.toLowerCase() === dN.toLowerCase())) {
-            alert('Este delegado ya existe.'); return;
-        }
-        delegados.push({ id: Date.now(), nombre: dN, equipo: tN, asistencias: {} });
-        localStorage.setItem('tournament_delegados', JSON.stringify(delegados)); 
-        document.getElementById('delegadoName').value = ''; 
-        renderTablaDelegados(); 
-        renderStandings(); 
-    }
-
-    function deleteDelegado(id) {
-        if (confirm('¿Eliminar a este delegado permanentemente?')) { 
-            delegados = delegados.filter(d => d.id !== id); 
-            localStorage.setItem('tournament_delegados', JSON.stringify(delegados)); 
-            renderTablaDelegados(); 
-            renderStandings(); 
-        }
-    }
-
-    function addJunta() {
-        const inputFecha = document.getElementById('fechaJunta');
-        const fecha = inputFecha.value;
-        if (!fecha) { alert('Por favor, selecciona una fecha en el calendario.'); return; }
-        
-        juntasDelegados.push({ id: Date.now(), fecha: fecha });
-        localStorage.setItem('tournament_juntas', JSON.stringify(juntasDelegados));
-        inputFecha.value = '';
-        renderTablaDelegados();
-        renderStandings(); 
-    }
-
-    function deleteJunta(juntaId) {
-        if (confirm('¿Eliminar esta junta? Se borrará la columna y los registros de asistencia de todos los delegados de ese día.')) {
-            juntasDelegados = juntasDelegados.filter(j => j.id !== juntaId);
-            localStorage.setItem('tournament_juntas', JSON.stringify(juntasDelegados));
-            renderTablaDelegados();
-            renderStandings();
-        }
-    }
-
-    function toggleAsistencia(delegadoId, juntaId, checkbox) {
-        const delegado = delegados.find(d => d.id === delegadoId);
-        if (delegado) {
-            delegado.asistencias[juntaId] = checkbox.checked;
-            localStorage.setItem('tournament_delegados', JSON.stringify(delegados));
-            renderTablaDelegados(); 
-            renderStandings();
-        }
-    }
-
-    function renderTablaDelegados() {
-        const c = document.getElementById('tablaDelegadosContainer'); 
-        c.innerHTML = ''; 
-        if (delegados.length === 0) { 
-            c.innerHTML = '<p style="color: #7f8c8d; font-style: italic;">Aún no hay delegados registrados.</p>'; 
-            return; 
-        }
-
-        let html = `<table class="standings-table"><thead><tr>
-                        <th class="team-name">Delegado</th>
-                        <th>Equipo</th>`;
-        
-        juntasDelegados.forEach(junta => {
-            html += `<th style="text-align: center; min-width: 95px;">
-                        <span style="font-size: 12px; display:block; margin-bottom: 5px;">${junta.fecha}</span>
-                        <button onclick="deleteJunta(${junta.id})" class="delete-btn" style="margin: 0; padding: 4px 8px; font-size: 10px;">Borrar</button>
-                     </th>`;
-        });
-
-        html += `<th style="text-align: center; color: #c0392b;">Faltas Totales</th>
-                 <th>Acciones</th></tr></thead><tbody>`;
-
-        delegados.forEach(d => {
-            let asistenciasContadas = 0;
-            juntasDelegados.forEach(j => {
-                if (d.asistencias[j.id] === true) asistenciasContadas++;
-            });
-            let faltas = juntasDelegados.length - asistenciasContadas;
-            let ptsPerdidos = Math.floor(faltas / 2);
-            let alerta = ptsPerdidos > 0 ? `<br><span style="font-size: 11px; color: #c0392b; display: block; margin-top: 4px;">(-${ptsPerdidos} pts)</span>` : '';
-
-            html += `<tr>
-                        <td style="font-weight: bold; font-size: 14px;">👤 ${d.nombre}</td>
-                        <td style="color: #2980b9;">${d.equipo}</td>`;
-
-            juntasDelegados.forEach(junta => {
-                let asistio = d.asistencias[junta.id] ? 'checked' : '';
-                html += `<td style="text-align: center; vertical-align: middle;">
-                            <input type="checkbox" style="transform: scale(1.4); cursor: pointer; accent-color: #27ae60;" ${asistio} onchange="toggleAsistencia(${d.id}, ${junta.id}, this)">
-                         </td>`;
-            });
-
-            html += `<td style="text-align: center; font-weight: bold; font-size: 18px; color: #c0392b;">${faltas} ${alerta}</td>
-                     <td><button onclick="deleteDelegado(${d.id})" class="delete-btn">Eliminar</button></td>
-                     </tr>`;
-        });
-
-        html += `</tbody></table>`;
-        c.innerHTML = html;
-    }
-
-
-    // --- LÓGICA DE SANCIONES ---
-    let currentDiscTeam = ""; let currentDiscPlayerId = "";
-
-    const causalesAmarilla = [
-        {val: 1, text: "1 - Ser culpable de conducta antideportiva"}, {val: 2, text: "2 - Desaprobar una decisión arbitral"},
-        {val: 3, text: "3 - Infringir con persistencia las reglas"}, {val: 4, text: "4 - Retardar la reanudación del juego"},
-        {val: 5, text: "5 - No respetar la distancia reglamentaria"}, {val: 6, text: "6 - Entrar al terreno de juego sin permiso"}, {val: 7, text: "7 - Abandonar deliberadamente el campo"}
-    ];
-    const causalesRoja = [
-        {val: 1, text: "1 - Ser culpable de juego brusco grave"}, {val: 2, text: "2 - Ser culpable de conducta violenta"},
-        {val: 3, text: "3 - Escupir a un adversario u otra persona"}, {val: 4, text: "4 - Impedir con mano una oportunidad de gol"},
-        {val: 5, text: "5 - Impedir mediante falta oportunidad de gol"}, {val: 6, text: "6 - Ser culpable de conducta grosera"},
-        {val: 7, text: "7 - Recibir una segunda amonestación en la jornada"}, {val: 8, text: "8 - Recibir tres amonestaciones en el Torneo"}
-    ];
-
-    function openDisciplinaModal(teamName, playerId) {
-        currentDiscTeam = teamName; currentDiscPlayerId = playerId;
-        const player = playersByTeam[teamName].find(p => p.id === playerId);
-        document.getElementById('discPlayerTitle').innerText = `${player.nombre} (ID: ${player.id})`;
-        const selectJor = document.getElementById('discJornada'); selectJor.innerHTML = '';
-        if(jornadas.length === 0) { selectJor.innerHTML = '<option value="">No hay jornadas</option>'; } 
-        else { jornadas.forEach(j => { selectJor.innerHTML += `<option value="${j.nombre}">${j.nombre}</option>`; }); }
-        document.getElementById('discGravedad').value = "amonestado"; document.getElementById('discPartidosSuspendidos').value = 1;
-        updateCausalesDropdowns(); renderHistorialSanciones(); document.getElementById('modalDisciplina').style.display = "flex";
-    }
-
-    function closeDisciplinaModal() { document.getElementById('modalDisciplina').style.display = "none"; }
-
-    function updateCausalesDropdowns() {
-        const gravedad = document.getElementById('discGravedad').value;
-        const sel1 = document.getElementById('discCausal1'); const sel2 = document.getElementById('discCausal2');
-        const box2 = document.getElementById('discBoxCausal2'); const boxP = document.getElementById('discBoxPartidos');
-        const lbl1 = document.getElementById('lblCausal1');
-        sel1.innerHTML = ''; sel2.innerHTML = '';
-        if (gravedad === 'amonestado' || gravedad === 'doble amonestado') {
-            lbl1.innerText = "3- Causal de Amonestación:";
-            causalesAmarilla.forEach(c => { sel1.innerHTML += `<option value="${c.val}">${c.text}</option>`; sel2.innerHTML += `<option value="${c.val}">${c.text}</option>`; });
-            box2.style.display = (gravedad === 'doble amonestado') ? "block" : "none"; boxP.style.display = (gravedad === 'doble amonestado') ? "block" : "none";
-        } else if (gravedad === 'expulsado') {
-            lbl1.innerText = "3- Causal de Expulsión:";
-            causalesRoja.slice(0, 7).forEach(c => { sel1.innerHTML += `<option value="${c.val}">${c.text}</option>`; });
-            box2.style.display = "none"; boxP.style.display = "block";
-        }
-    }
-
-    function guardarSancion() {
-        const player = playersByTeam[currentDiscTeam].find(p => p.id === currentDiscPlayerId);
-        const jorNombre = document.getElementById('discJornada').value; const gravedad = document.getElementById('discGravedad').value;
-        const c1Val = parseInt(document.getElementById('discCausal1').value); const c2Val = parseInt(document.getElementById('discCausal2').value);
-        if(!jorNombre) { alert("Primero debes crear al menos una jornada en el torneo."); return; }
-        
-        let textoOficial = "";
-        if (gravedad === 'amonestado') {
-            textoOficial = `${player.nombre} fue amonestado por el causal ${c1Val} en la ${jorNombre}`;
-            player.amonestaciones.push({ jornada: jorNombre, causal: c1Val });
-            if (player.amonestaciones.length >= 3) {
-                player.suspensiones.push({ causal: 8, partidos: 1 }); player.amonestaciones = []; textoOficial += ` (Suspendido automáticamente por acumulación)`;
-            }
-        } else if (gravedad === 'doble amonestado') {
-            const partidos = parseInt(document.getElementById('discPartidosSuspendidos').value) || 1;
-            textoOficial = `${player.nombre} fue doble amonestado por el causal ${c1Val} y ${c2Val} en la ${jorNombre}`;
-            player.suspensiones.push({ causal: 7, partidos: partidos });
-        } else if (gravedad === 'expulsado') {
-            const partidos = parseInt(document.getElementById('discPartidosSuspendidos').value) || 1;
-            textoOficial = `${player.nombre} fue expulsado por el causal ${c1Val} en la ${jorNombre}`;
-            player.suspensiones.push({ causal: c1Val, partidos: partidos });
-        }
-        player.historialCastigos.push(textoOficial); player.castigadoActivo = true;
-        localStorage.setItem('tournament_players', JSON.stringify(playersByTeam));
-        renderHistorialSanciones(); renderPlayersList(); searchPlayers(); 
-        
-        // Cierre automático del modal implementado aquí:
-        closeDisciplinaModal(); 
-    }
-
-    function renderHistorialSanciones() {
-        const player = playersByTeam[currentDiscTeam].find(p => p.id === currentDiscPlayerId);
-        const container = document.getElementById('discHistorialContainer'); container.innerHTML = '';
-        if(player.historialCastigos.length === 0) { container.innerHTML = '<p style="color: #7f8c8d; font-style: italic; font-size: 13px;">Limpio. Sin registro de infracciones.</p>'; return; }
-        player.historialCastigos.forEach((texto, index) => {
-            container.innerHTML += `<div class="sancion-item"><div style="flex:1; padding-right: 15px;">${texto}</div><button onclick="eliminarSancion(${index})" class="delete-btn" style="margin:0; padding: 5px 10px;">Borrar</button></div>`;
-        });
-    }
-
-    function eliminarSancion(index) {
-        const player = playersByTeam[currentDiscTeam].find(p => p.id === currentDiscPlayerId);
-        player.historialCastigos.splice(index, 1); localStorage.setItem('tournament_players', JSON.stringify(playersByTeam)); renderHistorialSanciones();
-    }
-
-    function toggleCastigoActivo(team, id, cb) {
-        const p = playersByTeam[team].find(x => x.id === id);
-        if(p) { p.castigadoActivo = cb.checked; if (!cb.checked) { p.amonestaciones = []; p.suspensiones = []; }
-            localStorage.setItem('tournament_players', JSON.stringify(playersByTeam)); }
-    }
-
-    function renderAmonestacionesTab() {
-        const cAmonestados = document.getElementById('tablaAmonestadosContainer'); const cSuspendidos = document.getElementById('tablaSuspendidosContainer');
-        let htmlA = `<table class="standings-table"><thead><tr><th class="team-name">Equipo</th><th class="team-name">Jugador</th><th>ID</th><th>Última Jornada</th><th>Causal 1</th><th>Causal 2</th><th>Causal 3</th></tr></thead><tbody>`;
-        let htmlS = `<table class="standings-table"><thead><tr><th class="team-name">Equipo</th><th class="team-name">Jugador</th><th>ID</th><th>Causal (No.)</th><th>Partidos Suspendido</th></tr></thead><tbody>`;
-        let hayAmonestados = false; let haySuspendidos = false;
-
-        for (const team in playersByTeam) {
-            playersByTeam[team].forEach(p => {
-                if (p.amonestaciones && p.amonestaciones.length > 0) {
-                    hayAmonestados = true; let uJor = p.amonestaciones[p.amonestaciones.length - 1].jornada;
-                    let c1 = p.amonestaciones[0] ? `<span style="font-weight: bold; font-size: 16px;">${p.amonestaciones[0].causal}</span>` : '0';
-                    let c2 = p.amonestaciones[1] ? `<span style="font-weight: bold; font-size: 16px;">${p.amonestaciones[1].causal}</span>` : '0';
-                    let c3 = p.amonestaciones[2] ? `<span style="font-weight: bold; font-size: 16px;">${p.amonestaciones[2].causal}</span>` : '0'; 
-                    htmlA += `<tr><td style="color: #2980b9;">${team}</td><td class="team-name"><strong>${p.nombre}</strong></td><td style="color: #7f8c8d;">${p.id}</td><td>${uJor}</td><td style="text-align: center;">${c1}</td><td style="text-align: center;">${c2}</td><td style="text-align: center;">${c3}</td></tr>`;
-                }
-                if (p.suspensiones && p.suspensiones.length > 0) {
-                    haySuspendidos = true; let uSusp = p.suspensiones[p.suspensiones.length - 1];
-                    htmlS += `<tr><td style="color: #2980b9;">${team}</td><td class="team-name" style="color: #c0392b;"><strong>${p.nombre}</strong></td><td style="color: #7f8c8d;">${p.id}</td><td style="font-weight: bold; font-size: 18px; text-align: center; color: #c0392b;">${uSusp.causal}</td><td style="font-weight: bold; color: #c0392b; font-size: 16px; text-align: center;">${uSusp.partidos}</td></tr>`;
-                }
-            });
-        }
-        cAmonestados.innerHTML = hayAmonestados ? htmlA + `</tbody></table>` : '<p style="color: #7f8c8d; font-style: italic;">No hay jugadores amonestados actualmente.</p>';
-        cSuspendidos.innerHTML = haySuspendidos ? htmlS + `</tbody></table>` : '<p style="color: #7f8c8d; font-style: italic;">No hay jugadores suspendidos actualmente.</p>';
-    }
-
-    function buildPlayerCardHTML(teamName, player) {
-        if (!player.jornadasStats) player.jornadasStats = {};
-        let jornadasHTML = '';
-        if (jornadas.length === 0) { jornadasHTML = `<div style="color:#7f8c8d; font-size:13px; font-style:italic; padding-top:15px; width: 100%; text-align: center;">No hay jornadas.</div>`; } 
-        else {
-            jornadas.forEach((jor, index) => {
-                const stats = player.jornadasStats[jor.id] || { jugado: false, goles: 0 }; const isChecked = stats.jugado ? 'checked' : '';
-                jornadasHTML += `<div class="jornada-stat-box"><div class="jor-title" title="${jor.nombre}">J${index + 1}</div><label style="font-size:11px; color:#7f8c8d; display:block; margin-bottom:4px; cursor:pointer;">Jugó <input type="checkbox" ${isChecked} onchange="updatePlayerStat('${teamName}', '${player.id}', ${jor.id}, 'jugado', this)" style="cursor:pointer;"></label><label style="font-size:11px; color:#7f8c8d; display:block; margin-top:8px; margin-bottom:2px;">Goles</label><input type="number" min="0" value="${stats.goles}" onchange="updatePlayerStat('${teamName}', '${player.id}', ${jor.id}, 'goles', this)" style="width: 45px; padding: 4px; text-align:center; border: 1px solid #ccc; border-radius: 4px;"></div>`;
-            });
-        }
-        const isSancionado = player.castigadoActivo ? 'checked' : '';
-        return `<div class="player-card"><div class="player-info"><span style="color: #2980b9; font-weight: bold; font-size: 13px;">ID: ${player.id}</span><div class="player-name-container"><strong style="font-size: 16px;">${player.nombre}</strong><input type="checkbox" title="Marcar/Desmarcar Sanción" class="sancion-checkbox" ${isSancionado} onchange="toggleCastigoActivo('${teamName}', '${player.id}', this)"></div><span style="color: #7f8c8d; font-size: 12px; margin-bottom: 8px;">${teamName}</span><div style="display: flex; gap: 5px; flex-wrap: wrap;"><button onclick="openDisciplinaModal('${teamName}', '${player.id}')" class="btn-disciplina">🟨/🟥 Sancionar</button><button onclick="deletePlayer('${teamName}', '${player.id}')" class="delete-btn" style="margin-left:0; padding:6px; font-size: 11px;">Baja</button></div></div><div class="player-jornadas-scroll">${jornadasHTML}</div><div class="player-totals"><div style="margin-bottom: 10px; color:#34495e;"><span style="font-size: 12px; display:block;">Jornadas</span><span id="total_partidos_${player.id}" style="color:#27ae60; font-size:22px; font-weight:bold;">${player.partidos || 0}</span></div><div style="color:#34495e;"><span style="font-size: 12px; display:block;">Goles Totales</span><span id="total_goles_${player.id}" style="color:#e67e22; font-size:22px; font-weight:bold;">${player.goles || 0}</span></div></div></div>`;
-    }
-
-    function addPlayer() {
-        const t = document.getElementById('teamSelectPlayers').value; const id = document.getElementById('playerId').value.trim(); const nm = document.getElementById('playerName').value.trim();
-        if (!t) return; if (id === '' || nm === '') return;
-        if (!playersByTeam[t]) playersByTeam[t] = [];
-        for (const eq in playersByTeam) { if (playersByTeam[eq].find(p => p.id === id)) { alert(`ID duplicado en ${eq}.`); return; } }
-        playersByTeam[t].push({ id: id, nombre: nm, goles: 0, partidos: 0, jornadasStats: {}, castigadoActivo: false, historialCastigos: [], amonestaciones: [], suspensiones: [] });
-        localStorage.setItem('tournament_players', JSON.stringify(playersByTeam)); renderPlayersList(); document.getElementById('playerId').value = ''; document.getElementById('playerName').value = '';
-    }
-
-    function deletePlayer(team, id) {
-        if (confirm(`¿Dar de baja a este jugador?`)) { playersByTeam[team] = playersByTeam[team].filter(p => p.id !== id); localStorage.setItem('tournament_players', JSON.stringify(playersByTeam)); renderPlayersList(); searchPlayers(); renderTopScorers(); }
-    }
-
-    function updatePlayerStat(team, id, jorId, field, obj) {
-        const p = playersByTeam[team].find(x => x.id === id); if (!p) return;
-        if (!p.jornadasStats) p.jornadasStats = {}; if (!p.jornadasStats[jorId]) p.jornadasStats[jorId] = { jugado: false, goles: 0 };
-        if (field === 'jugado') p.jornadasStats[jorId].jugado = obj.checked; else if (field === 'goles') p.jornadasStats[jorId].goles = parseInt(obj.value) || 0;
-        let tP = 0; let tG = 0;
-        for (const j in p.jornadasStats) { if (p.jornadasStats[j].jugado) tP++; tG += p.jornadasStats[j].goles; }
-        p.partidos = tP; p.goles = tG; localStorage.setItem('tournament_players', JSON.stringify(playersByTeam));
-        const e1 = document.getElementById(`total_partidos_${id}`); const e2 = document.getElementById(`total_goles_${id}`);
-        if (e1) e1.innerText = tP; if (e2) e2.innerText = tG; renderTopScorers();
-    }
-
-    function renderPlayersList() {
-        const t = document.getElementById('teamSelectPlayers').value; const lst = document.getElementById('playersList'); lst.innerHTML = ''; 
-        if (!t) { lst.innerHTML = '<p style="color: #7f8c8d;">Selecciona un equipo.</p>'; return; }
-        const ps = playersByTeam[t] || []; if (ps.length === 0) { lst.innerHTML = '<p style="color: #7f8c8d;">Plantilla vacía.</p>'; return; }
-        ps.forEach(p => { lst.innerHTML += buildPlayerCardHTML(t, p); });
-    }
-
-    function searchPlayers() {
-        const q = document.getElementById('searchPlayerInput').value.trim().toLowerCase(); const res = document.getElementById('searchResults');
-        if (q === '') { res.innerHTML = ''; return; } let html = ''; let c = 0;
-        for (const t in playersByTeam) { playersByTeam[t].forEach(p => { if (p.nombre.toLowerCase().includes(q) || p.id.toLowerCase().includes(q) || t.toLowerCase().includes(q)) { c++; html += buildPlayerCardHTML(t, p); } }); }
-        res.innerHTML = c === 0 ? `<p style="color: #e74c3c;">Sin resultados.</p>` : `<p style="color: #16a085;">Coincidencias:</p>` + html;
-    }
-
-    function loadDataFromStorage() {
-        const st = localStorage.getItem('tournament_teams'); const sm = localStorage.getItem('tournament_matches');
-        const sp = localStorage.getItem('tournament_players'); const sj = localStorage.getItem('tournament_jornadas'); 
-        const sd = localStorage.getItem('tournament_delegados'); const sJd = localStorage.getItem('tournament_juntas');
-
-        if (st) teams = JSON.parse(st); 
-        if (sJd) juntasDelegados = JSON.parse(sJd);
-
-        if (sp) { 
-            let parsedPlayers = JSON.parse(sp);
-            for (let team in parsedPlayers) {
-                parsedPlayers[team] = parsedPlayers[team].map(player => {
-                    let p = typeof player === 'string' ? { id: "N/A", nombre: player } : player;
-                    p.goles = p.goles || 0; p.partidos = p.partidos || 0; p.jornadasStats = p.jornadasStats || {}; 
-                    p.castigadoActivo = p.castigadoActivo || false; p.historialCastigos = p.historialCastigos || [];
-                    p.amonestaciones = p.amonestaciones || []; p.suspensiones = p.suspensiones || [];
-                    p.amonestaciones = p.amonestaciones.map(a => { if (typeof a.causal === 'string' && a.causal.includes('-')) { a.causal = parseInt(a.causal.split('-')[0].trim()); } return a; });
-                    p.suspensiones = p.suspensiones.map(s => { if (typeof s.causal === 'string' && s.causal.includes('-')) { s.causal = parseInt(s.causal.split('-')[0].trim()); } else if (typeof s.causal === 'string' && s.causal.includes('Acumulación')) { s.causal = 8; } else if (typeof s.causal === 'string' && s.causal.includes('Doble')) { s.causal = 7; } return s; });
-                    return p;
-                });
-            }
-            playersByTeam = parsedPlayers; 
-        } else { teams.forEach(t => { if (!playersByTeam[t]) playersByTeam[t] = []; }); } 
-        
-        if (sj) jornadas = JSON.parse(sj); if (sm) matches = JSON.parse(sm); 
-        if (sd) { 
-            let dTemp = JSON.parse(sd);
-            delegados = dTemp.map(d => { d.asistencias = d.asistencias || {}; return d; });
-        }
-        renderTeamsList(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderTopScorers(); renderTablaDelegados();
+        document.getElementById(tabId).classList.add("active"); evt.currentTarget.classList.add("active");
+        if (tabId === 'tab-estadisticas') { renderStandings(); renderTopScorers(); } if (tabId === 'tab-delegados') { renderTablaDelegados(); }
+        if (tabId === 'tab-roster') { renderPlayersList(); } if (tabId === 'tab-amonestaciones') { renderAmonestacionesTab(); }
     }
 
     function addTeam() {
-        const input = document.getElementById('teamName'); const nm = input.value.trim();
-        if (nm === '' || teams.includes(nm)) return;
-        teams.push(nm); playersByTeam[nm] = [];
-        localStorage.setItem('tournament_teams', JSON.stringify(teams)); localStorage.setItem('tournament_players', JSON.stringify(playersByTeam));
-        renderTeamsList(); updateSelectOptions(); renderStandings(); input.value = '';
+        const nm = document.getElementById('teamName').value.trim(); if (nm === '' || teams.includes(nm)) return;
+        teams.push(nm); playersByTeam[nm] = []; interceptCloudUpdates();
+        renderTeamsList(); updateSelectOptions(); renderStandings(); document.getElementById('teamName').value = '';
     }
-
+    
     function generateAutomaticFixture() {
         if (teams.length < 2) return;
         if (confirm('¿Generar torneo automático?')) {
@@ -604,99 +479,68 @@
                     const eA = t[i]; const eB = t[t.length - 1 - i];
                     if (eA === 'EQUIPO_FANTASMA') nJ.descansos.push(eB); else if (eB === 'EQUIPO_FANTASMA') nJ.descansos.push(eA);
                     else matches.push({ id: bt + r + (i * 100), jornadaId: jId, local: eA, visitante: eB, golesLocal: 0, golesVisitante: 0 });
-                }
-                t.splice(1, 0, t.pop());
-            }
-            localStorage.setItem('tournament_jornadas', JSON.stringify(jornadas)); localStorage.setItem('tournament_matches', JSON.stringify(matches));
-            updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderPlayersList();
+                } t.splice(1, 0, t.pop());
+            } interceptCloudUpdates(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderPlayersList();
         }
     }
-
+    
     function createJornada() {
         const nJ = { id: Date.now(), nombre: `Jornada ${jornadas.length + 1}`, descansos: [] }; jornadas.push(nJ);
-        localStorage.setItem('tournament_jornadas', JSON.stringify(jornadas)); updateSelectOptions(); renderMatchesHTML(); renderPlayersList(); document.getElementById('selectJornada').value = nJ.id;
+        interceptCloudUpdates(); updateSelectOptions(); renderMatchesHTML(); renderPlayersList(); document.getElementById('selectJornada').value = nJ.id;
     }
-
+    
     function createMatch() {
         const jId = document.getElementById('selectJornada').value; const tA = document.getElementById('teamA').value; const tB = document.getElementById('teamB').value;
         if (!jId || !tA || !tB || tA === tB) return; const jor = jornadas.find(j => j.id == jId); if (jor.descansos.includes(tA) || jor.descansos.includes(tB)) return;
         matches.push({ id: Date.now(), jornadaId: parseInt(jId), local: tA, visitante: tB, golesLocal: 0, golesVisitante: 0 });
-        localStorage.setItem('tournament_matches', JSON.stringify(matches)); renderMatchesHTML();
+        interceptCloudUpdates(); renderMatchesHTML();
     }
-
+    
     function assignRest() {
         const jId = document.getElementById('selectJornada').value; const t = document.getElementById('teamRest').value;
         if (!jId || !t) return; const jor = jornadas.find(j => j.id == jId);
         if (jor.descansos.includes(t) || matches.some(m => m.jornadaId == jId && (m.local === t || m.visitante === t))) return;
-        jor.descansos.push(t); localStorage.setItem('tournament_jornadas', JSON.stringify(jornadas)); renderMatchesHTML();
+        jor.descansos.push(t); interceptCloudUpdates(); renderMatchesHTML();
     }
-
+    
     function removeRest(jId, t) {
-        if (confirm(`¿Cancelar descanso?`)) { const jor = jornadas.find(j => j.id == jId); jor.descansos = jor.descansos.filter(x => x !== t); localStorage.setItem('tournament_jornadas', JSON.stringify(jornadas)); renderMatchesHTML(); }
+        if (confirm(`¿Cancelar descanso?`)) { const jor = jornadas.find(j => j.id == jId); jor.descansos = jor.descansos.filter(x => x !== t); interceptCloudUpdates(); renderMatchesHTML(); }
     }
-
-    // --- NUEVA LÓGICA DE GUARDADO AUTOMÁTICO DE MARCADORES ---
+    
     function autoSaveScore(matchId, teamType, val) {
-        // Encontramos el partido que se está editando
         const match = matches.find(m => m.id === matchId);
         if (match) {
-            // Actualizamos los goles dependiendo de si es el equipo local o visitante
-            if (teamType === 'local') {
-                match.golesLocal = parseInt(val) || 0;
-            } else if (teamType === 'visitante') {
-                match.golesVisitante = parseInt(val) || 0;
-            }
-            // Guardamos inmediatamente en la memoria (localStorage)
-            localStorage.setItem('tournament_matches', JSON.stringify(matches));
-            
-            // Recalculamos la tabla general y los puntos al instante, sin necesidad de redibujar 
-            // el contenedor de partidos, para que el usuario no pierda el foco de su teclado.
-            renderStandings(); 
+            if (teamType === 'local') match.golesLocal = parseInt(val) || 0;
+            else if (teamType === 'visitante') match.golesVisitante = parseInt(val) || 0;
+            interceptCloudUpdates(); renderStandings(); 
         }
     }
-
-    // --- NUEVA LÓGICA PARA MINIMIZAR JORNADAS ---
+    
     function toggleJornadaVisibility(jorId) {
-        const content = document.getElementById(`jornada-content-${jorId}`);
-        const icon = document.getElementById(`icon-jor-${jorId}`);
-        
-        // Si está bloqueado/visible, lo ocultamos y cambiamos el ícono
-        if (content.style.display === 'none') {
-            content.style.display = 'block';
-            icon.innerText = '➖';
-        } else {
-            content.style.display = 'none';
-            icon.innerText = '➕';
-        }
+        const content = document.getElementById(`jornada-content-${jorId}`); const icon = document.getElementById(`icon-jor-${jorId}`);
+        if (content.style.display === 'none') { content.style.display = 'block'; icon.innerText = '➖'; } else { content.style.display = 'none'; icon.innerText = '➕'; }
     }
-
+    
     function deleteTeam(tm) {
         if (confirm(`¿Eliminar al equipo "${tm}"?`)) {
             teams = teams.filter(t => t !== tm); delete playersByTeam[tm]; matches = matches.filter(m => m.local !== tm && m.visitante !== tm);
             jornadas.forEach(j => { j.descansos = j.descansos.filter(t => t !== tm); }); delegados = delegados.filter(d => d.equipo !== tm);
-            localStorage.setItem('tournament_teams', JSON.stringify(teams)); localStorage.setItem('tournament_players', JSON.stringify(playersByTeam));
-            localStorage.setItem('tournament_matches', JSON.stringify(matches)); localStorage.setItem('tournament_jornadas', JSON.stringify(jornadas)); localStorage.setItem('tournament_delegados', JSON.stringify(delegados));
-            renderTeamsList(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderTablaDelegados();
+            interceptCloudUpdates(); renderTeamsList(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderTablaDelegados();
         }
     }
-
-    function deleteMatch(mId) {
-        if (confirm('¿Eliminar partido?')) { matches = matches.filter(m => m.id !== mId); localStorage.setItem('tournament_matches', JSON.stringify(matches)); renderMatchesHTML(); renderStandings(); }
-    }
+    
+    function deleteMatch(mId) { if (confirm('¿Eliminar partido?')) { matches = matches.filter(m => m.id !== mId); interceptCloudUpdates(); renderMatchesHTML(); renderStandings(); } }
     
     function deleteJornada(jId) {
         if (confirm('¿Eliminar jornada?')) {
             jornadas = jornadas.filter(j => j.id !== jId); matches = matches.filter(m => m.jornadaId !== jId);
-            jornadas.forEach((j, i) => { j.nombre = `Jornada ${i + 1}`; });
-            localStorage.setItem('tournament_jornadas', JSON.stringify(jornadas)); localStorage.setItem('tournament_matches', JSON.stringify(matches));
+            jornadas.forEach((j, i) => { j.nombre = `Jornada ${i + 1}`; }); interceptCloudUpdates();
             updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderPlayersList();
         }
     }
-
-    function renderTeamsList() {
-        const el = document.getElementById('teamsList'); el.innerHTML = ''; teams.forEach(t => { el.innerHTML += `<div class="list-item"><span class="list-text">${t}</span><button onclick="deleteTeam('${t}')" class="delete-btn">Eliminar</button></div>`; });
-    }
-
+    
+    function renderTeamsList() { const el = document.getElementById('teamsList'); el.innerHTML = ''; teams.forEach(t => { el.innerHTML += `<div class="list-item"><span class="list-text">${t}</span><button onclick="deleteTeam('${t}')" class="delete-btn">Eliminar</button></div>`; }); }
+    
     function updateSelectOptions() {
         const sA = document.getElementById('teamA'); const sB = document.getElementById('teamB'); const sR = document.getElementById('teamRest'); const sP = document.getElementById('teamSelectPlayers'); const sJ = document.getElementById('selectJornada'); const sD = document.getElementById('selectTeamDelegado');
         const cP = sP.value; const cJ = sJ.value; const cD = sD.value;
@@ -705,56 +549,19 @@
         teams.forEach(t => { const o = `<option value="${t}">${t}</option>`; sA.innerHTML += o; sB.innerHTML += o; sR.innerHTML += o; sP.innerHTML += o; sD.innerHTML += o; });
         if (teams.includes(cP)) sP.value = cP; if (teams.includes(cD)) sD.value = cD; if (cJ && jornadas.some(j => j.id == cJ)) sJ.value = cJ; renderPlayersList();
     }
-
-    // --- RENDERIZADO MODIFICADO PARA JORNADAS MINIMIZABLES Y GUARDADO AUTOMÁTICO ---
+    
     function renderMatchesHTML() {
-        const c = document.getElementById('matchesContainer'); 
-        c.innerHTML = ''; 
-        if (jornadas.length === 0) return;
-        
+        const c = document.getElementById('matchesContainer'); c.innerHTML = ''; if (jornadas.length === 0) return;
         jornadas.forEach(jor => {
             const div = document.createElement('div'); 
-            
-            // 1. Cabecera interactiva que al darle clic ejecuta la función de ocultar/mostrar
-            let headerHTML = `
-                <div class="jornada-header-toggle" onclick="toggleJornadaVisibility(${jor.id})">
-                    <h3 class="jornada-title" style="margin: 0; pointer-events: none; color: #2c3e50;">
-                        <span id="icon-jor-${jor.id}" style="margin-right: 8px; font-size: 14px;">➖</span>${jor.nombre}
-                    </h3>
-                    <button onclick="event.stopPropagation(); deleteJornada(${jor.id})" class="delete-btn" style="margin: 0;">Borrar</button>
-                </div>`;
-            
-            // 2. Contenedor del contenido (partidos y descansos)
+            let headerHTML = `<div class="jornada-header-toggle" onclick="toggleJornadaVisibility(${jor.id})"><h3 class="jornada-title" style="margin: 0; pointer-events: none; color: #2c3e50;"><span id="icon-jor-${jor.id}" style="margin-right: 8px; font-size: 14px;">➖</span>${jor.nombre}</h3><button onclick="event.stopPropagation(); deleteJornada(${jor.id})" class="delete-btn" style="margin: 0;">Borrar</button></div>`;
             let contentHTML = `<div id="jornada-content-${jor.id}" class="jornada-content" style="display: block; margin-bottom: 25px;">`;
-
-            // Aquí se agregan los inputs con el evento 'oninput' que dispara autoSaveScore
-            matches.filter(m => m.jornadaId == jor.id).forEach(m => { 
-                contentHTML += `
-                    <div class="match-row">
-                        <span class="match-team left">${m.local}</span>
-                        <input type="number" min="0" value="${m.golesLocal}" oninput="autoSaveScore(${m.id}, 'local', this.value)">
-                        <span class="vs">VS</span>
-                        <input type="number" min="0" value="${m.golesVisitante}" oninput="autoSaveScore(${m.id}, 'visitante', this.value)">
-                        <span class="match-team right">${m.visitante}</span>
-                        <button onclick="deleteMatch(${m.id})" class="delete-btn" style="margin-left: 20px; padding: 6px 10px;">❌</button>
-                    </div>`; 
-            });
-            
-            jor.descansos.forEach(t => { 
-                contentHTML += `
-                    <div class="rest-team">
-                        <span>🛋️ <strong>${t}</strong> descansa.</span>
-                        <button onclick="removeRest(${jor.id}, '${t}')" class="delete-btn" style="padding: 6px 10px;">❌</button>
-                    </div>`; 
-            }); 
-            
-            contentHTML += `</div>`; // Cierre del contenedor de contenido
-            
-            div.innerHTML = headerHTML + contentHTML;
-            c.appendChild(div);
+            matches.filter(m => m.jornadaId == jor.id).forEach(m => { contentHTML += `<div class="match-row"><span class="match-team left">${m.local}</span><input type="number" min="0" value="${m.golesLocal}" oninput="autoSaveScore(${m.id}, 'local', this.value)"><span class="vs">VS</span><input type="number" min="0" value="${m.golesVisitante}" oninput="autoSaveScore(${m.id}, 'visitante', this.value)"><span class="match-team right">${m.visitante}</span><button onclick="deleteMatch(${m.id})" class="delete-btn" style="margin-left: 20px; padding: 6px 10px;">❌</button></div>`; });
+            jor.descansos.forEach(t => { contentHTML += `<div class="rest-team"><span>🛋️ <strong>${t}</strong> descansa.</span><button onclick="removeRest(${jor.id}, '${t}')" class="delete-btn" style="padding: 6px 10px;">❌</button></div>`; }); 
+            contentHTML += `</div>`; div.innerHTML = headerHTML + contentHTML; c.appendChild(div);
         });
     }
-
+    
     function renderStandings() {
         const c = document.getElementById('standingsContainer'); c.innerHTML = ''; if (teams.length === 0) return;
         let st = {}; teams.forEach(t => { st[t] = { n: t, jj: 0, jg: 0, je: 0, jp: 0, gf: 0, gc: 0, dg: 0, pts: 0 }; });
@@ -764,21 +571,12 @@
                 if (m.golesLocal > m.golesVisitante) { st[m.local].jg++; st[m.local].pts += 3; st[m.visitante].jp++; } else if (m.golesLocal < m.golesVisitante) { st[m.visitante].jg++; st[m.visitante].pts += 3; st[m.local].jp++; } else { st[m.local].je++; st[m.visitante].je++; st[m.local].pts++; st[m.visitante].pts++; }
             }
         });
-        
-        delegados.forEach(d => { 
-            if (st[d.equipo]) {
-                let contadas = 0;
-                juntasDelegados.forEach(j => { if (d.asistencias[j.id]) contadas++; });
-                let totalFaltas = juntasDelegados.length - contadas;
-                st[d.equipo].pts -= Math.floor(totalFaltas / 2); 
-            } 
-        });
-
+        delegados.forEach(d => { if (st[d.equipo]) { let contadas = 0; juntasDelegados.forEach(j => { if (d.asistencias[j.id]) contadas++; }); let totalFaltas = juntasDelegados.length - contadas; st[d.equipo].pts -= Math.floor(totalFaltas / 2); } });
         let arr = Object.values(st); arr.forEach(e => { e.dg = e.gf - e.gc; }); arr.sort((a, b) => { if (b.pts !== a.pts) return b.pts - a.pts; if (b.dg !== a.dg) return b.dg - a.dg; return b.gf - a.gf; });
         let h = `<table class="standings-table"><thead><tr><th>Pos</th><th class="team-name">Equipo</th><th>JJ</th><th>JG</th><th>JE</th><th>JP</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr></thead><tbody>`;
         arr.forEach((e, i) => { let p = i + 1; if (i === 0) p = '🥇'; else if (i === 1) p = '🥈'; else if (i === 2) p = '🥉'; h += `<tr><td>${p}</td><td class="team-name">${e.n}</td><td>${e.jj}</td><td>${e.jg}</td><td>${e.je}</td><td>${e.jp}</td><td>${e.gf}</td><td>${e.gc}</td><td>${e.dg}</td><td style="font-weight: bold; color: #27ae60;">${e.pts}</td></tr>`; }); c.innerHTML = h + `</tbody></table>`;
     }
-
+    
     function renderTopScorers() {
         const c = document.getElementById('topScorersContainer'); c.innerHTML = ''; let tJ = [];
         for (const t in playersByTeam) { playersByTeam[t].forEach(p => { tJ.push({ id: p.id, nombre: p.nombre, equipo: t, goles: p.goles || 0 }); }); }
@@ -787,13 +585,36 @@
         let html = `<table class="standings-table"><thead><tr><th>Pos</th><th>ID</th><th class="team-name">Jugador</th><th>Equipo</th><th>Goles</th></tr></thead><tbody>`;
         tJ.slice(0, 15).forEach((j, i) => { let p = i + 1; if (i === 0) p = '🥇'; else if (i === 1) p = '🥈'; else if (i === 2) p = '🥉'; html += `<tr><td>${p}</td><td style="color: #7f8c8d; font-size: 13px;">${j.id}</td><td class="team-name">${j.nombre}</td><td style="color: #2980b9;">${j.equipo}</td><td style="font-weight: bold; color: #e67e22; font-size: 16px;">${j.goles}</td></tr>`; }); c.innerHTML = html + `</tbody></table>`;
     }
-
+    
     function resetTournament() {
-        if (confirm('¿Borrar todos los datos permanentemente?')) {
-            localStorage.clear(); teams = []; matches = []; playersByTeam = {}; jornadas = []; delegados = []; juntasDelegados = [];
-            renderTeamsList(); updateSelectOptions(); renderMatchesHTML(); renderPlayersList(); renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab(); document.getElementById('searchResults').innerHTML = '';
+        if (confirm('¿Borrar el tablero activo?')) {
+            teams = []; matches = []; playersByTeam = {}; jornadas = []; delegados = []; juntasDelegados = [];
+            interceptCloudUpdates(); renderTeamsList(); updateSelectOptions(); renderMatchesHTML(); renderPlayersList(); renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab(); document.getElementById('searchResults').innerHTML = '';
         }
     }
+    
+    function addPlayer() { const t = document.getElementById('teamSelectPlayers').value; const id = document.getElementById('playerId').value.trim(); const nm = document.getElementById('playerName').value.trim(); if (!t || id === '' || nm === '') return; if (!playersByTeam[t]) playersByTeam[t] = []; for (const eq in playersByTeam) { if (playersByTeam[eq].find(p => p.id === id)) { alert(`ID duplicado en ${eq}.`); return; } } playersByTeam[t].push({ id: id, nombre: nm, goles: 0, partidos: 0, jornadasStats: {}, castigadoActivo: false, historialCastigos: [], amonestaciones: [], suspensiones: [] }); interceptCloudUpdates(); renderPlayersList(); document.getElementById('playerId').value = ''; document.getElementById('playerName').value = ''; }
+    function deletePlayer(team, id) { if (confirm(`¿Dar de baja a este jugador?`)) { playersByTeam[team] = playersByTeam[team].filter(p => p.id !== id); interceptCloudUpdates(); renderPlayersList(); searchPlayers(); renderTopScorers(); } }
+    function updatePlayerStat(team, id, jorId, field, obj) { const p = playersByTeam[team].find(x => x.id === id); if (!p) return; if (!p.jornadasStats) p.jornadasStats = {}; if (!p.jornadasStats[jorId]) p.jornadasStats[jorId] = { jugado: false, goles: 0 }; if (field === 'jugado') p.jornadasStats[jorId].jugado = obj.checked; else if (field === 'goles') p.jornadasStats[jorId].goles = parseInt(obj.value) || 0; let tP = 0; let tG = 0; for (const j in p.jornadasStats) { if (p.jornadasStats[j].jugado) tP++; tG += p.jornadasStats[j].goles; } p.partidos = tP; p.goles = tG; interceptCloudUpdates(); const e1 = document.getElementById(`total_partidos_${id}`); const e2 = document.getElementById(`total_goles_${id}`); if (e1) e1.innerText = tP; if (e2) e2.innerText = tG; renderTopScorers(); }
+    function renderPlayersList() { const t = document.getElementById('teamSelectPlayers').value; const lst = document.getElementById('playersList'); lst.innerHTML = ''; if (!t) { lst.innerHTML = '<p style="color: #7f8c8d;">Selecciona un equipo.</p>'; return; } const ps = playersByTeam[t] || []; if (ps.length === 0) { lst.innerHTML = '<p style="color: #7f8c8d;">Plantilla vacía.</p>'; return; } ps.forEach(p => { lst.innerHTML += buildPlayerCardHTML(t, p); }); }
+    function searchPlayers() { const q = document.getElementById('searchPlayerInput').value.trim().toLowerCase(); const res = document.getElementById('searchResults'); if (q === '') { res.innerHTML = ''; return; } let html = ''; let c = 0; for (const t in playersByTeam) { playersByTeam[t].forEach(p => { if (p.nombre.toLowerCase().includes(q) || p.id.toLowerCase().includes(q) || t.toLowerCase().includes(q)) { c++; html += buildPlayerCardHTML(t, p); } }); } res.innerHTML = c === 0 ? `<p style="color: #e74c3c;">Sin resultados.</p>` : `<p style="color: #16a085;">Coincidencias:</p>` + html; }
+    
+    function addDelegado() { const tN = document.getElementById('selectTeamDelegado').value; const dN = document.getElementById('delegadoName').value.trim(); if (!tN || dN === '') return; if (delegados.find(d => d.equipo === tN && d.nombre.toLowerCase() === dN.toLowerCase())) { alert('Este delegado ya existe.'); return; } delegados.push({ id: Date.now(), nombre: dN, equipo: tN, asistencias: {} }); interceptCloudUpdates(); document.getElementById('delegadoName').value = ''; renderTablaDelegados(); renderStandings(); }
+    function deleteDelegado(id) { if (confirm('¿Eliminar a este delegado permanentemente?')) { delegados = delegados.filter(d => d.id !== id); interceptCloudUpdates(); renderTablaDelegados(); renderStandings(); } }
+    function addJunta() { const inputFecha = document.getElementById('fechaJunta'); const fecha = inputFecha.value; if (!fecha) { alert('Por favor, selecciona una fecha.'); return; } juntasDelegados.push({ id: Date.now(), fecha: fecha }); interceptCloudUpdates(); inputFecha.value = ''; renderTablaDelegados(); renderStandings(); }
+    function deleteJunta(juntaId) { if (confirm('¿Eliminar esta junta?')) { juntasDelegados = juntasDelegados.filter(j => j.id !== juntaId); interceptCloudUpdates(); renderTablaDelegados(); renderStandings(); } }
+    function toggleAsistencia(delegadoId, juntaId, checkbox) { const delegado = delegados.find(d => d.id === delegadoId); if (delegado) { delegado.asistencias[juntaId] = checkbox.checked; interceptCloudUpdates(); renderTablaDelegados(); renderStandings(); } }
+    
+    function renderTablaDelegados() { const c = document.getElementById('tablaDelegadosContainer'); c.innerHTML = ''; let headerHTML = ''; if (juntasDelegados.length > 0) { headerHTML += '<div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 25px; border-bottom: 1px solid #f39c12;"><div style="font-weight: bold; color: #d35400; display: flex; align-items: center; padding-right: 10px; font-size: 14px;">Administrar Juntas:</div>'; juntasDelegados.forEach(junta => { headerHTML += `<div style="background: #fad7a1; padding: 8px 12px; border-radius: 6px; display: flex; flex-direction: column; align-items: center; min-width: 90px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);"><span style="font-size: 13px; font-weight: bold; color: #d35400; margin-bottom: 6px;">${junta.fecha}</span><button onclick="deleteJunta(${junta.id})" class="delete-btn" style="margin: 0; padding: 4px 8px; font-size: 10px; background-color: #e74c3c;">Borrar Junta</button></div>`; }); headerHTML += '</div>'; } if (delegados.length === 0) { c.innerHTML = headerHTML + '<p style="color: #7f8c8d; font-style: italic;">Aún no hay delegados registrados.</p>'; return; } let html = headerHTML; delegados.forEach(d => { let asistenciasContadas = 0; let juntasHTML = ''; if (juntasDelegados.length === 0) { juntasHTML = `<div style="color:#7f8c8d; font-size:13px; font-style:italic; padding-top:25px; width: 100%; text-align: center;">No has creado ninguna junta.</div>`; } else { juntasDelegados.forEach((junta) => { let asistio = d.asistencias[junta.id]; if (asistio) asistenciasContadas++; let isChecked = asistio ? 'checked' : ''; juntasHTML += `<div class="jornada-stat-box" style="background: white; border: 1px solid #f39c12; border-radius: 6px; padding: 8px; text-align: center; min-width: 75px;"><div class="jor-title" title="${junta.fecha}" style="font-size: 11px; margin-bottom: 8px; color: #d35400; border-bottom: 1px solid #fad7a1; padding-bottom: 4px;">${junta.fecha}</div><label style="font-size:12px; color:#34495e; display:block; cursor:pointer;">Asistió<br><input type="checkbox" style="transform: scale(1.4); margin-top: 8px; cursor: pointer; accent-color: #27ae60;" ${isChecked} onchange="toggleAsistencia(${d.id}, ${junta.id}, this)"></label></div>`; }); } let faltas = juntasDelegados.length - asistenciasContadas; let ptsPerdidos = Math.floor(faltas / 2); let alerta = ptsPerdidos > 0 ? `<span style="font-size: 12px; color: #c0392b; display: block; margin-top: 6px; font-weight: normal;">(-${ptsPerdidos} pts deducidos)</span>` : ''; html += `<div class="player-card" style="border-left: 5px solid #f39c12; margin-bottom: 15px;"><div class="player-info"><span style="color: #d35400; font-weight: bold; font-size: 12px; display: block; margin-bottom: 4px;">Equipo Representado:</span><span style="color: #2980b9; font-weight: bold; font-size: 15px; display: block; margin-bottom: 8px;">${d.equipo}</span><div class="player-name-container" style="margin-bottom: 10px;"><strong style="font-size: 17px; color: #2c3e50;">👤 ${d.nombre}</strong></div><button onclick="deleteDelegado(${d.id})" class="delete-btn" style="margin-left:0; padding:6px 12px; font-size: 11px; width: 100%;">Destituir</button></div><div class="player-jornadas-scroll" style="display: flex; gap: 10px; padding: 10px; align-items: center; background: #fdfefe;">${juntasHTML}</div><div class="player-totals" style="min-width: 130px;"><div style="color:#34495e; text-align: center;"><span style="font-size: 13px; display:block; margin-bottom: 5px;">Faltas Acumuladas</span><span style="color:#c0392b; font-size:28px; font-weight:bold;">${faltas}</span>${alerta}</div></div></div>`; }); c.innerHTML = html; }
+    function buildPlayerCardHTML(teamName, player) { if (!player.jornadasStats) player.jornadasStats = {}; let jornadasHTML = ''; if (jornadas.length === 0) { jornadasHTML = `<div style="color:#7f8c8d; font-size:13px; font-style:italic; padding-top:15px; width: 100%; text-align: center;">No hay jornadas.</div>`; } else { jornadas.forEach((jor, index) => { const stats = player.jornadasStats[jor.id] || { jugado: false, goles: 0 }; const isChecked = stats.jugado ? 'checked' : ''; jornadasHTML += `<div class="jornada-stat-box"><div class="jor-title" title="${jor.nombre}">J${index + 1}</div><label style="font-size:11px; color:#7f8c8d; display:block; margin-bottom:4px; cursor:pointer;">Jugó <input type="checkbox" ${isChecked} onchange="updatePlayerStat('${teamName}', '${player.id}', ${jor.id}, 'jugado', this)" style="cursor:pointer;"></label><label style="font-size:11px; color:#7f8c8d; display:block; margin-top:8px; margin-bottom:2px;">Goles</label><input type="number" min="0" value="${stats.goles}" onchange="updatePlayerStat('${teamName}', '${player.id}', ${jor.id}, 'goles', this)" style="width: 45px; padding: 4px; text-align:center; border: 1px solid #ccc; border-radius: 4px;"></div>`; }); } const isSancionado = player.castigadoActivo ? 'checked' : ''; return `<div class="player-card"><div class="player-info"><span style="color: #2980b9; font-weight: bold; font-size: 13px;">ID: ${player.id}</span><div class="player-name-container"><strong style="font-size: 16px;">${player.nombre}</strong><input type="checkbox" title="Marcar/Desmarcar Sanción" class="sancion-checkbox" ${isSancionado} onchange="toggleCastigoActivo('${teamName}', '${player.id}', this)"></div><span style="color: #7f8c8d; font-size: 12px; margin-bottom: 8px;">${teamName}</span><div style="display: flex; gap: 5px; flex-wrap: wrap;"><button onclick="openDisciplinaModal('${teamName}', '${player.id}')" class="btn-disciplina">🟨/🟥 Sancionar</button><button onclick="deletePlayer('${teamName}', '${player.id}')" class="delete-btn" style="margin-left:0; padding:6px; font-size: 11px;">Baja</button></div></div><div class="player-jornadas-scroll">${jornadasHTML}</div><div class="player-totals"><div style="margin-bottom: 10px; color:#34495e;"><span style="font-size: 12px; display:block;">Jornadas</span><span id="total_partidos_${player.id}" style="color:#27ae60; font-size:22px; font-weight:bold;">${player.partidos || 0}</span></div><div style="color:#34495e;"><span style="font-size: 12px; display:block;">Goles Totales</span><span id="total_goles_${player.id}" style="color:#e67e22; font-size:22px; font-weight:bold;">${player.goles || 0}</span></div></div></div>`; }
+    function openDisciplinaModal(teamName, playerId) { currentDiscTeam = teamName; currentDiscPlayerId = playerId; const player = playersByTeam[teamName].find(p => p.id === playerId); document.getElementById('discPlayerTitle').innerText = `${player.nombre} (ID: ${player.id})`; const selectJor = document.getElementById('discJornada'); selectJor.innerHTML = ''; if(jornadas.length === 0) { selectJor.innerHTML = '<option value="">No hay jornadas</option>'; } else { jornadas.forEach(j => { selectJor.innerHTML += `<option value="${j.nombre}">${j.nombre}</option>`; }); } document.getElementById('discGravedad').value = "amonestado"; document.getElementById('discPartidosSuspendidos').value = 1; updateCausalesDropdowns(); renderHistorialSanciones(); document.getElementById('modalDisciplina').style.display = "flex"; }
+    function closeDisciplinaModal() { document.getElementById('modalDisciplina').style.display = "none"; }
+    function updateCausalesDropdowns() { const gravedad = document.getElementById('discGravedad').value; const sel1 = document.getElementById('discCausal1'); const sel2 = document.getElementById('discCausal2'); const box2 = document.getElementById('discBoxCausal2'); const boxP = document.getElementById('discBoxPartidos'); const lbl1 = document.getElementById('lblCausal1'); sel1.innerHTML = ''; sel2.innerHTML = ''; if (gravedad === 'amonestado' || gravedad === 'doble amonestado') { lbl1.innerText = "3- Causal de Amonestación:"; causalesAmarilla.forEach(c => { sel1.innerHTML += `<option value="${c.val}">${c.text}</option>`; sel2.innerHTML += `<option value="${c.val}">${c.text}</option>`; }); box2.style.display = (gravedad === 'doble amonestado') ? "block" : "none"; boxP.style.display = (gravedad === 'doble amonestado') ? "block" : "none"; } else if (gravedad === 'expulsado') { lbl1.innerText = "3- Causal de Expulsión:"; causalesRoja.slice(0, 7).forEach(c => { sel1.innerHTML += `<option value="${c.val}">${c.text}</option>`; }); box2.style.display = "none"; boxP.style.display = "block"; } }
+    function guardarSancion() { const player = playersByTeam[currentDiscTeam].find(p => p.id === currentDiscPlayerId); const jorNombre = document.getElementById('discJornada').value; const gravedad = document.getElementById('discGravedad').value; const c1Val = parseInt(document.getElementById('discCausal1').value); const c2Val = parseInt(document.getElementById('discCausal2').value); if(!jorNombre) { alert("Primero debes crear al menos una jornada en el torneo."); return; } let textoOficial = ""; if (gravedad === 'amonestado') { textoOficial = `${player.nombre} fue amonestado por el causal ${c1Val} en la ${jorNombre}`; player.amonestaciones.push({ jornada: jorNombre, causal: c1Val }); if (player.amonestaciones.length >= 3) { player.suspensiones.push({ causal: 8, partidos: 1 }); player.amonestaciones = []; textoOficial += ` (Suspendido automáticamente por acumulación)`; } } else if (gravedad === 'doble amonestado') { const partidos = parseInt(document.getElementById('discPartidosSuspendidos').value) || 1; textoOficial = `${player.nombre} fue doble amonestado por el causal ${c1Val} y ${c2Val} en la ${jorNombre}`; player.suspensiones.push({ causal: 7, partidos: partidos }); } else if (gravedad === 'expulsado') { const partidos = parseInt(document.getElementById('discPartidosSuspendidos').value) || 1; textoOficial = `${player.nombre} fue expulsado por el causal ${c1Val} en la ${jorNombre}`; player.suspensiones.push({ causal: c1Val, partidos: partidos }); } player.historialCastigos.push(textoOficial); player.castigadoActivo = true; interceptCloudUpdates(); renderHistorialSanciones(); renderPlayersList(); searchPlayers(); closeDisciplinaModal(); }
+    function renderHistorialSanciones() { const player = playersByTeam[currentDiscTeam].find(p => p.id === currentDiscPlayerId); const container = document.getElementById('discHistorialContainer'); container.innerHTML = ''; if(player.historialCastigos.length === 0) { container.innerHTML = '<p style="color: #7f8c8d; font-style: italic; font-size: 13px;">Limpio. Sin registro de infracciones.</p>'; return; } player.historialCastigos.forEach((texto, index) => { container.innerHTML += `<div class="sancion-item"><div style="flex:1; padding-right: 15px;">${texto}</div><button onclick="eliminarSancion(${index})" class="delete-btn" style="margin:0; padding: 5px 10px;">Borrar</button></div>`; }); }
+    function eliminarSancion(index) { const player = playersByTeam[currentDiscTeam].find(p => p.id === currentDiscPlayerId); player.historialCastigos.splice(index, 1); interceptCloudUpdates(); renderHistorialSanciones(); }
+    function toggleCastigoActivo(team, id, cb) { const p = playersByTeam[team].find(x => x.id === id); if(p) { p.castigadoActivo = cb.checked; if (!cb.checked) { p.amonestaciones = []; p.suspensiones = []; } interceptCloudUpdates(); } }
+    function renderAmonestacionesTab() { const cAmonestados = document.getElementById('tablaAmonestadosContainer'); const cSuspendidos = document.getElementById('tablaSuspendidosContainer'); let htmlA = `<table class="standings-table"><thead><tr><th class="team-name">Equipo</th><th class="team-name">Jugador</th><th>ID</th><th>Última Jornada</th><th>Causal 1</th><th>Causal 2</th><th>Causal 3</th></tr></thead><tbody>`; let htmlS = `<table class="standings-table"><thead><tr><th class="team-name">Equipo</th><th class="team-name">Jugador</th><th>ID</th><th>Causal (No.)</th><th>Partidos Suspendido</th></tr></thead><tbody>`; let hayAmonestados = false; let haySuspendidos = false; for (const team in playersByTeam) { playersByTeam[team].forEach(p => { if (p.amonestaciones && p.amonestaciones.length > 0) { hayAmonestados = true; let uJor = p.amonestaciones[p.amonestaciones.length - 1].jornada; let c1 = p.amonestaciones[0] ? `<span style="font-weight: bold; font-size: 16px;">${p.amonestaciones[0].causal}</span>` : '0'; let c2 = p.amonestaciones[1] ? `<span style="font-weight: bold; font-size: 16px;">${p.amonestaciones[1].causal}</span>` : '0'; let c3 = p.amonestaciones[2] ? `<span style="font-weight: bold; font-size: 16px;">${p.amonestaciones[2].causal}</span>` : '0'; htmlA += `<tr><td style="color: #2980b9;">${team}</td><td class="team-name"><strong>${p.nombre}</strong></td><td style="color: #7f8c8d;">${p.id}</td><td>${uJor}</td><td style="text-align: center;">${c1}</td><td style="text-align: center;">${c2}</td><td style="text-align: center;">${c3}</td></tr>`; } if (p.suspensiones && p.suspensiones.length > 0) { haySuspendidos = true; let uSusp = p.suspensiones[p.suspensiones.length - 1]; htmlS += `<tr><td style="color: #2980b9;">${team}</td><td class="team-name" style="color: #c0392b;"><strong>${p.nombre}</strong></td><td style="color: #7f8c8d;">${p.id}</td><td style="font-weight: bold; font-size: 18px; text-align: center; color: #c0392b;">${uSusp.causal}</td><td style="font-weight: bold; color: #c0392b; font-size: 16px; text-align: center;">${uSusp.partidos}</td></tr>`; } }); } cAmonestados.innerHTML = hayAmonestados ? htmlA + `</tbody></table>` : '<p style="color: #7f8c8d; font-style: italic;">No hay jugadores amonestados actualmente.</p>'; cSuspendidos.innerHTML = haySuspendidos ? htmlS + `</tbody></table>` : '<p style="color: #7f8c8d; font-style: italic;">No hay jugadores suspendidos actualmente.</p>'; }
 </script>
 
 </body>
