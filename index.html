@@ -5,6 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Torneo de Fútbol - Sistema Arbitral Avanzado</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- LIBRERÍAS DE GOOGLE FIREBASE (CONEXIÓN A LA NUBE) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    
+    <style>
+        /* Estilos generales y de jornadas */
+        .jornada-header-toggle {
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #ecf0f1; padding: 10px 15px; border-radius: 6px; 
+            cursor: pointer; transition: background 0.2s; margin-bottom: 10px;
+        }
+        .jornada-header-toggle:hover { background: #dfe6e9; }
+        .jornada-content { overflow: hidden; transition: max-height 0.3s ease-out; }
+        
+        /* Panel de Guardado Multi-Torneo */
+        .save-manager-panel {
+            background: #2c3e50; color: white; padding: 15px 20px; 
+            border-radius: 8px; margin-bottom: 25px; display: flex; 
+            gap: 20px; align-items: flex-start; flex-wrap: wrap;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .save-manager-section { flex: 1; min-width: 250px; }
+        .save-manager-label { display: block; font-size: 13px; margin-bottom: 8px; color: #bdc3c7; font-weight: bold; }
+        .save-manager-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+        .save-manager-input, .save-manager-select {
+            flex: 1; min-width: 150px; padding: 10px; border-radius: 4px; 
+            border: 1px solid #34495e; background: #ecf0f1; color: #2c3e50; font-size: 14px;
+        }
+        .save-btn { background: #27ae60; margin: 0; padding: 10px 15px; white-space: nowrap; }
+        .save-btn:hover { background: #219653; }
+        .load-btn { background: #f39c12; margin: 0; padding: 10px 15px; white-space: nowrap; }
+        .load-btn:hover { background: #e67e22; }
+        .del-torneo-btn { background: #c0392b; margin: 0; padding: 10px 15px; }
+        .del-torneo-btn:hover { background: #a93226; }
+        .divider { width: 2px; background: #34495e; align-self: stretch; }
+
+        /* PANTALLA DE AUTENTICACIÓN (LOGIN) */
+        .auth-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #2c3e50; z-index: 9999; display: flex;
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+        .auth-box {
+            background: #fff; padding: 40px; border-radius: 10px;
+            width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .auth-box h2 { color: #2c3e50; margin-top: 0; margin-bottom: 25px; }
+        .auth-input {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 2px solid #bdc3c7; border-radius: 6px; font-size: 16px; box-sizing: border-box;
+        }
+        .auth-btn-primary {
+            background: #2980b9; color: white; width: 100%; padding: 12px;
+            border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold;
+        }
+        .auth-btn-primary:hover { background: #1f618d; }
+        .auth-switch {
+            margin-top: 20px; font-size: 14px; color: #7f8c8d; cursor: pointer;
+        }
+        .auth-switch span { color: #2980b9; font-weight: bold; text-decoration: underline; }
+        .cloud-status { margin-top: 15px; font-size: 12px; color: #27ae60; font-weight: bold; }
+
+        /* Encabezado del usuario logueado */
+        .user-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #fff; padding: 10px 20px; border-radius: 8px;
+            margin-bottom: 20px; border: 1px solid #ecf0f1;
+        }
+        .user-header .user-info { font-weight: bold; color: #2980b9; }
+        .logout-btn { background: #e74c3c; padding: 8px 15px; border-radius: 4px; color: white; border: none; cursor: pointer; }
+        .logout-btn:hover { background: #c0392b; }
+    </style>
 </head>
 <body>
 
@@ -24,7 +98,7 @@
             <p id="authSwitchText">¿No tienes cuenta? <span>Crea una aquí</span></p>
         </div>
         
-        <div class="cloud-status">☁️ Sistema preparado para conexión a base de datos externa.</div>
+        <div class="cloud-status" id="cloudStatusText">☁️ Conectando con Google Firebase...</div>
     </div>
 </div>
 
@@ -247,22 +321,41 @@
 
 <script>
     // ============================================================================
+    // 1. CONFIGURACIÓN DE GOOGLE FIREBASE
+    // ============================================================================
+    // ↓↓↓ BORRA ESTE BLOQUE FALSO Y PEGA EL TUYO AQUÍ ↓↓↓
+    // Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAaZg2H_AytmlOcaA6oaB1sQWh0c1BUKG4",
+  authDomain: "rvsoccer-c0cbf.firebaseapp.com",
+  projectId: "rvsoccer-c0cbf",
+  storageBucket: "rvsoccer-c0cbf.firebasestorage.app",
+  messagingSenderId: "823280750540",
+  appId: "1:823280750540:web:e29ccdee0e5a0a68a2d769"
+};
+    // ↑↑↑ HASTA AQUÍ ↑↑↑
+
+    // Inicializamos Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    // Confirmación visual
+    document.getElementById('cloudStatusText').innerText = "☁️ Firebase Firestore Activo";
+
+
+    // ============================================================================
     // ARQUITECTURA DE DATOS: VARIABLES GLOBALES DEL TABLERO
     // ============================================================================
     let teams = []; let matches = []; let playersByTeam = {}; 
     let jornadas = []; let delegados = []; let juntasDelegados = [];
     
     // ============================================================================
-    // MÓDULO DE AUTENTICACIÓN Y CONEXIÓN A LA NUBE (ARQUITECTURA LISTA PARA FIREBASE)
+    // MÓDULO DE AUTENTICACIÓN Y CONEXIÓN REAL A LA NUBE
     // ============================================================================
-    // NOTA TÉCNICA: Dado que GitHub Pages no tiene base de datos nativa, he estructurado 
-    // este módulo para que simule llamadas asíncronas a un servidor en la nube.
-    // Actualmente usa una "falsa nube" (localStorage) para que el código no falle en tus pruebas.
-    // Cuando integres Firebase, simplemente reemplazarás el contenido de "simularLlamadaNube" 
-    // con las consultas reales a tu Firestore. Todo el resto de la aplicación funcionará intacto.
-    
     let currentUserEmail = null;
-    let authMode = 'login'; // Puede ser 'login' o 'register'
+    let authMode = 'login';
 
     window.onload = function() { 
         checkAuthSession(); 
@@ -276,50 +369,58 @@
         document.getElementById('authSwitchText').innerHTML = authMode === 'login' ? '¿No tienes cuenta? <span>Crea una aquí</span>' : '¿Ya tienes cuenta? <span>Inicia sesión</span>';
     }
 
-    // Función principal para manejar el acceso (Registro / Login)
     async function handleAuth() {
         const email = document.getElementById('authEmail').value.trim().toLowerCase();
         const pass = document.getElementById('authPassword').value.trim();
 
         if (!email || !pass) { alert("Por favor ingresa correo y contraseña."); return; }
+        
+        // Cambiamos el texto del botón mientras carga la nube
+        const btn = document.getElementById('authSubmitBtn');
+        const btnOriginalText = btn.innerText;
+        btn.innerText = "Cargando desde la nube...";
+        btn.disabled = true;
 
-        if (authMode === 'register') {
-            // Lógica para registrar cuenta nueva en la nube
-            const userExists = await verificarSiUsuarioExisteEnLaNube(email);
-            if (userExists) { alert("Este correo ya está registrado. Inicia sesión."); return; }
-            
-            // Creamos el perfil virgen para el usuario nuevo
-            const nuevoPerfil = {
-                password: pass,
-                torneosGuardados: {},
-                tableroActivo: { teams: [], matches: [], playersByTeam: {}, jornadas: [], delegados: [], juntasDelegados: [] }
-            };
-            
-            await guardarPerfilEnLaNube(email, nuevoPerfil);
-            alert("Cuenta creada exitosamente. Iniciando sesión de forma segura...");
-            iniciarSesionUI(email);
-            
-        } else {
-            // Lógica para iniciar sesión consultando a la nube
-            const perfilEnLaNube = await descargarPerfilDeLaNube(email);
-            
-            if (!perfilEnLaNube) { alert("No existe una cuenta con este correo."); return; }
-            if (perfilEnLaNube.password !== pass) { alert("Contraseña incorrecta."); return; }
-            
-            iniciarSesionUI(email);
+        try {
+            if (authMode === 'register') {
+                const userExists = await verificarSiUsuarioExisteEnLaNube(email);
+                if (userExists) { alert("Este correo ya está registrado. Inicia sesión."); btn.innerText = btnOriginalText; btn.disabled = false; return; }
+                
+                const nuevoPerfil = {
+                    password: pass,
+                    torneosGuardados: {},
+                    tableroActivo: { teams: [], matches: [], playersByTeam: {}, jornadas: [], delegados: [], juntasDelegados: [] }
+                };
+                
+                await guardarPerfilEnLaNube(email, nuevoPerfil);
+                alert("Cuenta creada exitosamente en Firebase. Iniciando sesión...");
+                await iniciarSesionUI(email);
+                
+            } else {
+                const perfilEnLaNube = await descargarPerfilDeLaNube(email);
+                
+                if (!perfilEnLaNube) { alert("No existe una cuenta con este correo en la base de datos."); btn.innerText = btnOriginalText; btn.disabled = false; return; }
+                if (perfilEnLaNube.password !== pass) { alert("Contraseña incorrecta."); btn.innerText = btnOriginalText; btn.disabled = false; return; }
+                
+                await iniciarSesionUI(email);
+            }
+        } catch (error) {
+            console.error("Error de Firebase:", error);
+            alert("Error al conectar con la base de datos. Asegúrate de haber puesto tu firebaseConfig y que las reglas de Firestore estén en 'Modo de prueba'.");
+        } finally {
+            btn.innerText = btnOriginalText;
+            btn.disabled = false;
         }
     }
 
-    // Funciones visuales tras confirmar acceso
     async function iniciarSesionUI(email) {
         currentUserEmail = email;
-        localStorage.setItem('futbol_active_session', email); // Mantener sesión en el dispositivo actual
+        localStorage.setItem('futbol_active_session', email);
         
         document.getElementById('authScreen').style.display = 'none';
         document.getElementById('appContainer').style.display = 'block';
         document.getElementById('displayUserEmail').innerText = email;
         
-        // Procedemos a descargar los torneos desde la cuenta en la nube
         await cargarTableroActivoDelUsuario();
         await updateDropdownTorneosGuardados();
     }
@@ -327,12 +428,22 @@
     async function checkAuthSession() {
         const session = localStorage.getItem('futbol_active_session');
         if (session) {
-            iniciarSesionUI(session);
+            try {
+                // Verificamos rápido si el usuario sigue existiendo en la nube antes de dejarlo pasar
+                const perfil = await descargarPerfilDeLaNube(session);
+                if(perfil) {
+                    await iniciarSesionUI(session);
+                } else {
+                    localStorage.removeItem('futbol_active_session');
+                }
+            } catch (e) {
+                console.log("Esperando inicio de sesión manual...");
+            }
         }
     }
 
     async function logout() {
-        if(confirm("¿Seguro que deseas cerrar sesión? Asegúrate de haber guardado tus cambios.")) {
+        if(confirm("¿Seguro que deseas cerrar sesión? Tus cambios se guardarán en la nube automáticamente.")) {
             await guardarTableroActivoEnLaNube();
             currentUserEmail = null;
             localStorage.removeItem('futbol_active_session');
@@ -344,54 +455,57 @@
     }
 
     // ============================================================================
-    // SIMULACIÓN DE CONEXIÓN A BASE DE DATOS EXTERNA (Firebase/Supabase Ready)
+    // CONEXIONES DIRECTAS A FIREBASE FIRESTORE
     // ============================================================================
-    // Aquí es donde harás las llamadas reales a la API cuando conectes tu BaaS.
-    
-    function simularLlamadaNube() { return new Promise(resolve => setTimeout(resolve, 150)); } // Simula el retraso de internet
     
     async function verificarSiUsuarioExisteEnLaNube(email) {
-        await simularLlamadaNube();
-        let dbFalsa = JSON.parse(localStorage.getItem('cloud_mock_db')) || {};
-        return !!dbFalsa[email];
+        const docRef = db.collection('usuarios_futbol').doc(email);
+        const docSnap = await docRef.get();
+        return docSnap.exists;
     }
 
     async function descargarPerfilDeLaNube(email) {
-        await simularLlamadaNube();
-        let dbFalsa = JSON.parse(localStorage.getItem('cloud_mock_db')) || {};
-        return dbFalsa[email] || null;
+        const docRef = db.collection('usuarios_futbol').doc(email);
+        const docSnap = await docRef.get();
+        return docSnap.exists ? docSnap.data() : null;
     }
 
     async function guardarPerfilEnLaNube(email, perfilData) {
-        await simularLlamadaNube();
-        let dbFalsa = JSON.parse(localStorage.getItem('cloud_mock_db')) || {};
-        dbFalsa[email] = perfilData;
-        localStorage.setItem('cloud_mock_db', JSON.stringify(dbFalsa));
+        await db.collection('usuarios_futbol').doc(email).set(perfilData);
     }
 
-    // Guarda cada movimiento en la nube para que esté disponible en otro dispositivo
     async function guardarTableroActivoEnLaNube() {
         if (!currentUserEmail) return;
         const perfil = await descargarPerfilDeLaNube(currentUserEmail);
-        perfil.tableroActivo = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados };
-        await guardarPerfilEnLaNube(currentUserEmail, perfil);
+        if (perfil) {
+            perfil.tableroActivo = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados };
+            await guardarPerfilEnLaNube(currentUserEmail, perfil);
+        }
     }
 
     async function cargarTableroActivoDelUsuario() {
         const perfil = await descargarPerfilDeLaNube(currentUserEmail);
-        const u = perfil.tableroActivo;
-        teams = u.teams || []; matches = u.matches || []; playersByTeam = u.playersByTeam || {};
-        jornadas = u.jornadas || []; delegados = u.delegados || []; juntasDelegados = u.juntasDelegados || [];
-        
-        renderTeamsList(); updateSelectOptions(); renderMatchesHTML(); 
-        renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab();
+        if (perfil && perfil.tableroActivo) {
+            const u = perfil.tableroActivo;
+            teams = u.teams || []; matches = u.matches || []; playersByTeam = u.playersByTeam || {};
+            jornadas = u.jornadas || []; delegados = u.delegados || []; juntasDelegados = u.juntasDelegados || [];
+            
+            renderTeamsList(); updateSelectOptions(); renderMatchesHTML(); 
+            renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab();
+        }
     }
 
-    // Intercepta los cambios para enviarlos a la nube
-    function interceptCloudUpdates() { guardarTableroActivoEnLaNube(); }
+    // Usaremos un temporizador para no saturar a Firebase con miles de peticiones al teclear goles
+    let cloudSaveTimeout = null;
+    function interceptCloudUpdates() { 
+        clearTimeout(cloudSaveTimeout);
+        cloudSaveTimeout = setTimeout(() => {
+            guardarTableroActivoEnLaNube();
+        }, 1500); // Guarda en la nube 1.5 segundos después de que dejas de mover cosas
+    }
 
     // ============================================================================
-    // GESTIÓN DE TORNEOS GUARDADOS (Sincronizados)
+    // GESTIÓN DE TORNEOS GUARDADOS (Sincronizados en Firestore)
     // ============================================================================
     async function updateDropdownTorneosGuardados() {
         const select = document.getElementById('selectTorneosGuardados');
@@ -405,10 +519,15 @@
         const nombreTorneo = document.getElementById('saveTorneoName').value.trim();
         if (nombreTorneo === '') { alert('Escribe un nombre para el torneo.'); return; }
         
+        const btn = document.querySelector('.save-btn');
+        btn.innerText = "Guardando...";
+        
         const perfil = await descargarPerfilDeLaNube(currentUserEmail);
         const misTorneos = perfil.torneosGuardados || {};
 
-        if (misTorneos[nombreTorneo] && !confirm(`¿Sobrescribir el torneo "${nombreTorneo}" en la nube?`)) return;
+        if (misTorneos[nombreTorneo] && !confirm(`¿Sobrescribir el torneo "${nombreTorneo}" en la nube?`)) {
+            btn.innerText = "Guardar"; return;
+        }
 
         misTorneos[nombreTorneo] = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados };
         perfil.torneosGuardados = misTorneos;
@@ -416,6 +535,7 @@
         await guardarPerfilEnLaNube(currentUserEmail, perfil);
         await updateDropdownTorneosGuardados(); 
         document.getElementById('saveTorneoName').value = '';
+        btn.innerText = "Guardar";
         alert(`¡Torneo guardado exitosamente en tu cuenta en la nube!`);
     }
 
@@ -449,7 +569,7 @@
 
 
     // ============================================================================
-    // LÓGICA DE LA APLICACIÓN DE FÚTBOL (Intacta, conectada a interceptCloudUpdates)
+    // LÓGICA DE LA APLICACIÓN DE FÚTBOL (Mismas funciones, guarda en la nube)
     // ============================================================================
     
     function openTab(evt, tabId) {
@@ -587,7 +707,7 @@
     }
     
     function resetTournament() {
-        if (confirm('¿Borrar el tablero activo?')) {
+        if (confirm('¿Borrar el tablero actual? (No borra tus archivos en la nube)')) {
             teams = []; matches = []; playersByTeam = {}; jornadas = []; delegados = []; juntasDelegados = [];
             interceptCloudUpdates(); renderTeamsList(); updateSelectOptions(); renderMatchesHTML(); renderPlayersList(); renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab(); document.getElementById('searchResults').innerHTML = '';
         }
