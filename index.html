@@ -59,6 +59,14 @@
         .acta-header { font-size: 12px; color: #7f8c8d; margin-bottom: 4px; display: flex; justify-content: space-between; }
         .acta-text { font-size: 14px; color: #2c3e50; line-height: 1.4; white-space: pre-wrap; }
 
+        /* GALERÍA DE EVIDENCIAS FOTOGRÁFICAS */
+        .evidencias-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; margin-top: 20px; }
+        .evidencia-item { position: relative; border-radius: 8px; overflow: hidden; border: 2px solid #bdc3c7; aspect-ratio: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.1); background: #ecf0f1; }
+        .evidencia-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: transform 0.2s; }
+        .evidencia-item img:hover { transform: scale(1.05); }
+        .evidencia-delete { position: absolute; top: 5px; right: 5px; background: rgba(231, 76, 60, 0.9); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.3); transition: background 0.2s; }
+        .evidencia-delete:hover { background: rgba(192, 57, 43, 1); }
+
         /* PANTALLA DE AUTENTICACIÓN (LOGIN) */
         .auth-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -119,7 +127,7 @@
     </div>
 </div>
 
-<!-- CONTENEDOR PRINCIPAL DE LA APP (OCULTO HASTA INICIAR SESIÓN) -->
+<!-- CONTENEDOR PRINCIPAL DE LA APP -->
 <div class="container" id="appContainer" style="display: none;">
     
     <div class="user-header">
@@ -131,7 +139,7 @@
     <h3>Torneo: Ricardo Carvajal Rodriguez</h3>
     <h4>Temporada: 2026</h4>
 
-    <!-- PANEL DE GESTIÓN MULTI-TORNEO (SINCRONIZADO A LA CUENTA) -->
+    <!-- PANEL DE GESTIÓN MULTI-TORNEO -->
     <div class="save-manager-panel">
         <div class="save-manager-section">
             <label class="save-manager-label">💾 Guardar como torneo nuevo:</label>
@@ -140,27 +148,19 @@
                 <button onclick="guardarTorneoComo()" class="save-btn">Guardar Nuevo</button>
             </div>
         </div>
-        
         <div class="divider"></div>
-        
         <div class="save-manager-section">
             <label class="save-manager-label">🔄 Sobrescribir torneo existente:</label>
             <div class="save-manager-controls">
-                <select id="selectSobrescribir" class="save-manager-select">
-                    <option value="">-- Elige un torneo --</option>
-                </select>
+                <select id="selectSobrescribir" class="save-manager-select"><option value="">-- Elige un torneo --</option></select>
                 <button onclick="sobrescribirTorneoSeleccionado()" class="save-btn" style="background:#3498db;">Actualizar</button>
             </div>
         </div>
-
         <div class="divider"></div>
-        
         <div class="save-manager-section">
             <label class="save-manager-label">📂 Cargar o eliminar torneos:</label>
             <div class="save-manager-controls">
-                <select id="selectTorneosGuardados" class="save-manager-select">
-                    <option value="">-- Mis Torneos --</option>
-                </select>
+                <select id="selectTorneosGuardados" class="save-manager-select"><option value="">-- Mis Torneos --</option></select>
                 <button onclick="cargarTorneoGuardado()" class="load-btn">Cargar</button>
                 <button onclick="eliminarTorneoGuardado()" class="del-torneo-btn" title="Eliminar registro">🗑️</button>
             </div>
@@ -192,8 +192,6 @@
 
     <!-- PESTAÑA 2: TORNEO Y CAMPOS -->
     <div id="tab-torneo" class="tab-content">
-        
-        <!-- GESTIÓN DE CAMPOS -->
         <div class="section" style="background: #eaf2f8; padding: 20px; border-radius: 8px; border: 1px solid #3498db; margin-bottom: 25px;">
             <h2 style="color: #2980b9; margin-top: 0;">🏟️ Gestión de Campos de Juego</h2>
             <div style="display: flex; gap: 15px; margin-top: 10px; align-items: flex-end;">
@@ -201,9 +199,7 @@
                     <label for="campoName" style="color: #2c3e50; font-weight: bold; font-size: 13px;">Registrar nuevo campo o cancha:</label>
                     <input type="text" id="campoName" placeholder="Ej. Cancha 1, Estadio Municipal..." style="border: 1px solid #3498db;">
                 </div>
-                <div>
-                    <button onclick="addCampo()" style="background-color: #2980b9;">Añadir Campo</button>
-                </div>
+                <div><button onclick="addCampo()" style="background-color: #2980b9;">Añadir Campo</button></div>
             </div>
             <div id="camposList" style="margin-top: 15px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
         </div>
@@ -220,9 +216,7 @@
             <h2>Programación y Marcadores</h2>
             <div class="form-group">
                 <label for="selectJornada" style="color: #2980b9;">Selecciona la Jornada en la que deseas trabajar:</label>
-                <select id="selectJornada" style="border-color: #2980b9;">
-                    <option value="">-- Crea una jornada primero --</option>
-                </select>
+                <select id="selectJornada" style="border-color: #2980b9;"><option value="">-- Crea una jornada primero --</option></select>
             </div>
             <h3 style="margin-top: 25px;">Asignar Partido o Descanso</h3>
             <div style="display: flex; gap: 20px; align-items: flex-end; margin-bottom: 15px;">
@@ -250,29 +244,18 @@
     <div id="tab-roster" class="tab-content">
         <div class="section" style="background: #e8f8f5; padding: 20px; border-radius: 8px; border: 1px solid #1abc9c; margin-bottom: 30px;">
             <h2 style="color: #16a085; border-bottom-color: #a3e4d7;">🔍 Buscador General de Jugadores</h2>
-            <div class="form-group">
-                <input type="text" id="searchPlayerInput" onkeyup="searchPlayers()" placeholder="Buscar por ID, nombre o equipo..." style="border: 2px solid #1abc9c; padding: 12px; font-size: 16px;">
-            </div>
+            <div class="form-group"><input type="text" id="searchPlayerInput" onkeyup="searchPlayers()" placeholder="Buscar por ID, nombre o equipo..." style="border: 2px solid #1abc9c; padding: 12px; font-size: 16px;"></div>
             <div id="searchResults"></div>
         </div>
-
         <div class="section">
             <h2>Administrar Plantillas (Roster)</h2>
             <div class="form-group">
                 <label for="teamSelectPlayers">Selecciona el Equipo:</label>
-                <select id="teamSelectPlayers" onchange="renderPlayersList()">
-                    <option value="">-- Selecciona un equipo --</option>
-                </select>
+                <select id="teamSelectPlayers" onchange="renderPlayersList()"><option value="">-- Selecciona un equipo --</option></select>
             </div>
             <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                <div class="form-group" style="flex: 1;">
-                    <label for="playerId">ID del Jugador:</label>
-                    <input type="text" id="playerId" placeholder="Ej. 10, 001, CR7...">
-                </div>
-                <div class="form-group" style="flex: 2;">
-                    <label for="playerName">Nombre del Jugador:</label>
-                    <input type="text" id="playerName" placeholder="Ej. Lionel Messi...">
-                </div>
+                <div class="form-group" style="flex: 1;"><label for="playerId">ID del Jugador:</label><input type="text" id="playerId" placeholder="Ej. 10, 001, CR7..."></div>
+                <div class="form-group" style="flex: 2;"><label for="playerName">Nombre del Jugador:</label><input type="text" id="playerName" placeholder="Ej. Lionel Messi..."></div>
             </div>
             <button onclick="addPlayer()">Añadir Jugador al Roster</button>
             <div id="playersList" style="margin-top: 25px;"></div>
@@ -281,15 +264,9 @@
 
     <!-- PESTAÑA 4: ESTADISTICAS -->
     <div id="tab-estadisticas" class="tab-content">
-        <div class="section">
-            <h2>Tabla General de Clasificación</h2>
-            <div id="standingsContainer" style="margin-top: 20px;"></div>
-        </div>
+        <div class="section"><h2>Tabla General de Clasificación</h2><div id="standingsContainer" style="margin-top: 20px;"></div></div>
         <hr style="border: 0; border-top: 1px solid #ecf0f1; margin: 40px 0;">
-        <div class="section">
-            <h2 style="color: #e67e22; border-bottom-color: #f39c12;">🔥 Top 15 Goleadores</h2>
-            <div id="topScorersContainer" style="margin-top: 20px;"></div>
-        </div>
+        <div class="section"><h2 style="color: #e67e22; border-bottom-color: #f39c12;">🔥 Top 15 Goleadores</h2><div id="topScorersContainer" style="margin-top: 20px;"></div></div>
     </div>
 
     <!-- PESTAÑA 5: DELEGADOS Y ACTAS -->
@@ -297,103 +274,54 @@
         <div class="section">
             <h2>Registro de Delegados</h2>
             <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                <div class="form-group" style="flex: 1;">
-                    <label for="selectTeamDelegado">Equipo Representado:</label>
-                    <select id="selectTeamDelegado">
-                        <option value="">-- Selecciona --</option>
-                    </select>
-                </div>
-                <div class="form-group" style="flex: 2;">
-                    <label for="delegadoName">Nombre del Delegado:</label>
-                    <input type="text" id="delegadoName" placeholder="Ej. Carlos Pérez...">
-                </div>
+                <div class="form-group" style="flex: 1;"><label for="selectTeamDelegado">Equipo Representado:</label><select id="selectTeamDelegado"><option value="">-- Selecciona --</option></select></div>
+                <div class="form-group" style="flex: 2;"><label for="delegadoName">Nombre del Delegado:</label><input type="text" id="delegadoName" placeholder="Ej. Carlos Pérez..."></div>
             </div>
             <button onclick="addDelegado()">Agregar Delegado</button>
         </div>
-
         <div class="section" style="background: #fff3e0; padding: 20px; border: 1px solid #f39c12; border-radius: 8px; margin-bottom: 30px;">
             <h2 style="color: #d35400; border-bottom-color: #f39c12;">📅 Creación de Juntas</h2>
             <div style="display: flex; gap: 15px; margin-bottom: 25px; align-items: flex-end;">
-                <div class="form-group" style="flex: 1;">
-                    <label style="color: #d35400; font-weight: bold;">Establecer fecha para una nueva junta:</label>
-                    <input type="date" id="fechaJunta" style="border: 2px solid #f39c12;">
-                </div>
-                <div style="flex: 1;">
-                    <button onclick="addJunta()" style="background-color: #d35400;">Agregar Junta al Control</button>
-                </div>
+                <div class="form-group" style="flex: 1;"><label style="color: #d35400; font-weight: bold;">Establecer fecha para una nueva junta:</label><input type="date" id="fechaJunta" style="border: 2px solid #f39c12;"></div>
+                <div style="flex: 1;"><button onclick="addJunta()" style="background-color: #d35400;">Agregar Junta al Control</button></div>
             </div>
-
             <h2 style="color: #d35400; border-bottom-color: #f39c12; margin-top: 30px;">📋 Control de Asistencias</h2>
             <div id="tablaDelegadosContainer" style="margin-top: 10px;"></div>
         </div>
-
-        <!-- SECCIÓN: LIBRO DE ACTAS INMUTABLE -->
         <div class="section" style="background: #fdfefe; padding: 20px; border: 1px solid #7f8c8d; border-radius: 8px;">
             <h2 style="color: #2c3e50; border-bottom-color: #bdc3c7;">📜 Libro de Actas Oficiales (Registros Inmutables)</h2>
             <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                <div class="form-group" style="flex: 1; min-width: 150px;">
-                    <label for="actaTipo">Tipo de Registro:</label>
-                    <select id="actaTipo" style="border: 1px solid #7f8c8d;">
-                        <option value="reglas">📘 Regla del Torneo</option>
-                        <option value="acuerdos">📗 Acuerdo de Junta</option>
-                        <option value="castigos">📕 Castigo a Equipo/Delegado</option>
-                    </select>
-                </div>
-                <div class="form-group" style="flex: 1; min-width: 150px;">
-                    <label for="actaFecha">Fecha de Oficialización:</label>
-                    <input type="date" id="actaFecha" style="border: 1px solid #7f8c8d;">
-                </div>
+                <div class="form-group" style="flex: 1; min-width: 150px;"><label for="actaTipo">Tipo de Registro:</label><select id="actaTipo" style="border: 1px solid #7f8c8d;"><option value="reglas">📘 Regla del Torneo</option><option value="acuerdos">📗 Acuerdo de Junta</option><option value="castigos">📕 Castigo a Equipo/Delegado</option></select></div>
+                <div class="form-group" style="flex: 1; min-width: 150px;"><label for="actaFecha">Fecha de Oficialización:</label><input type="date" id="actaFecha" style="border: 1px solid #7f8c8d;"></div>
             </div>
-            <div class="form-group">
-                <label for="actaTexto">Descripción Oficial:</label>
-                <textarea id="actaTexto" rows="3" placeholder="Escribe los detalles aquí... Al firmar, este registro será permanente y no podrá modificarse." style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #7f8c8d; font-family: inherit; font-size: 14px; resize: vertical; box-sizing: border-box;"></textarea>
-            </div>
+            <div class="form-group"><label for="actaTexto">Descripción Oficial:</label><textarea id="actaTexto" rows="3" placeholder="Escribe los detalles aquí... Al firmar, este registro será permanente y no podrá modificarse." style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #7f8c8d; font-family: inherit; font-size: 14px; resize: vertical; box-sizing: border-box;"></textarea></div>
             <button onclick="registrarActa()" style="background-color: #2c3e50; width: 100%; padding: 12px; font-size: 16px; margin-top: 10px;">⚖️ Firmar y Registrar (Acción Irreversible)</button>
-
-            <!-- Columnas de visualización de Actas -->
             <div style="display: flex; gap: 20px; margin-top: 35px; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 250px; background: #f4f6f7; padding: 15px; border-radius: 6px; border-top: 4px solid #2980b9;">
-                    <h3 style="color: #2980b9; margin-top: 0; text-align: center;">📘 Reglas</h3>
-                    <div id="listaReglas"></div>
-                </div>
-                <div style="flex: 1; min-width: 250px; background: #f4f6f7; padding: 15px; border-radius: 6px; border-top: 4px solid #27ae60;">
-                    <h3 style="color: #27ae60; margin-top: 0; text-align: center;">📗 Acuerdos</h3>
-                    <div id="listaAcuerdos"></div>
-                </div>
-                <div style="flex: 1; min-width: 250px; background: #f4f6f7; padding: 15px; border-radius: 6px; border-top: 4px solid #c0392b;">
-                    <h3 style="color: #c0392b; margin-top: 0; text-align: center;">📕 Castigos</h3>
-                    <div id="listaCastigos"></div>
-                </div>
+                <div style="flex: 1; min-width: 250px; background: #f4f6f7; padding: 15px; border-radius: 6px; border-top: 4px solid #2980b9;"><h3 style="color: #2980b9; margin-top: 0; text-align: center;">📘 Reglas</h3><div id="listaReglas"></div></div>
+                <div style="flex: 1; min-width: 250px; background: #f4f6f7; padding: 15px; border-radius: 6px; border-top: 4px solid #27ae60;"><h3 style="color: #27ae60; margin-top: 0; text-align: center;">📗 Acuerdos</h3><div id="listaAcuerdos"></div></div>
+                <div style="flex: 1; min-width: 250px; background: #f4f6f7; padding: 15px; border-radius: 6px; border-top: 4px solid #c0392b;"><h3 style="color: #c0392b; margin-top: 0; text-align: center;">📕 Castigos</h3><div id="listaCastigos"></div></div>
             </div>
         </div>
     </div>
 
     <!-- PESTAÑA 6: AMONESTACIONES -->
     <div id="tab-amonestaciones" class="tab-content">
-        <div class="section">
-            <h2 style="color: #d35400; border-bottom-color: #fad7a1;">🟨 Tabla de Jugadores Amonestados</h2>
-            <div id="tablaAmonestadosContainer" style="overflow-x: auto;"></div>
-        </div>
+        <div class="section"><h2 style="color: #d35400; border-bottom-color: #fad7a1;">🟨 Tabla de Jugadores Amonestados</h2><div id="tablaAmonestadosContainer" style="overflow-x: auto;"></div></div>
         <hr style="border: 0; border-top: 1px solid #ecf0f1; margin: 40px 0;">
-        <div class="section" style="background: #fdfefe; padding: 20px; border-radius: 8px; border: 1px solid #e74c3c;">
-            <h2 style="color: #c0392b; border-bottom-color: #fadbd8; margin-top: 0;">🟥 Tabla de Jugadores Suspendidos</h2>
-            <div id="tablaSuspendidosContainer" style="overflow-x: auto;"></div>
-        </div>
+        <div class="section" style="background: #fdfefe; padding: 20px; border-radius: 8px; border: 1px solid #e74c3c;"><h2 style="color: #c0392b; border-bottom-color: #fadbd8; margin-top: 0;">🟥 Tabla de Jugadores Suspendidos</h2><div id="tablaSuspendidosContainer" style="overflow-x: auto;"></div></div>
     </div>
 
     <hr style="border: 0; border-top: 1px solid #ecf0f1; margin-top: 40px;">
     <button onclick="resetTournament()" class="clear-btn">Borrar Tablero Actual (Limpiar Pantalla)</button>
 </div>
 
-<!-- PANEL MODAL DE AMONESTACIONES Y DISCIPLINA -->
+<!-- PANEL MODAL DE DISCIPLINA -->
 <div id="modalDisciplina" class="modal-overlay" style="display: none;">
     <div class="modal-content">
         <h3 style="color: #d35400; margin-top: 0; border-bottom: 2px solid #fad7a1; padding-bottom: 8px;">⚖️ Tribunal Disciplinario</h3>
         <p style="font-weight: bold; color: #2c3e50; font-size: 18px;" id="discPlayerTitle"></p>
         <div class="form-group" style="margin-top: 15px;"><label>1- Jornada de la infracción:</label><select id="discJornada"></select></div>
-        <div class="form-group"><label>2- Nivel de la Sanción:</label>
-            <select id="discGravedad" onchange="updateCausalesDropdowns()"><option value="amonestado">Amonestado</option><option value="doble amonestado">Doble Amonestado</option><option value="expulsado">Expulsado</option></select>
-        </div>
+        <div class="form-group"><label>2- Nivel de la Sanción:</label><select id="discGravedad" onchange="updateCausalesDropdowns()"><option value="amonestado">Amonestado</option><option value="doble amonestado">Doble Amonestado</option><option value="expulsado">Expulsado</option></select></div>
         <div class="form-group" id="discBoxCausal1"><label id="lblCausal1">3- Causal:</label><select id="discCausal1"></select></div>
         <div class="form-group" id="discBoxCausal2" style="display: none;"><label>Segunda Causal:</label><select id="discCausal2"></select></div>
         <div class="form-group" id="discBoxPartidos" style="display: none;"><label style="color: #c0392b;">Partidos suspendido:</label><input type="number" id="discPartidosSuspendidos" min="1" value="1"></div>
@@ -406,10 +334,31 @@
     </div>
 </div>
 
+<!-- NUEVO PANEL MODAL DE EVIDENCIAS FOTOGRÁFICAS -->
+<div id="modalEvidencias" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 650px;">
+        <h3 style="color: #8e44ad; margin-top: 0; border-bottom: 2px solid #d2b4de; padding-bottom: 8px;">📸 Galería de Evidencias</h3>
+        <p style="font-weight: bold; color: #2c3e50; font-size: 18px;" id="evidenciasMatchTitle"></p>
+        
+        <div style="background: #f4f6f7; padding: 15px; border-radius: 6px; margin-top: 15px; border: 1px dashed #9b59b6;">
+            <label style="display: block; font-size: 14px; font-weight: bold; margin-bottom: 10px; color: #34495e;">Selecciona fotos para anexar al partido:</label>
+            <input type="file" id="inputEvidencias" multiple accept="image/*" onchange="procesarYSubirEvidencias(event)" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #bdc3c7; background: #fff;">
+            <p style="font-size: 12px; color: #7f8c8d; margin-top: 10px; margin-bottom: 0;"><strong>Ingeniería Interna:</strong> Las imágenes se comprimen automáticamente antes de subir a Firebase para proteger el límite de 1MB de tu base de datos.</p>
+        </div>
+        
+        <div id="evidenciasGallery" class="evidencias-grid"></div>
+        
+        <div style="display: flex; justify-content: flex-end; margin-top: 25px;">
+            <button onclick="closeEvidenciasModal()" style="background-color: #34495e; padding: 10px 20px;">Cerrar Galería</button>
+        </div>
+    </div>
+</div>
+
 <script>
     // ============================================================================
     // 1. CONFIGURACIÓN DE GOOGLE FIREBASE
     // ============================================================================
+    // ↓↓↓ BORRA ESTE BLOQUE FALSO Y PEGA EL TUYO AQUÍ ↓↓↓
     // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAaZg2H_AytmlOcaA6oaB1sQWh0c1BUKG4",
@@ -427,38 +376,17 @@ const firebaseConfig = {
     document.getElementById('cloudStatusText').innerText = "☁️ Firebase Firestore Activo";
 
     // ============================================================================
-    // ARQUITECTURA DE DATOS: VARIABLES GLOBALES DEL TABLERO
+    // ARQUITECTURA DE DATOS GLOBALES
     // ============================================================================
     let teams = []; let matches = []; let playersByTeam = {}; 
     let jornadas = []; let delegados = []; let juntasDelegados = [];
-    let campos = []; 
-    let actas = { reglas: [], acuerdos: [], castigos: [] };
+    let campos = []; let actas = { reglas: [], acuerdos: [], castigos: [] };
 
-    // --- VARIABLES FALTANTES AÑADIDAS AQUÍ PARA EL TRIBUNAL DISCIPLINARIO ---
-    let currentDiscTeam = null; 
-    let currentDiscPlayerId = null;
+    let currentDiscTeam = null; let currentDiscPlayerId = null;
+    let currentMatchIdForEvidencias = null; // Memoria para saber a qué partido le estamos subiendo fotos
 
-    const causalesAmarilla = [
-        {val: 1, text: "1 - Conducta Antideportiva"},
-        {val: 2, text: "2 - Desaprobación (palabras/acciones)"},
-        {val: 3, text: "3 - Infracción persistente de las reglas"},
-        {val: 4, text: "4 - Retardar reanudación del juego"},
-        {val: 5, text: "5 - No respetar la distancia reglamentaria"},
-        {val: 6, text: "6 - Entrar o volver sin permiso del árbitro"},
-        {val: 7, text: "7 - Abandonar el terreno sin permiso"}
-    ];
-
-    const causalesRoja = [
-        {val: 1, text: "1 - Juego brusco grave"},
-        {val: 2, text: "2 - Conducta violenta"},
-        {val: 3, text: "3 - Escupir a un adversario o persona"},
-        {val: 4, text: "4 - Impedir gol con la mano (no portero)"},
-        {val: 5, text: "5 - Impedir oportunidad de gol (falta)"},
-        {val: 6, text: "6 - Lenguaje ofensivo, grosero u obsceno"},
-        {val: 7, text: "7 - Recibir segunda amonestación"},
-        {val: 8, text: "8 - Suspensión automática por acumulación"}
-    ];
-    // ------------------------------------------------------------------------
+    const causalesAmarilla = [{val: 1, text: "1 - Conducta Antideportiva"},{val: 2, text: "2 - Desaprobación (palabras/acciones)"},{val: 3, text: "3 - Infracción persistente de las reglas"},{val: 4, text: "4 - Retardar reanudación del juego"},{val: 5, text: "5 - No respetar la distancia reglamentaria"},{val: 6, text: "6 - Entrar o volver sin permiso del árbitro"},{val: 7, text: "7 - Abandonar el terreno sin permiso"}];
+    const causalesRoja = [{val: 1, text: "1 - Juego brusco grave"},{val: 2, text: "2 - Conducta violenta"},{val: 3, text: "3 - Escupir a un adversario o persona"},{val: 4, text: "4 - Impedir gol con la mano (no portero)"},{val: 5, text: "5 - Impedir oportunidad de gol (falta)"},{val: 6, text: "6 - Lenguaje ofensivo, grosero u obsceno"},{val: 7, text: "7 - Recibir segunda amonestación"},{val: 8, text: "8 - Suspensión automática por acumulación"}];
     
     // ============================================================================
     // MÓDULO DE AUTENTICACIÓN Y CONEXIÓN REAL A LA NUBE
@@ -467,8 +395,7 @@ const firebaseConfig = {
 
     window.onload = function() { 
         checkAuthSession(); 
-        const hoy = new Date();
-        hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset());
+        const hoy = new Date(); hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset());
         document.getElementById('actaFecha').value = hoy.toISOString().split('T')[0];
     };
 
@@ -483,9 +410,7 @@ const firebaseConfig = {
     async function handleAuth() {
         const email = document.getElementById('authEmail').value.trim().toLowerCase();
         const pass = document.getElementById('authPassword').value.trim();
-
         if (!email || !pass) { alert("Por favor ingresa correo y contraseña."); return; }
-        
         const btn = document.getElementById('authSubmitBtn'); const btnOriginalText = btn.innerText;
         btn.innerText = "Cargando desde la nube..."; btn.disabled = true;
 
@@ -493,14 +418,8 @@ const firebaseConfig = {
             if (authMode === 'register') {
                 const userExists = await verificarSiUsuarioExisteEnLaNube(email);
                 if (userExists) { alert("Este correo ya está registrado. Inicia sesión."); btn.innerText = btnOriginalText; btn.disabled = false; return; }
-                
-                const nuevoPerfil = {
-                    password: pass, torneosGuardados: {},
-                    tableroActivo: { teams: [], matches: [], playersByTeam: {}, jornadas: [], delegados: [], juntasDelegados: [], campos: [], actas: { reglas: [], acuerdos: [], castigos: [] } }
-                };
-                
-                await guardarPerfilEnLaNube(email, nuevoPerfil);
-                alert("Cuenta creada exitosamente en Firebase. Iniciando sesión..."); await iniciarSesionUI(email);
+                const nuevoPerfil = { password: pass, torneosGuardados: {}, tableroActivo: { teams: [], matches: [], playersByTeam: {}, jornadas: [], delegados: [], juntasDelegados: [], campos: [], actas: { reglas: [], acuerdos: [], castigos: [] } } };
+                await guardarPerfilEnLaNube(email, nuevoPerfil); alert("Cuenta creada exitosamente en Firebase. Iniciando sesión..."); await iniciarSesionUI(email);
             } else {
                 const perfilEnLaNube = await descargarPerfilDeLaNube(email);
                 if (!perfilEnLaNube) { alert("No existe una cuenta con este correo en la base de datos."); btn.innerText = btnOriginalText; btn.disabled = false; return; }
@@ -518,23 +437,8 @@ const firebaseConfig = {
         await cargarTableroActivoDelUsuario(); await updateDropdownTorneosGuardados();
     }
 
-    async function checkAuthSession() {
-        const session = localStorage.getItem('futbol_active_session');
-        if (session) {
-            try {
-                const perfil = await descargarPerfilDeLaNube(session);
-                if(perfil) { await iniciarSesionUI(session); } else { localStorage.removeItem('futbol_active_session'); }
-            } catch (e) { console.log("Esperando inicio..."); }
-        }
-    }
-
-    async function logout() {
-        if(confirm("¿Seguro que deseas cerrar sesión? Tus cambios se guardarán en la nube automáticamente.")) {
-            await guardarTableroActivoEnLaNube(); currentUserEmail = null; localStorage.removeItem('futbol_active_session');
-            document.getElementById('authScreen').style.display = 'flex'; document.getElementById('appContainer').style.display = 'none';
-        }
-    }
-
+    async function checkAuthSession() { const session = localStorage.getItem('futbol_active_session'); if (session) { try { const perfil = await descargarPerfilDeLaNube(session); if(perfil) { await iniciarSesionUI(session); } else { localStorage.removeItem('futbol_active_session'); } } catch (e) {} } }
+    async function logout() { if(confirm("¿Seguro que deseas cerrar sesión? Tus cambios se guardarán en la nube automáticamente.")) { await guardarTableroActivoEnLaNube(); currentUserEmail = null; localStorage.removeItem('futbol_active_session'); document.getElementById('authScreen').style.display = 'flex'; document.getElementById('appContainer').style.display = 'none'; } }
     async function verificarSiUsuarioExisteEnLaNube(email) { const docSnap = await db.collection('usuarios_futbol').doc(email).get(); return docSnap.exists; }
     async function descargarPerfilDeLaNube(email) { const docSnap = await db.collection('usuarios_futbol').doc(email).get(); return docSnap.exists ? docSnap.data() : null; }
     async function guardarPerfilEnLaNube(email, perfilData) { await db.collection('usuarios_futbol').doc(email).set(perfilData); }
@@ -542,10 +446,7 @@ const firebaseConfig = {
     async function guardarTableroActivoEnLaNube() {
         if (!currentUserEmail) return;
         const perfil = await descargarPerfilDeLaNube(currentUserEmail);
-        if (perfil) {
-            perfil.tableroActivo = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas };
-            await guardarPerfilEnLaNube(currentUserEmail, perfil);
-        }
+        if (perfil) { perfil.tableroActivo = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas }; await guardarPerfilEnLaNube(currentUserEmail, perfil); }
     }
 
     async function cargarTableroActivoDelUsuario() {
@@ -554,146 +455,68 @@ const firebaseConfig = {
             const u = perfil.tableroActivo;
             teams = u.teams || []; matches = u.matches || []; playersByTeam = u.playersByTeam || {};
             jornadas = u.jornadas || []; delegados = u.delegados || []; juntasDelegados = u.juntasDelegados || [];
-            campos = u.campos || [];
-            actas = u.actas || { reglas: [], acuerdos: [], castigos: [] };
-            
-            renderTeamsList(); renderCamposList(); updateSelectOptions(); renderMatchesHTML(); 
-            renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab(); renderActas();
+            campos = u.campos || []; actas = u.actas || { reglas: [], acuerdos: [], castigos: [] };
+            renderTeamsList(); renderCamposList(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab(); renderActas();
         }
     }
 
     let cloudSaveTimeout = null;
-    function interceptCloudUpdates() { 
-        clearTimeout(cloudSaveTimeout);
-        cloudSaveTimeout = setTimeout(() => { guardarTableroActivoEnLaNube(); }, 1500); 
-    }
+    function interceptCloudUpdates() { clearTimeout(cloudSaveTimeout); cloudSaveTimeout = setTimeout(() => { guardarTableroActivoEnLaNube(); }, 1500); }
 
     // ============================================================================
-    // GESTIÓN DE TORNEOS GUARDADOS Y SOBREESCRITURA
+    // GESTIÓN DE TORNEOS GUARDADOS
     // ============================================================================
     async function updateDropdownTorneosGuardados() {
-        const select = document.getElementById('selectTorneosGuardados');
-        const selectSobre = document.getElementById('selectSobrescribir');
-        select.innerHTML = '<option value="">-- Mis Torneos (Nube) --</option>';
-        selectSobre.innerHTML = '<option value="">-- Elige un torneo --</option>';
-        
-        const perfil = await descargarPerfilDeLaNube(currentUserEmail);
-        const misTorneos = perfil.torneosGuardados || {};
-        for (let nombre in misTorneos) { 
-            select.innerHTML += `<option value="${nombre}">${nombre}</option>`; 
-            selectSobre.innerHTML += `<option value="${nombre}">${nombre}</option>`; 
-        }
+        const select = document.getElementById('selectTorneosGuardados'); const selectSobre = document.getElementById('selectSobrescribir');
+        select.innerHTML = '<option value="">-- Mis Torneos (Nube) --</option>'; selectSobre.innerHTML = '<option value="">-- Elige un torneo --</option>';
+        const perfil = await descargarPerfilDeLaNube(currentUserEmail); const misTorneos = perfil.torneosGuardados || {};
+        for (let nombre in misTorneos) { select.innerHTML += `<option value="${nombre}">${nombre}</option>`; selectSobre.innerHTML += `<option value="${nombre}">${nombre}</option>`; }
     }
-
     async function guardarTorneoComo() {
-        const nombreTorneo = document.getElementById('saveTorneoName').value.trim();
-        if (nombreTorneo === '') { alert('Escribe un nombre para el torneo.'); return; }
-        
-        const btn = document.querySelector('.save-btn'); btn.innerText = "Guardando...";
-        const perfil = await descargarPerfilDeLaNube(currentUserEmail);
-        const misTorneos = perfil.torneosGuardados || {};
-
+        const nombreTorneo = document.getElementById('saveTorneoName').value.trim(); if (nombreTorneo === '') { alert('Escribe un nombre para el torneo.'); return; }
+        const btn = document.querySelector('.save-btn'); btn.innerText = "Guardando..."; const perfil = await descargarPerfilDeLaNube(currentUserEmail); const misTorneos = perfil.torneosGuardados || {};
         if (misTorneos[nombreTorneo] && !confirm(`¿Sobrescribir el torneo "${nombreTorneo}" en la nube?`)) { btn.innerText = "Guardar Nuevo"; return; }
-
-        misTorneos[nombreTorneo] = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas };
-        perfil.torneosGuardados = misTorneos;
-        
-        await guardarPerfilEnLaNube(currentUserEmail, perfil); await updateDropdownTorneosGuardados(); 
-        document.getElementById('saveTorneoName').value = ''; btn.innerText = "Guardar Nuevo"; alert(`¡Torneo guardado exitosamente!`);
+        misTorneos[nombreTorneo] = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas }; perfil.torneosGuardados = misTorneos;
+        await guardarPerfilEnLaNube(currentUserEmail, perfil); await updateDropdownTorneosGuardados(); document.getElementById('saveTorneoName').value = ''; btn.innerText = "Guardar Nuevo"; alert(`¡Torneo guardado exitosamente!`);
     }
-
     async function sobrescribirTorneoSeleccionado() {
-        const nombreTorneo = document.getElementById('selectSobrescribir').value;
-        if (nombreTorneo === '') { alert('Selecciona un torneo de la lista para actualizarlo.'); return; }
-
+        const nombreTorneo = document.getElementById('selectSobrescribir').value; if (nombreTorneo === '') { alert('Selecciona un torneo de la lista para actualizarlo.'); return; }
         if (confirm(`Estás a punto de actualizar el archivo "${nombreTorneo}" en la nube con los datos actuales. ¿Deseas proceder?`)) {
             const perfil = await descargarPerfilDeLaNube(currentUserEmail);
-            
             perfil.torneosGuardados[nombreTorneo] = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas };
-            await guardarPerfilEnLaNube(currentUserEmail, perfil); 
-            alert(`¡El torneo "${nombreTorneo}" ha sido actualizado con éxito!`);
+            await guardarPerfilEnLaNube(currentUserEmail, perfil); alert(`¡El torneo "${nombreTorneo}" ha sido actualizado con éxito!`);
         }
     }
-
     async function cargarTorneoGuardado() {
-        const nombreTorneo = document.getElementById('selectTorneosGuardados').value;
-        if (nombreTorneo === '') { alert('Selecciona un torneo de la lista.'); return; }
-
+        const nombreTorneo = document.getElementById('selectTorneosGuardados').value; if (nombreTorneo === '') { alert('Selecciona un torneo de la lista.'); return; }
         if (confirm(`Estás a punto de cargar "${nombreTorneo}" desde la nube. ¿Deseas proceder?`)) {
-            const perfil = await descargarPerfilDeLaNube(currentUserEmail);
-            const dataToLoad = perfil.torneosGuardados[nombreTorneo];
-            
+            const perfil = await descargarPerfilDeLaNube(currentUserEmail); const dataToLoad = perfil.torneosGuardados[nombreTorneo];
             teams = dataToLoad.teams || []; matches = dataToLoad.matches || []; playersByTeam = dataToLoad.playersByTeam || {};
             jornadas = dataToLoad.jornadas || []; delegados = dataToLoad.delegados || []; juntasDelegados = dataToLoad.juntasDelegados || [];
-            campos = dataToLoad.campos || [];
-            actas = dataToLoad.actas || { reglas: [], acuerdos: [], castigos: [] };
-            
+            campos = dataToLoad.campos || []; actas = dataToLoad.actas || { reglas: [], acuerdos: [], castigos: [] };
             await guardarTableroActivoEnLaNube();
             renderTeamsList(); renderCamposList(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab(); renderActas();
-            
             document.getElementById('selectSobrescribir').value = nombreTorneo;
         }
     }
-
     async function eliminarTorneoGuardado() {
-        const nombreTorneo = document.getElementById('selectTorneosGuardados').value;
-        if (nombreTorneo === '') return;
-        if (confirm(`¿Eliminar permanentemente "${nombreTorneo}" de tu cuenta en la nube?`)) {
-            const perfil = await descargarPerfilDeLaNube(currentUserEmail);
-            delete perfil.torneosGuardados[nombreTorneo];
-            await guardarPerfilEnLaNube(currentUserEmail, perfil); await updateDropdownTorneosGuardados(); alert(`Archivo eliminado.`);
-        }
+        const nombreTorneo = document.getElementById('selectTorneosGuardados').value; if (nombreTorneo === '') return;
+        if (confirm(`¿Eliminar permanentemente "${nombreTorneo}" de tu cuenta en la nube?`)) { const perfil = await descargarPerfilDeLaNube(currentUserEmail); delete perfil.torneosGuardados[nombreTorneo]; await guardarPerfilEnLaNube(currentUserEmail, perfil); await updateDropdownTorneosGuardados(); alert(`Archivo eliminado.`); }
     }
 
-
     // ============================================================================
-    // LÓGICA DE LA APLICACIÓN DE FÚTBOL
+    // LÓGICA DE LA APLICACIÓN
     // ============================================================================
-    
     function openTab(evt, tabId) {
-        const tabContents = document.getElementsByClassName("tab-content");
-        for (let i = 0; i < tabContents.length; i++) { tabContents[i].classList.remove("active"); }
-        const tabButtons = document.getElementsByClassName("tab-button");
-        for (let i = 0; i < tabButtons.length; i++) { tabButtons[i].classList.remove("active"); }
+        const tabContents = document.getElementsByClassName("tab-content"); for (let i = 0; i < tabContents.length; i++) { tabContents[i].classList.remove("active"); }
+        const tabButtons = document.getElementsByClassName("tab-button"); for (let i = 0; i < tabButtons.length; i++) { tabButtons[i].classList.remove("active"); }
         document.getElementById(tabId).classList.add("active"); evt.currentTarget.classList.add("active");
-        if (tabId === 'tab-estadisticas') { renderStandings(); renderTopScorers(); } 
-        if (tabId === 'tab-delegados') { renderTablaDelegados(); renderActas(); }
-        if (tabId === 'tab-roster') { renderPlayersList(); } 
-        if (tabId === 'tab-amonestaciones') { renderAmonestacionesTab(); }
+        if (tabId === 'tab-estadisticas') { renderStandings(); renderTopScorers(); } if (tabId === 'tab-delegados') { renderTablaDelegados(); renderActas(); } if (tabId === 'tab-roster') { renderPlayersList(); } if (tabId === 'tab-amonestaciones') { renderAmonestacionesTab(); }
     }
-
-    function addCampo() {
-        const nm = document.getElementById('campoName').value.trim();
-        if (nm === '' || campos.includes(nm)) return;
-        campos.push(nm); interceptCloudUpdates();
-        renderCamposList(); renderMatchesHTML();
-        document.getElementById('campoName').value = '';
-    }
-    
-    function deleteCampo(nm) {
-        if (confirm(`¿Eliminar el campo "${nm}"? Los partidos asignados ahí quedarán sin campo asignado.`)) {
-            campos = campos.filter(c => c !== nm);
-            matches.forEach(m => { if (m.campo === nm) m.campo = ''; });
-            interceptCloudUpdates(); renderCamposList(); renderMatchesHTML();
-        }
-    }
-    
-    function renderCamposList() {
-        const el = document.getElementById('camposList'); el.innerHTML = '';
-        if (campos.length === 0) { el.innerHTML = '<span style="font-size: 13px; color: #7f8c8d;">No hay campos registrados aún.</span>'; return; }
-        campos.forEach(c => {
-            el.innerHTML += `<div style="background: white; border: 1px solid #3498db; border-radius: 4px; padding: 5px 10px; display: flex; align-items: center; gap: 8px;">
-            <span style="font-weight: bold; color: #2980b9; font-size: 13px;">${c}</span>
-            <button onclick="deleteCampo('${c}')" class="delete-btn" style="margin: 0; padding: 2px 6px; font-size: 10px;">❌</button></div>`;
-        });
-    }
-
-    function addTeam() {
-        const nm = document.getElementById('teamName').value.trim(); if (nm === '' || teams.includes(nm)) return;
-        teams.push(nm); playersByTeam[nm] = []; interceptCloudUpdates();
-        renderTeamsList(); updateSelectOptions(); renderStandings(); document.getElementById('teamName').value = '';
-    }
-    
+    function addCampo() { const nm = document.getElementById('campoName').value.trim(); if (nm === '' || campos.includes(nm)) return; campos.push(nm); interceptCloudUpdates(); renderCamposList(); renderMatchesHTML(); document.getElementById('campoName').value = ''; }
+    function deleteCampo(nm) { if (confirm(`¿Eliminar el campo "${nm}"? Los partidos asignados ahí quedarán sin campo asignado.`)) { campos = campos.filter(c => c !== nm); matches.forEach(m => { if (m.campo === nm) m.campo = ''; }); interceptCloudUpdates(); renderCamposList(); renderMatchesHTML(); } }
+    function renderCamposList() { const el = document.getElementById('camposList'); el.innerHTML = ''; if (campos.length === 0) { el.innerHTML = '<span style="font-size: 13px; color: #7f8c8d;">No hay campos registrados aún.</span>'; return; } campos.forEach(c => { el.innerHTML += `<div style="background: white; border: 1px solid #3498db; border-radius: 4px; padding: 5px 10px; display: flex; align-items: center; gap: 8px;"><span style="font-weight: bold; color: #2980b9; font-size: 13px;">${c}</span><button onclick="deleteCampo('${c}')" class="delete-btn" style="margin: 0; padding: 2px 6px; font-size: 10px;">❌</button></div>`; }); }
+    function addTeam() { const nm = document.getElementById('teamName').value.trim(); if (nm === '' || teams.includes(nm)) return; teams.push(nm); playersByTeam[nm] = []; interceptCloudUpdates(); renderTeamsList(); updateSelectOptions(); renderStandings(); document.getElementById('teamName').value = ''; }
     function generateAutomaticFixture() {
         if (teams.length < 2) return;
         if (confirm('¿Generar torneo automático? (Los marcadores iniciarán vacíos)')) {
@@ -705,110 +528,32 @@ const firebaseConfig = {
                     const eA = t[i]; const eB = t[t.length - 1 - i];
                     if (eA === 'EQUIPO_FANTASMA') nJ.descansos.push({ equipo: eB, bono: false }); 
                     else if (eB === 'EQUIPO_FANTASMA') nJ.descansos.push({ equipo: eA, bono: false });
-                    else matches.push({ id: bt + r + (i * 100), jornadaId: jId, local: eA, visitante: eB, golesLocal: null, golesVisitante: null, campo: '', hora: '' });
+                    else matches.push({ id: bt + r + (i * 100), jornadaId: jId, local: eA, visitante: eB, golesLocal: null, golesVisitante: null, campo: '', hora: '', evidencias: [] });
                 } t.splice(1, 0, t.pop());
             } interceptCloudUpdates(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderPlayersList();
         }
     }
-    
-    function createJornada() {
-        const nJ = { id: Date.now(), nombre: `Jornada ${jornadas.length + 1}`, descansos: [] }; jornadas.push(nJ);
-        interceptCloudUpdates(); updateSelectOptions(); renderMatchesHTML(); renderPlayersList(); document.getElementById('selectJornada').value = nJ.id;
-    }
-    
-    function createMatch() {
-        const jId = document.getElementById('selectJornada').value; const tA = document.getElementById('teamA').value; const tB = document.getElementById('teamB').value;
-        if (!jId || !tA || !tB || tA === tB) return; const jor = jornadas.find(j => j.id == jId); 
-        if (jor.descansos.some(d => (typeof d === 'string' ? d : d.equipo) === tA) || jor.descansos.some(d => (typeof d === 'string' ? d : d.equipo) === tB)) return;
-        matches.push({ id: Date.now(), jornadaId: parseInt(jId), local: tA, visitante: tB, golesLocal: null, golesVisitante: null, campo: '', hora: '' });
-        interceptCloudUpdates(); renderMatchesHTML();
-    }
-    
-    function assignRest() {
-        const jId = document.getElementById('selectJornada').value; const t = document.getElementById('teamRest').value;
-        if (!jId || !t) return; const jor = jornadas.find(j => j.id == jId);
-        if (jor.descansos.some(d => (typeof d === 'string' ? d : d.equipo) === t) || matches.some(m => m.jornadaId == jId && (m.local === t || m.visitante === t))) return;
-        jor.descansos.push({ equipo: t, bono: false }); interceptCloudUpdates(); renderMatchesHTML(); renderStandings();
-    }
-    
-    function removeRest(jId, t) {
-        if (confirm(`¿Cancelar descanso?`)) { 
-            const jor = jornadas.find(j => j.id == jId); 
-            jor.descansos = jor.descansos.filter(x => (typeof x === 'string' ? x : x.equipo) !== t); 
-            interceptCloudUpdates(); renderMatchesHTML(); renderStandings(); 
-        }
-    }
-
-    function toggleBonoDescanso(jId, t, isChecked) {
-        const jor = jornadas.find(j => j.id == jId);
-        if (jor) {
-            const idx = jor.descansos.findIndex(d => (typeof d === 'string' ? d : d.equipo) === t);
-            if (idx !== -1) {
-                jor.descansos[idx] = { equipo: t, bono: isChecked };
-                interceptCloudUpdates(); renderStandings();
-            }
-        }
-    }
-    
-    function autoSaveScore(matchId, teamType, val) {
-        const match = matches.find(m => m.id === matchId);
-        if (match) {
-            let numVal = val === '' ? null : parseInt(val);
-            if (teamType === 'local') match.golesLocal = numVal;
-            else if (teamType === 'visitante') match.golesVisitante = numVal;
-            interceptCloudUpdates(); renderStandings(); 
-        }
-    }
-
-    function autoSaveCampo(matchId, val) {
-        const match = matches.find(m => m.id === matchId);
-        if (match) { match.campo = val; interceptCloudUpdates(); }
-    }
-
-    function autoSaveHora(matchId, val) {
-        const match = matches.find(m => m.id === matchId);
-        if (match) { match.hora = val; interceptCloudUpdates(); }
-    }
-    
-    function toggleJornadaVisibility(jorId) {
-        const content = document.getElementById(`jornada-content-${jorId}`); const icon = document.getElementById(`icon-jor-${jorId}`);
-        if (content.style.display === 'none') { content.style.display = 'block'; icon.innerText = '➖'; } else { content.style.display = 'none'; icon.innerText = '➕'; }
-    }
-    
-    function deleteTeam(tm) {
-        if (confirm(`¿Eliminar al equipo "${tm}"?`)) {
-            teams = teams.filter(t => t !== tm); delete playersByTeam[tm]; matches = matches.filter(m => m.local !== tm && m.visitante !== tm);
-            jornadas.forEach(j => { j.descansos = j.descansos.filter(x => (typeof x === 'string' ? x : x.equipo) !== tm); }); delegados = delegados.filter(d => d.equipo !== tm);
-            interceptCloudUpdates(); renderTeamsList(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderTablaDelegados();
-        }
-    }
-    
+    function createJornada() { const nJ = { id: Date.now(), nombre: `Jornada ${jornadas.length + 1}`, descansos: [] }; jornadas.push(nJ); interceptCloudUpdates(); updateSelectOptions(); renderMatchesHTML(); renderPlayersList(); document.getElementById('selectJornada').value = nJ.id; }
+    function createMatch() { const jId = document.getElementById('selectJornada').value; const tA = document.getElementById('teamA').value; const tB = document.getElementById('teamB').value; if (!jId || !tA || !tB || tA === tB) return; const jor = jornadas.find(j => j.id == jId); if (jor.descansos.some(d => (typeof d === 'string' ? d : d.equipo) === tA) || jor.descansos.some(d => (typeof d === 'string' ? d : d.equipo) === tB)) return; matches.push({ id: Date.now(), jornadaId: parseInt(jId), local: tA, visitante: tB, golesLocal: null, golesVisitante: null, campo: '', hora: '', evidencias: [] }); interceptCloudUpdates(); renderMatchesHTML(); }
+    function assignRest() { const jId = document.getElementById('selectJornada').value; const t = document.getElementById('teamRest').value; if (!jId || !t) return; const jor = jornadas.find(j => j.id == jId); if (jor.descansos.some(d => (typeof d === 'string' ? d : d.equipo) === t) || matches.some(m => m.jornadaId == jId && (m.local === t || m.visitante === t))) return; jor.descansos.push({ equipo: t, bono: false }); interceptCloudUpdates(); renderMatchesHTML(); renderStandings(); }
+    function removeRest(jId, t) { if (confirm(`¿Cancelar descanso?`)) { const jor = jornadas.find(j => j.id == jId); jor.descansos = jor.descansos.filter(x => (typeof x === 'string' ? x : x.equipo) !== t); interceptCloudUpdates(); renderMatchesHTML(); renderStandings(); } }
+    function toggleBonoDescanso(jId, t, isChecked) { const jor = jornadas.find(j => j.id == jId); if (jor) { const idx = jor.descansos.findIndex(d => (typeof d === 'string' ? d : d.equipo) === t); if (idx !== -1) { jor.descansos[idx] = { equipo: t, bono: isChecked }; interceptCloudUpdates(); renderStandings(); } } }
+    function autoSaveScore(matchId, teamType, val) { const match = matches.find(m => m.id === matchId); if (match) { let numVal = val === '' ? null : parseInt(val); if (teamType === 'local') match.golesLocal = numVal; else if (teamType === 'visitante') match.golesVisitante = numVal; interceptCloudUpdates(); renderStandings(); } }
+    function autoSaveCampo(matchId, val) { const match = matches.find(m => m.id === matchId); if (match) { match.campo = val; interceptCloudUpdates(); } }
+    function autoSaveHora(matchId, val) { const match = matches.find(m => m.id === matchId); if (match) { match.hora = val; interceptCloudUpdates(); } }
+    function toggleJornadaVisibility(jorId) { const content = document.getElementById(`jornada-content-${jorId}`); const icon = document.getElementById(`icon-jor-${jorId}`); if (content.style.display === 'none') { content.style.display = 'block'; icon.innerText = '➖'; } else { content.style.display = 'none'; icon.innerText = '➕'; } }
+    function deleteTeam(tm) { if (confirm(`¿Eliminar al equipo "${tm}"?`)) { teams = teams.filter(t => t !== tm); delete playersByTeam[tm]; matches = matches.filter(m => m.local !== tm && m.visitante !== tm); jornadas.forEach(j => { j.descansos = j.descansos.filter(x => (typeof x === 'string' ? x : x.equipo) !== tm); }); delegados = delegados.filter(d => d.equipo !== tm); interceptCloudUpdates(); renderTeamsList(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderTablaDelegados(); } }
     function deleteMatch(mId) { if (confirm('¿Eliminar partido?')) { matches = matches.filter(m => m.id !== mId); interceptCloudUpdates(); renderMatchesHTML(); renderStandings(); } }
-    
-    function deleteJornada(jId) {
-        if (confirm('¿Eliminar jornada?')) {
-            jornadas = jornadas.filter(j => j.id !== jId); matches = matches.filter(m => m.jornadaId !== jId);
-            jornadas.forEach((j, i) => { j.nombre = `Jornada ${i + 1}`; }); interceptCloudUpdates();
-            updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderPlayersList();
-        }
-    }
-    
+    function deleteJornada(jId) { if (confirm('¿Eliminar jornada?')) { jornadas = jornadas.filter(j => j.id !== jId); matches = matches.filter(m => m.jornadaId !== jId); jornadas.forEach((j, i) => { j.nombre = `Jornada ${i + 1}`; }); interceptCloudUpdates(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderPlayersList(); } }
     function renderTeamsList() { const el = document.getElementById('teamsList'); el.innerHTML = ''; teams.forEach(t => { el.innerHTML += `<div class="list-item"><span class="list-text">${t}</span><button onclick="deleteTeam('${t}')" class="delete-btn">Eliminar</button></div>`; }); }
+    function updateSelectOptions() { const sA = document.getElementById('teamA'); const sB = document.getElementById('teamB'); const sR = document.getElementById('teamRest'); const sP = document.getElementById('teamSelectPlayers'); const sJ = document.getElementById('selectJornada'); const sD = document.getElementById('selectTeamDelegado'); const cP = sP.value; const cJ = sJ.value; const cD = sD.value; sA.innerHTML = '<option value="">-- Selecciona --</option>'; sB.innerHTML = '<option value="">-- Selecciona --</option>'; sR.innerHTML = '<option value="">-- Selecciona --</option>'; sP.innerHTML = '<option value="">-- Selecciona un equipo --</option>'; sD.innerHTML = '<option value="">-- Selecciona --</option>'; sJ.innerHTML = jornadas.length === 0 ? '<option value="">-- Crea jornada --</option>' : ''; jornadas.forEach(j => { sJ.innerHTML += `<option value="${j.id}">${j.nombre}</option>`; }); teams.forEach(t => { const o = `<option value="${t}">${t}</option>`; sA.innerHTML += o; sB.innerHTML += o; sR.innerHTML += o; sP.innerHTML += o; sD.innerHTML += o; }); if (teams.includes(cP)) sP.value = cP; if (teams.includes(cD)) sD.value = cD; if (cJ && jornadas.some(j => j.id == cJ)) sJ.value = cJ; renderPlayersList(); }
     
-    function updateSelectOptions() {
-        const sA = document.getElementById('teamA'); const sB = document.getElementById('teamB'); const sR = document.getElementById('teamRest'); const sP = document.getElementById('teamSelectPlayers'); const sJ = document.getElementById('selectJornada'); const sD = document.getElementById('selectTeamDelegado');
-        const cP = sP.value; const cJ = sJ.value; const cD = sD.value;
-        sA.innerHTML = '<option value="">-- Selecciona --</option>'; sB.innerHTML = '<option value="">-- Selecciona --</option>'; sR.innerHTML = '<option value="">-- Selecciona --</option>'; sP.innerHTML = '<option value="">-- Selecciona un equipo --</option>'; sD.innerHTML = '<option value="">-- Selecciona --</option>'; sJ.innerHTML = jornadas.length === 0 ? '<option value="">-- Crea jornada --</option>' : '';
-        jornadas.forEach(j => { sJ.innerHTML += `<option value="${j.id}">${j.nombre}</option>`; });
-        teams.forEach(t => { const o = `<option value="${t}">${t}</option>`; sA.innerHTML += o; sB.innerHTML += o; sR.innerHTML += o; sP.innerHTML += o; sD.innerHTML += o; });
-        if (teams.includes(cP)) sP.value = cP; if (teams.includes(cD)) sD.value = cD; if (cJ && jornadas.some(j => j.id == cJ)) sJ.value = cJ; renderPlayersList();
-    }
-    
+    // ============================================================================
+    // SECCIÓN DE RENDERIZADO DE PARTIDOS CON BOTÓN DE EVIDENCIA
+    // ============================================================================
     function renderMatchesHTML() {
         const c = document.getElementById('matchesContainer'); c.innerHTML = ''; if (jornadas.length === 0) return;
-        
-        let opcionesCampos = '<option value="">-- Campo --</option>';
-        campos.forEach(cmp => { opcionesCampos += `<option value="${cmp}">${cmp}</option>`; });
+        let opcionesCampos = '<option value="">-- Campo --</option>'; campos.forEach(cmp => { opcionesCampos += `<option value="${cmp}">${cmp}</option>`; });
 
         jornadas.forEach(jor => {
             const div = document.createElement('div'); 
@@ -816,12 +561,8 @@ const firebaseConfig = {
             let contentHTML = `<div id="jornada-content-${jor.id}" class="jornada-content" style="display: block; margin-bottom: 25px;">`;
             
             matches.filter(m => m.jornadaId == jor.id).forEach(m => { 
-                let gL = m.golesLocal !== null ? m.golesLocal : '';
-                let gV = m.golesVisitante !== null ? m.golesVisitante : '';
-                let matchHora = m.hora || '';
-                
-                let selectCampoLocal = opcionesCampos;
-                if(m.campo) { selectCampoLocal = selectCampoLocal.replace(`value="${m.campo}"`, `value="${m.campo}" selected`); }
+                let gL = m.golesLocal !== null ? m.golesLocal : ''; let gV = m.golesVisitante !== null ? m.golesVisitante : ''; let matchHora = m.hora || '';
+                let selectCampoLocal = opcionesCampos; if(m.campo) { selectCampoLocal = selectCampoLocal.replace(`value="${m.campo}"`, `value="${m.campo}" selected`); }
 
                 contentHTML += `<div class="match-row">
                     <span class="match-team left">${m.local}</span>
@@ -833,190 +574,136 @@ const firebaseConfig = {
                         <select class="campo-select" onchange="autoSaveCampo(${m.id}, this.value)" style="margin-left: 0;">${selectCampoLocal}</select>
                         <input type="time" value="${matchHora}" onchange="autoSaveHora(${m.id}, this.value)" class="time-select" title="Horario del partido">
                     </div>
-                    <button onclick="deleteMatch(${m.id})" class="delete-btn" style="margin-left: 15px; padding: 6px 10px;">❌</button>
+                    
+                    <!-- NUEVO BOTÓN DE EVIDENCIA -->
+                    <button onclick="openEvidenciasModal(${m.id})" style="background: #8e44ad; color: white; border: none; border-radius: 4px; padding: 6px 12px; margin-left: 15px; cursor: pointer; font-size: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" title="Anexar Fotos / Evidencias">📸</button>
+                    
+                    <button onclick="deleteMatch(${m.id})" class="delete-btn" style="margin-left: 5px; padding: 6px 10px;">❌</button>
                 </div>`; 
             });
             
             jor.descansos.forEach(d => { 
-                let eqDescanso = typeof d === 'string' ? d : d.equipo;
-                let bonoActivo = typeof d === 'string' ? false : (d.bono || false);
-                let isChecked = bonoActivo ? 'checked' : '';
-
-                contentHTML += `<div class="rest-team">
-                    <div style="display:flex; align-items:center; gap: 10px; flex-wrap: wrap;">
-                        <span>🛋️ <strong>${eqDescanso}</strong> descansa.</span>
-                        <label style="font-size: 13px; color: #2c3e50; cursor:pointer; background: #fff; padding: 4px 8px; border-radius: 4px; border: 1px solid #bdc3c7;">
-                            <input type="checkbox" onchange="toggleBonoDescanso(${jor.id}, '${eqDescanso}', this.checked)" ${isChecked} style="accent-color: #e74c3c; cursor:pointer;">
-                            Aplicar Bono (+3 Pts, +2 GF)
-                        </label>
-                    </div>
-                    <button onclick="removeRest(${jor.id}, '${eqDescanso}')" class="delete-btn" style="padding: 6px 10px; margin: 0;">❌</button>
-                </div>`; 
+                let eqDescanso = typeof d === 'string' ? d : d.equipo; let bonoActivo = typeof d === 'string' ? false : (d.bono || false); let isChecked = bonoActivo ? 'checked' : '';
+                contentHTML += `<div class="rest-team"><div style="display:flex; align-items:center; gap: 10px; flex-wrap: wrap;"><span>🛋️ <strong>${eqDescanso}</strong> descansa.</span><label style="font-size: 13px; color: #2c3e50; cursor:pointer; background: #fff; padding: 4px 8px; border-radius: 4px; border: 1px solid #bdc3c7;"><input type="checkbox" onchange="toggleBonoDescanso(${jor.id}, '${eqDescanso}', this.checked)" ${isChecked} style="accent-color: #e74c3c; cursor:pointer;"> Aplicar Bono (+3 Pts, +2 GF)</label></div><button onclick="removeRest(${jor.id}, '${eqDescanso}')" class="delete-btn" style="padding: 6px 10px; margin: 0;">❌</button></div>`; 
             }); 
             contentHTML += `</div>`; div.innerHTML = headerHTML + contentHTML; c.appendChild(div);
         });
     }
-    
-    function renderStandings() {
-        const c = document.getElementById('standingsContainer'); c.innerHTML = ''; if (teams.length === 0) return;
-        let st = {}; teams.forEach(t => { st[t] = { n: t, jj: 0, jg: 0, je: 0, jp: 0, gf: 0, gc: 0, dg: 0, pts: 0 }; });
+
+    // ============================================================================
+    // MOTOR DE COMPRESIÓN Y GALERÍA DE EVIDENCIAS FOTOGRÁFICAS
+    // ============================================================================
+    function openEvidenciasModal(matchId) {
+        currentMatchIdForEvidencias = matchId;
+        const match = matches.find(m => m.id === matchId);
+        document.getElementById('evidenciasMatchTitle').innerText = `${match.local} VS ${match.visitante}`;
+        renderEvidenciasGallery();
+        document.getElementById('modalEvidencias').style.display = "flex";
+    }
+
+    function closeEvidenciasModal() {
+        document.getElementById('modalEvidencias').style.display = "none";
+        document.getElementById('inputEvidencias').value = '';
+    }
+
+    function procesarYSubirEvidencias(event) {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
         
-        matches.forEach(m => {
-            if (st[m.local] && st[m.visitante]) {
-                if (m.golesLocal !== null && m.golesVisitante !== null) {
-                    st[m.local].jj++; st[m.visitante].jj++; 
-                    st[m.local].gf += m.golesLocal; st[m.local].gc += m.golesVisitante; 
-                    st[m.visitante].gf += m.golesVisitante; st[m.visitante].gc += m.golesLocal;
+        const match = matches.find(m => m.id === currentMatchIdForEvidencias);
+        if (!match.evidencias) match.evidencias = [];
+
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    // Compresión extrema para proteger el documento de Firebase (Max 600px ancho)
+                    const MAX_WIDTH = 600; 
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height = Math.round((height * MAX_WIDTH) / width);
+                        width = MAX_WIDTH;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
                     
-                    if (m.golesLocal > m.golesVisitante) { st[m.local].jg++; st[m.local].pts += 3; st[m.visitante].jp++; } 
-                    else if (m.golesLocal < m.golesVisitante) { st[m.visitante].jg++; st[m.visitante].pts += 3; st[m.local].jp++; } 
-                    else { st[m.local].je++; st[m.visitante].je++; st[m.local].pts++; st[m.visitante].pts++; }
+                    // Compresión JPEG a calidad 50% para reducir el Base64 a ~30kb por imagen
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.5); 
+                    
+                    match.evidencias.push(dataUrl);
+                    interceptCloudUpdates();
+                    renderEvidenciasGallery();
                 }
+                img.src = e.target.result;
             }
+            reader.readAsDataURL(file);
         });
+        event.target.value = '';
+    }
 
-        jornadas.forEach(jor => {
-            jor.descansos.forEach(d => {
-                let eqDescanso = typeof d === 'string' ? d : d.equipo;
-                let bonoActivo = typeof d === 'string' ? false : (d.bono || false);
-                if(bonoActivo && st[eqDescanso]) { st[eqDescanso].jj++; st[eqDescanso].jg++; st[eqDescanso].gf += 2; st[eqDescanso].pts += 3; }
-            });
-        });
-
-        delegados.forEach(d => { if (st[d.equipo]) { let contadas = 0; juntasDelegados.forEach(j => { if (d.asistencias[j.id]) contadas++; }); let totalFaltas = juntasDelegados.length - contadas; st[d.equipo].pts -= Math.floor(totalFaltas / 2); } });
-        let arr = Object.values(st); arr.forEach(e => { e.dg = e.gf - e.gc; }); arr.sort((a, b) => { if (b.pts !== a.pts) return b.pts - a.pts; if (b.dg !== a.dg) return b.dg - a.dg; return b.gf - a.gf; });
+    function renderEvidenciasGallery() {
+        const match = matches.find(m => m.id === currentMatchIdForEvidencias);
+        const gallery = document.getElementById('evidenciasGallery');
+        gallery.innerHTML = '';
         
-        let h = `<table class="standings-table"><thead><tr><th>Pos</th><th class="team-name">Equipo</th><th>JJ</th><th>JG</th><th>JE</th><th>JP</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr></thead><tbody>`;
-        arr.forEach((e, i) => { let p = i + 1; if (i === 0) p = '🥇'; else if (i === 1) p = '🥈'; else if (i === 2) p = '🥉'; h += `<tr><td>${p}</td><td class="team-name">${e.n}</td><td>${e.jj}</td><td>${e.jg}</td><td>${e.je}</td><td>${e.jp}</td><td>${e.gf}</td><td>${e.gc}</td><td>${e.dg}</td><td style="font-weight: bold; color: #27ae60;">${e.pts}</td></tr>`; }); c.innerHTML = h + `</tbody></table>`;
+        if (!match.evidencias || match.evidencias.length === 0) {
+            gallery.innerHTML = '<p style="color: #7f8c8d; font-size: 13px; grid-column: 1 / -1; text-align: center; margin: 10px 0;">No hay imágenes anexadas a este partido.</p>';
+            return;
+        }
+
+        match.evidencias.forEach((base64Img, index) => {
+            gallery.innerHTML += `
+            <div class="evidencia-item">
+                <img src="${base64Img}" alt="Evidencia" onclick="verImagenCompleta('${base64Img}')" title="Clic para ampliar">
+                <button class="evidencia-delete" onclick="borrarEvidencia(${index})" title="Eliminar imagen">✖</button>
+            </div>`;
+        });
     }
-    
-    function renderTopScorers() {
-        const c = document.getElementById('topScorersContainer'); c.innerHTML = ''; let tJ = [];
-        for (const t in playersByTeam) { playersByTeam[t].forEach(p => { tJ.push({ id: p.id, nombre: p.nombre, equipo: t, goles: p.goles || 0 }); }); }
-        if (!tJ.some(p => p.goles > 0)) { c.innerHTML = '<p style="color: #7f8c8d; font-style: italic;">Sin goles registrados.</p>'; return; }
-        tJ.sort((a, b) => b.goles - a.goles);
-        let html = `<table class="standings-table"><thead><tr><th>Pos</th><th>ID</th><th class="team-name">Jugador</th><th>Equipo</th><th>Goles</th></tr></thead><tbody>`;
-        tJ.slice(0, 15).forEach((j, i) => { let p = i + 1; if (i === 0) p = '🥇'; else if (i === 1) p = '🥈'; else if (i === 2) p = '🥉'; html += `<tr><td>${p}</td><td style="color: #7f8c8d; font-size: 13px;">${j.id}</td><td class="team-name">${j.nombre}</td><td style="color: #2980b9;">${j.equipo}</td><td style="font-weight: bold; color: #e67e22; font-size: 16px;">${j.goles}</td></tr>`; }); c.innerHTML = html + `</tbody></table>`;
-    }
-    
-    function resetTournament() {
-        if (confirm('¿Borrar el tablero actual? (No borra tus archivos en la nube)')) {
-            teams = []; matches = []; playersByTeam = {}; jornadas = []; delegados = []; juntasDelegados = []; campos = [];
-            actas = { reglas: [], acuerdos: [], castigos: [] }; 
-            interceptCloudUpdates(); renderTeamsList(); renderCamposList(); updateSelectOptions(); renderMatchesHTML(); renderPlayersList(); renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab(); renderActas(); document.getElementById('searchResults').innerHTML = '';
+
+    function borrarEvidencia(index) {
+        if(confirm("¿Seguro que deseas eliminar permanentemente esta evidencia fotográfica?")) {
+            const match = matches.find(m => m.id === currentMatchIdForEvidencias);
+            match.evidencias.splice(index, 1);
+            interceptCloudUpdates();
+            renderEvidenciasGallery();
         }
     }
-    
+
+    function verImagenCompleta(src) {
+        const w = window.open("");
+        w.document.write(`<body style="background:#2c3e50; display:flex; justify-content:center; align-items:center; margin:0; height:100vh;"><img src="${src}" style="max-width: 100%; max-height: 100vh; box-shadow: 0 10px 25px rgba(0,0,0,0.5);"></body>`);
+    }
+
+    // ============================================================================
+    // RESTO DEL CÓDIGO (ESTADÍSTICAS, ROSTER, DELEGADOS, ETC)
+    // ============================================================================
+    function renderStandings() { const c = document.getElementById('standingsContainer'); c.innerHTML = ''; if (teams.length === 0) return; let st = {}; teams.forEach(t => { st[t] = { n: t, jj: 0, jg: 0, je: 0, jp: 0, gf: 0, gc: 0, dg: 0, pts: 0 }; }); matches.forEach(m => { if (st[m.local] && st[m.visitante]) { if (m.golesLocal !== null && m.golesVisitante !== null) { st[m.local].jj++; st[m.visitante].jj++; st[m.local].gf += m.golesLocal; st[m.local].gc += m.golesVisitante; st[m.visitante].gf += m.golesVisitante; st[m.visitante].gc += m.golesLocal; if (m.golesLocal > m.golesVisitante) { st[m.local].jg++; st[m.local].pts += 3; st[m.visitante].jp++; } else if (m.golesLocal < m.golesVisitante) { st[m.visitante].jg++; st[m.visitante].pts += 3; st[m.local].jp++; } else { st[m.local].je++; st[m.visitante].je++; st[m.local].pts++; st[m.visitante].pts++; } } } }); jornadas.forEach(jor => { jor.descansos.forEach(d => { let eqDescanso = typeof d === 'string' ? d : d.equipo; let bonoActivo = typeof d === 'string' ? false : (d.bono || false); if(bonoActivo && st[eqDescanso]) { st[eqDescanso].jj++; st[eqDescanso].jg++; st[eqDescanso].gf += 2; st[eqDescanso].pts += 3; } }); }); delegados.forEach(d => { if (st[d.equipo]) { let contadas = 0; juntasDelegados.forEach(j => { if (d.asistencias[j.id]) contadas++; }); let totalFaltas = juntasDelegados.length - contadas; st[d.equipo].pts -= Math.floor(totalFaltas / 2); } }); let arr = Object.values(st); arr.forEach(e => { e.dg = e.gf - e.gc; }); arr.sort((a, b) => { if (b.pts !== a.pts) return b.pts - a.pts; if (b.dg !== a.dg) return b.dg - a.dg; return b.gf - a.gf; }); let h = `<table class="standings-table"><thead><tr><th>Pos</th><th class="team-name">Equipo</th><th>JJ</th><th>JG</th><th>JE</th><th>JP</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr></thead><tbody>`; arr.forEach((e, i) => { let p = i + 1; if (i === 0) p = '🥇'; else if (i === 1) p = '🥈'; else if (i === 2) p = '🥉'; h += `<tr><td>${p}</td><td class="team-name">${e.n}</td><td>${e.jj}</td><td>${e.jg}</td><td>${e.je}</td><td>${e.jp}</td><td>${e.gf}</td><td>${e.gc}</td><td>${e.dg}</td><td style="font-weight: bold; color: #27ae60;">${e.pts}</td></tr>`; }); c.innerHTML = h + `</tbody></table>`; }
+    function renderTopScorers() { const c = document.getElementById('topScorersContainer'); c.innerHTML = ''; let tJ = []; for (const t in playersByTeam) { playersByTeam[t].forEach(p => { tJ.push({ id: p.id, nombre: p.nombre, equipo: t, goles: p.goles || 0 }); }); } if (!tJ.some(p => p.goles > 0)) { c.innerHTML = '<p style="color: #7f8c8d; font-style: italic;">Sin goles registrados.</p>'; return; } tJ.sort((a, b) => b.goles - a.goles); let html = `<table class="standings-table"><thead><tr><th>Pos</th><th>ID</th><th class="team-name">Jugador</th><th>Equipo</th><th>Goles</th></tr></thead><tbody>`; tJ.slice(0, 15).forEach((j, i) => { let p = i + 1; if (i === 0) p = '🥇'; else if (i === 1) p = '🥈'; else if (i === 2) p = '🥉'; html += `<tr><td>${p}</td><td style="color: #7f8c8d; font-size: 13px;">${j.id}</td><td class="team-name">${j.nombre}</td><td style="color: #2980b9;">${j.equipo}</td><td style="font-weight: bold; color: #e67e22; font-size: 16px;">${j.goles}</td></tr>`; }); c.innerHTML = html + `</tbody></table>`; }
+    function resetTournament() { if (confirm('¿Borrar el tablero actual? (No borra tus archivos en la nube)')) { teams = []; matches = []; playersByTeam = {}; jornadas = []; delegados = []; juntasDelegados = []; campos = []; actas = { reglas: [], acuerdos: [], castigos: [] }; interceptCloudUpdates(); renderTeamsList(); renderCamposList(); updateSelectOptions(); renderMatchesHTML(); renderPlayersList(); renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab(); renderActas(); document.getElementById('searchResults').innerHTML = ''; } }
     function addPlayer() { const t = document.getElementById('teamSelectPlayers').value; const id = document.getElementById('playerId').value.trim(); const nm = document.getElementById('playerName').value.trim(); if (!t || id === '' || nm === '') return; if (!playersByTeam[t]) playersByTeam[t] = []; for (const eq in playersByTeam) { if (playersByTeam[eq].find(p => p.id === id)) { alert(`ID duplicado en ${eq}.`); return; } } playersByTeam[t].push({ id: id, nombre: nm, goles: 0, partidos: 0, jornadasStats: {}, castigadoActivo: false, historialCastigos: [], amonestaciones: [], suspensiones: [] }); interceptCloudUpdates(); renderPlayersList(); document.getElementById('playerId').value = ''; document.getElementById('playerName').value = ''; }
     function deletePlayer(team, id) { if (confirm(`¿Dar de baja a este jugador?`)) { playersByTeam[team] = playersByTeam[team].filter(p => p.id !== id); interceptCloudUpdates(); renderPlayersList(); searchPlayers(); renderTopScorers(); } }
     function updatePlayerStat(team, id, jorId, field, obj) { const p = playersByTeam[team].find(x => x.id === id); if (!p) return; if (!p.jornadasStats) p.jornadasStats = {}; if (!p.jornadasStats[jorId]) p.jornadasStats[jorId] = { jugado: false, goles: 0 }; if (field === 'jugado') p.jornadasStats[jorId].jugado = obj.checked; else if (field === 'goles') p.jornadasStats[jorId].goles = parseInt(obj.value) || 0; let tP = 0; let tG = 0; for (const j in p.jornadasStats) { if (p.jornadasStats[j].jugado) tP++; tG += p.jornadasStats[j].goles; } p.partidos = tP; p.goles = tG; interceptCloudUpdates(); const e1 = document.getElementById(`total_partidos_${id}`); const e2 = document.getElementById(`total_goles_${id}`); if (e1) e1.innerText = tP; if (e2) e2.innerText = tG; renderTopScorers(); }
     function renderPlayersList() { const t = document.getElementById('teamSelectPlayers').value; const lst = document.getElementById('playersList'); lst.innerHTML = ''; if (!t) { lst.innerHTML = '<p style="color: #7f8c8d;">Selecciona un equipo.</p>'; return; } const ps = playersByTeam[t] || []; if (ps.length === 0) { lst.innerHTML = '<p style="color: #7f8c8d;">Plantilla vacía.</p>'; return; } ps.forEach(p => { lst.innerHTML += buildPlayerCardHTML(t, p); }); }
     function searchPlayers() { const q = document.getElementById('searchPlayerInput').value.trim().toLowerCase(); const res = document.getElementById('searchResults'); if (q === '') { res.innerHTML = ''; return; } let html = ''; let c = 0; for (const t in playersByTeam) { playersByTeam[t].forEach(p => { if (p.nombre.toLowerCase().includes(q) || p.id.toLowerCase().includes(q) || t.toLowerCase().includes(q)) { c++; html += buildPlayerCardHTML(t, p); } }); } res.innerHTML = c === 0 ? `<p style="color: #e74c3c;">Sin resultados.</p>` : `<p style="color: #16a085;">Coincidencias:</p>` + html; }
-    
     function addDelegado() { const tN = document.getElementById('selectTeamDelegado').value; const dN = document.getElementById('delegadoName').value.trim(); if (!tN || dN === '') return; if (delegados.find(d => d.equipo === tN && d.nombre.toLowerCase() === dN.toLowerCase())) { alert('Este delegado ya existe.'); return; } delegados.push({ id: Date.now(), nombre: dN, equipo: tN, asistencias: {} }); interceptCloudUpdates(); document.getElementById('delegadoName').value = ''; renderTablaDelegados(); renderStandings(); }
     function deleteDelegado(id) { if (confirm('¿Eliminar a este delegado permanentemente?')) { delegados = delegados.filter(d => d.id !== id); interceptCloudUpdates(); renderTablaDelegados(); renderStandings(); } }
     function addJunta() { const inputFecha = document.getElementById('fechaJunta'); const fecha = inputFecha.value; if (!fecha) { alert('Por favor, selecciona una fecha.'); return; } juntasDelegados.push({ id: Date.now(), fecha: fecha }); interceptCloudUpdates(); inputFecha.value = ''; renderTablaDelegados(); renderStandings(); }
     function deleteJunta(juntaId) { if (confirm('¿Eliminar esta junta?')) { juntasDelegados = juntasDelegados.filter(j => j.id !== juntaId); interceptCloudUpdates(); renderTablaDelegados(); renderStandings(); } }
     function toggleAsistencia(delegadoId, juntaId, checkbox) { const delegado = delegados.find(d => d.id === delegadoId); if (delegado) { delegado.asistencias[juntaId] = checkbox.checked; interceptCloudUpdates(); renderTablaDelegados(); renderStandings(); } }
-    
     function renderTablaDelegados() { const c = document.getElementById('tablaDelegadosContainer'); c.innerHTML = ''; let headerHTML = ''; if (juntasDelegados.length > 0) { headerHTML += '<div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 25px; border-bottom: 1px solid #f39c12;"><div style="font-weight: bold; color: #d35400; display: flex; align-items: center; padding-right: 10px; font-size: 14px;">Administrar Juntas:</div>'; juntasDelegados.forEach(junta => { headerHTML += `<div style="background: #fad7a1; padding: 8px 12px; border-radius: 6px; display: flex; flex-direction: column; align-items: center; min-width: 90px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);"><span style="font-size: 13px; font-weight: bold; color: #d35400; margin-bottom: 6px;">${junta.fecha}</span><button onclick="deleteJunta(${junta.id})" class="delete-btn" style="margin: 0; padding: 4px 8px; font-size: 10px; background-color: #e74c3c;">Borrar Junta</button></div>`; }); headerHTML += '</div>'; } if (delegados.length === 0) { c.innerHTML = headerHTML + '<p style="color: #7f8c8d; font-style: italic;">Aún no hay delegados registrados.</p>'; return; } let html = headerHTML; delegados.forEach(d => { let asistenciasContadas = 0; let juntasHTML = ''; if (juntasDelegados.length === 0) { juntasHTML = `<div style="color:#7f8c8d; font-size:13px; font-style:italic; padding-top:25px; width: 100%; text-align: center;">No has creado ninguna junta.</div>`; } else { juntasDelegados.forEach((junta) => { let asistio = d.asistencias[junta.id]; if (asistio) asistenciasContadas++; let isChecked = asistio ? 'checked' : ''; juntasHTML += `<div class="jornada-stat-box" style="background: white; border: 1px solid #f39c12; border-radius: 6px; padding: 8px; text-align: center; min-width: 75px;"><div class="jor-title" title="${junta.fecha}" style="font-size: 11px; margin-bottom: 8px; color: #d35400; border-bottom: 1px solid #fad7a1; padding-bottom: 4px;">${junta.fecha}</div><label style="font-size:12px; color:#34495e; display:block; cursor:pointer;">Asistió<br><input type="checkbox" style="transform: scale(1.4); margin-top: 8px; cursor: pointer; accent-color: #27ae60;" ${isChecked} onchange="toggleAsistencia(${d.id}, ${junta.id}, this)"></label></div>`; }); } let faltas = juntasDelegados.length - asistenciasContadas; let ptsPerdidos = Math.floor(faltas / 2); let alerta = ptsPerdidos > 0 ? `<span style="font-size: 12px; color: #c0392b; display: block; margin-top: 6px; font-weight: normal;">(-${ptsPerdidos} pts deducidos)</span>` : ''; html += `<div class="player-card" style="border-left: 5px solid #f39c12; margin-bottom: 15px;"><div class="player-info"><span style="color: #d35400; font-weight: bold; font-size: 12px; display: block; margin-bottom: 4px;">Equipo Representado:</span><span style="color: #2980b9; font-weight: bold; font-size: 15px; display: block; margin-bottom: 8px;">${d.equipo}</span><div class="player-name-container" style="margin-bottom: 10px;"><strong style="font-size: 17px; color: #2c3e50;">👤 ${d.nombre}</strong></div><button onclick="deleteDelegado(${d.id})" class="delete-btn" style="margin-left:0; padding:6px 12px; font-size: 11px; width: 100%;">Destituir</button></div><div class="player-jornadas-scroll" style="display: flex; gap: 10px; padding: 10px; align-items: center; background: #fdfefe;">${juntasHTML}</div><div class="player-totals" style="min-width: 130px;"><div style="color:#34495e; text-align: center;"><span style="font-size: 13px; display:block; margin-bottom: 5px;">Faltas Acumuladas</span><span style="color:#c0392b; font-size:28px; font-weight:bold;">${faltas}</span>${alerta}</div></div></div>`; }); c.innerHTML = html; }
-    
-    // Funciones del Nuevo Libro de Actas
-    function registrarActa() {
-        const tipo = document.getElementById('actaTipo').value;
-        const fecha = document.getElementById('actaFecha').value;
-        const texto = document.getElementById('actaTexto').value.trim();
-
-        if (!fecha || texto === '') { alert('Debes llenar tanto la fecha como la descripción para poder firmar el acta.'); return; }
-
-        if (confirm(`Estás a punto de registrar oficialmente un(a) ${tipo === 'reglas' ? 'REGLA' : tipo === 'acuerdos' ? 'ACUERDO' : 'CASTIGO'}.\n\n⚠️ ESTA ACCIÓN ES TOTALMENTE IRREVERSIBLE.\nPor seguridad institucional, una vez firmado, no podrás modificar ni eliminar este texto.\n\n¿Deseas firmar y registrar este documento en la base de datos?`)) {
-            
-            const numeroConsecutivo = actas[tipo].length + 1;
-            
-            actas[tipo].push({
-                numero: numeroConsecutivo,
-                fecha: fecha,
-                texto: texto
-            });
-            
-            interceptCloudUpdates(); 
-            document.getElementById('actaTexto').value = '';
-            renderActas();
-        }
-    }
-
-    function renderActas() {
-        const renderColumna = (arregloActas, elementId, colorBase) => {
-            const contenedor = document.getElementById(elementId);
-            contenedor.innerHTML = '';
-            
-            if (arregloActas.length === 0) {
-                contenedor.innerHTML = '<span style="font-size: 13px; color: #7f8c8d; font-style: italic; display: block; text-align: center; margin-top: 10px;">El registro está vacío.</span>';
-                return;
-            }
-            
-            arregloActas.forEach(acta => {
-                contenedor.innerHTML += `
-                <div class="acta-card">
-                    <div class="acta-header">
-                        <strong style="color: ${colorBase}; font-size: 14px;">#${acta.numero}</strong>
-                        <span>🗓️ ${acta.fecha}</span>
-                    </div>
-                    <div class="acta-text">${acta.texto}</div>
-                </div>`;
-            });
-        };
-
-        renderColumna(actas.reglas, 'listaReglas', '#2980b9');
-        renderColumna(actas.acuerdos, 'listaAcuerdos', '#27ae60');
-        renderColumna(actas.castigos, 'listaCastigos', '#c0392b');
-    }
-
-    // Funciones de Jugadores
+    function registrarActa() { const tipo = document.getElementById('actaTipo').value; const fecha = document.getElementById('actaFecha').value; const texto = document.getElementById('actaTexto').value.trim(); if (!fecha || texto === '') { alert('Debes llenar tanto la fecha como la descripción para poder firmar el acta.'); return; } if (confirm(`Estás a punto de registrar oficialmente un(a) ${tipo === 'reglas' ? 'REGLA' : tipo === 'acuerdos' ? 'ACUERDO' : 'CASTIGO'}.\n\n⚠️ ESTA ACCIÓN ES TOTALMENTE IRREVERSIBLE.\nPor seguridad institucional, una vez firmado, no podrás modificar ni eliminar este texto.\n\n¿Deseas firmar y registrar este documento en la base de datos?`)) { const numeroConsecutivo = actas[tipo].length + 1; actas[tipo].push({ numero: numeroConsecutivo, fecha: fecha, texto: texto }); interceptCloudUpdates(); document.getElementById('actaTexto').value = ''; renderActas(); } }
+    function renderActas() { const renderColumna = (arregloActas, elementId, colorBase) => { const contenedor = document.getElementById(elementId); contenedor.innerHTML = ''; if (arregloActas.length === 0) { contenedor.innerHTML = '<span style="font-size: 13px; color: #7f8c8d; font-style: italic; display: block; text-align: center; margin-top: 10px;">El registro está vacío.</span>'; return; } arregloActas.forEach(acta => { contenedor.innerHTML += `<div class="acta-card"><div class="acta-header"><strong style="color: ${colorBase}; font-size: 14px;">#${acta.numero}</strong><span>🗓️ ${acta.fecha}</span></div><div class="acta-text">${acta.texto}</div></div>`; }); }; renderColumna(actas.reglas, 'listaReglas', '#2980b9'); renderColumna(actas.acuerdos, 'listaAcuerdos', '#27ae60'); renderColumna(actas.castigos, 'listaCastigos', '#c0392b'); }
     function buildPlayerCardHTML(teamName, player) { if (!player.jornadasStats) player.jornadasStats = {}; let jornadasHTML = ''; if (jornadas.length === 0) { jornadasHTML = `<div style="color:#7f8c8d; font-size:13px; font-style:italic; padding-top:15px; width: 100%; text-align: center;">No hay jornadas.</div>`; } else { jornadas.forEach((jor, index) => { const stats = player.jornadasStats[jor.id] || { jugado: false, goles: 0 }; const isChecked = stats.jugado ? 'checked' : ''; jornadasHTML += `<div class="jornada-stat-box"><div class="jor-title" title="${jor.nombre}">J${index + 1}</div><label style="font-size:11px; color:#7f8c8d; display:block; margin-bottom:4px; cursor:pointer;">Jugó <input type="checkbox" ${isChecked} onchange="updatePlayerStat('${teamName}', '${player.id}', ${jor.id}, 'jugado', this)" style="cursor:pointer;"></label><label style="font-size:11px; color:#7f8c8d; display:block; margin-top:8px; margin-bottom:2px;">Goles</label><input type="number" min="0" value="${stats.goles}" onchange="updatePlayerStat('${teamName}', '${player.id}', ${jor.id}, 'goles', this)" style="width: 45px; padding: 4px; text-align:center; border: 1px solid #ccc; border-radius: 4px;"></div>`; }); } const isSancionado = player.castigadoActivo ? 'checked' : ''; return `<div class="player-card"><div class="player-info"><span style="color: #2980b9; font-weight: bold; font-size: 13px;">ID: ${player.id}</span><div class="player-name-container"><strong style="font-size: 16px;">${player.nombre}</strong><input type="checkbox" title="Marcar/Desmarcar Sanción" class="sancion-checkbox" ${isSancionado} onchange="toggleCastigoActivo('${teamName}', '${player.id}', this)"></div><span style="color: #7f8c8d; font-size: 12px; margin-bottom: 8px;">${teamName}</span><div style="display: flex; gap: 5px; flex-wrap: wrap;"><button onclick="openDisciplinaModal('${teamName}', '${player.id}')" class="btn-disciplina">🟨/🟥 Sancionar</button><button onclick="deletePlayer('${teamName}', '${player.id}')" class="delete-btn" style="margin-left:0; padding:6px; font-size: 11px;">Baja</button></div></div><div class="player-jornadas-scroll">${jornadasHTML}</div><div class="player-totals"><div style="margin-bottom: 10px; color:#34495e;"><span style="font-size: 12px; display:block;">Jornadas</span><span id="total_partidos_${player.id}" style="color:#27ae60; font-size:22px; font-weight:bold;">${player.partidos || 0}</span></div><div style="color:#34495e;"><span style="font-size: 12px; display:block;">Goles Totales</span><span id="total_goles_${player.id}" style="color:#e67e22; font-size:22px; font-weight:bold;">${player.goles || 0}</span></div></div></div>`; }
-    
-    function openDisciplinaModal(teamName, playerId) { 
-        currentDiscTeam = teamName; 
-        currentDiscPlayerId = playerId; 
-        const player = playersByTeam[teamName].find(p => p.id === playerId); 
-        document.getElementById('discPlayerTitle').innerText = `${player.nombre} (ID: ${player.id})`; 
-        const selectJor = document.getElementById('discJornada'); 
-        selectJor.innerHTML = ''; 
-        if(jornadas.length === 0) { 
-            selectJor.innerHTML = '<option value="">No hay jornadas</option>'; 
-        } else { 
-            jornadas.forEach(j => { selectJor.innerHTML += `<option value="${j.nombre}">${j.nombre}</option>`; }); 
-        } 
-        document.getElementById('discGravedad').value = "amonestado"; 
-        document.getElementById('discPartidosSuspendidos').value = 1; 
-        updateCausalesDropdowns(); 
-        renderHistorialSanciones(); 
-        document.getElementById('modalDisciplina').style.display = "flex"; 
-    }
-
+    function openDisciplinaModal(teamName, playerId) { currentDiscTeam = teamName; currentDiscPlayerId = playerId; const player = playersByTeam[teamName].find(p => p.id === playerId); document.getElementById('discPlayerTitle').innerText = `${player.nombre} (ID: ${player.id})`; const selectJor = document.getElementById('discJornada'); selectJor.innerHTML = ''; if(jornadas.length === 0) { selectJor.innerHTML = '<option value="">No hay jornadas</option>'; } else { jornadas.forEach(j => { selectJor.innerHTML += `<option value="${j.nombre}">${j.nombre}</option>`; }); } document.getElementById('discGravedad').value = "amonestado"; document.getElementById('discPartidosSuspendidos').value = 1; updateCausalesDropdowns(); renderHistorialSanciones(); document.getElementById('modalDisciplina').style.display = "flex"; }
     function closeDisciplinaModal() { document.getElementById('modalDisciplina').style.display = "none"; }
-    
-    function updateCausalesDropdowns() { 
-        const gravedad = document.getElementById('discGravedad').value; 
-        const sel1 = document.getElementById('discCausal1'); 
-        const sel2 = document.getElementById('discCausal2'); 
-        const box2 = document.getElementById('discBoxCausal2'); 
-        const boxP = document.getElementById('discBoxPartidos'); 
-        const lbl1 = document.getElementById('lblCausal1'); 
-        sel1.innerHTML = ''; sel2.innerHTML = ''; 
-        if (gravedad === 'amonestado' || gravedad === 'doble amonestado') { 
-            lbl1.innerText = "3- Causal de Amonestación:"; 
-            causalesAmarilla.forEach(c => { sel1.innerHTML += `<option value="${c.val}">${c.text}</option>`; sel2.innerHTML += `<option value="${c.val}">${c.text}</option>`; }); 
-            box2.style.display = (gravedad === 'doble amonestado') ? "block" : "none"; 
-            boxP.style.display = (gravedad === 'doble amonestado') ? "block" : "none"; 
-        } else if (gravedad === 'expulsado') { 
-            lbl1.innerText = "3- Causal de Expulsión:"; 
-            causalesRoja.slice(0, 7).forEach(c => { sel1.innerHTML += `<option value="${c.val}">${c.text}</option>`; }); 
-            box2.style.display = "none"; 
-            boxP.style.display = "block"; 
-        } 
-    }
-
+    function updateCausalesDropdowns() { const gravedad = document.getElementById('discGravedad').value; const sel1 = document.getElementById('discCausal1'); const sel2 = document.getElementById('discCausal2'); const box2 = document.getElementById('discBoxCausal2'); const boxP = document.getElementById('discBoxPartidos'); const lbl1 = document.getElementById('lblCausal1'); sel1.innerHTML = ''; sel2.innerHTML = ''; if (gravedad === 'amonestado' || gravedad === 'doble amonestado') { lbl1.innerText = "3- Causal de Amonestación:"; causalesAmarilla.forEach(c => { sel1.innerHTML += `<option value="${c.val}">${c.text}</option>`; sel2.innerHTML += `<option value="${c.val}">${c.text}</option>`; }); box2.style.display = (gravedad === 'doble amonestado') ? "block" : "none"; boxP.style.display = (gravedad === 'doble amonestado') ? "block" : "none"; } else if (gravedad === 'expulsado') { lbl1.innerText = "3- Causal de Expulsión:"; causalesRoja.slice(0, 7).forEach(c => { sel1.innerHTML += `<option value="${c.val}">${c.text}</option>`; }); box2.style.display = "none"; boxP.style.display = "block"; } }
     function guardarSancion() { const player = playersByTeam[currentDiscTeam].find(p => p.id === currentDiscPlayerId); const jorNombre = document.getElementById('discJornada').value; const gravedad = document.getElementById('discGravedad').value; const c1Val = parseInt(document.getElementById('discCausal1').value); const c2Val = parseInt(document.getElementById('discCausal2').value); if(!jorNombre) { alert("Primero debes crear al menos una jornada en el torneo."); return; } let textoOficial = ""; if (gravedad === 'amonestado') { textoOficial = `${player.nombre} fue amonestado por el causal ${c1Val} en la ${jorNombre}`; player.amonestaciones.push({ jornada: jorNombre, causal: c1Val }); if (player.amonestaciones.length >= 3) { player.suspensiones.push({ causal: 8, partidos: 1 }); player.amonestaciones = []; textoOficial += ` (Suspendido automáticamente por acumulación)`; } } else if (gravedad === 'doble amonestado') { const partidos = parseInt(document.getElementById('discPartidosSuspendidos').value) || 1; textoOficial = `${player.nombre} fue doble amonestado por el causal ${c1Val} y ${c2Val} en la ${jorNombre}`; player.suspensiones.push({ causal: 7, partidos: partidos }); } else if (gravedad === 'expulsado') { const partidos = parseInt(document.getElementById('discPartidosSuspendidos').value) || 1; textoOficial = `${player.nombre} fue expulsado por el causal ${c1Val} en la ${jorNombre}`; player.suspensiones.push({ causal: c1Val, partidos: partidos }); } player.historialCastigos.push(textoOficial); player.castigadoActivo = true; interceptCloudUpdates(); renderHistorialSanciones(); renderPlayersList(); searchPlayers(); closeDisciplinaModal(); }
     function renderHistorialSanciones() { const player = playersByTeam[currentDiscTeam].find(p => p.id === currentDiscPlayerId); const container = document.getElementById('discHistorialContainer'); container.innerHTML = ''; if(player.historialCastigos.length === 0) { container.innerHTML = '<p style="color: #7f8c8d; font-style: italic; font-size: 13px;">Limpio. Sin registro de infracciones.</p>'; return; } player.historialCastigos.forEach((texto, index) => { container.innerHTML += `<div class="sancion-item"><div style="flex:1; padding-right: 15px;">${texto}</div><button onclick="eliminarSancion(${index})" class="delete-btn" style="margin:0; padding: 5px 10px;">Borrar</button></div>`; }); }
     function eliminarSancion(index) { const player = playersByTeam[currentDiscTeam].find(p => p.id === currentDiscPlayerId); player.historialCastigos.splice(index, 1); interceptCloudUpdates(); renderHistorialSanciones(); }
