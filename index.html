@@ -56,10 +56,18 @@
         .match-grid-btn { justify-self: center; width: 100%; padding: 2px 0; font-size: 10px; border-radius: 2px; }
         .rest-team { background: #f9ebea; padding: 4px 8px; border-radius: 4px; color: #c0392b; margin-top: 4px; border: 1px dashed #e74c3c; display: flex; justify-content: space-between; align-items: center; flex-wrap: nowrap; gap: 6px; font-size: 11px; min-width: 300px; }
 
-        .player-card { border: 1px solid #bdc3c7; border-radius: 4px; padding: 6px; margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 8px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .player-info { flex: 1; min-width: 140px; }
-        .player-name-container strong { font-size: 13px; }
-        .jornada-stat-box { border: 1px solid #ecf0f1; border-radius: 3px; padding: 2px; text-align: center; min-width: 40px; }
+        /* NUEVOS ESTILOS: RENGLÓN COMPACTO DE JUGADOR */
+        .player-compact-row { border: 1px solid #bdc3c7; background: #fff; border-radius: 4px; margin-bottom: 4px; padding: 6px 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background 0.2s; }
+        .player-compact-row:hover { background: #fdfefe; border-color: #3498db; }
+        .player-row-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: nowrap; }
+        .player-identity { display: flex; align-items: center; gap: 6px; flex: 2; min-width: 150px; overflow: hidden; }
+        .player-team-tag { flex: 1; font-size: 10px; color: #2980b9; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .player-stats-totals { display: flex; gap: 12px; font-size: 11px; font-weight: bold; justify-content: center; min-width: 80px; }
+        .player-controls { display: flex; gap: 4px; justify-content: flex-end; }
+        .badge-sancion { background: #e74c3c; color: white; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: bold; text-transform: uppercase; white-space: nowrap; }
+        .player-stats-menu { display: none; margin-top: 8px; padding: 8px; background: #ecf0f1; border-radius: 4px; border: 1px dashed #bdc3c7; }
+        
+        .jornada-stat-box { border: 1px solid #d5dbdb; background: #fff; border-radius: 3px; padding: 2px; text-align: center; min-width: 40px; margin-right: 4px; margin-bottom: 4px; display: inline-block; }
         .jor-title { font-weight: bold; font-size: 9px; color: #34495e; border-bottom: 1px solid #ecf0f1; padding-bottom: 2px; margin-bottom: 2px; }
         
         .standings-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
@@ -92,7 +100,6 @@
         .role-1 { background: #8e44ad; } .role-2 { background: #27ae60; } .role-3 { background: #7f8c8d; }
         .logout-btn { background: #e74c3c; padding: 4px 8px; font-size: 10px; margin: 0; }
 
-        /* BLINDAJE NIVEL 3 CON EXCEPCIONES PARA EL BUSCADOR */
         body.viewer-mode .hide-in-viewer { display: none !important; }
         body.viewer-mode input:not(#searchPlayerInput), body.viewer-mode select:not(#selectCommunityTorneos):not(#filterTeamSelect), body.viewer-mode textarea, body.viewer-mode .sancion-checkbox { pointer-events: none; opacity: 0.7; background-color: #f4f6f7; border-color: #d5dbdb; }
         body.viewer-mode button:not(.tab-button):not(.logout-btn):not(.view-only-btn):not(.toggle-visibility-btn) { display: none !important; }
@@ -158,7 +165,7 @@
         <div class="divider"></div>
         <div class="save-manager-section"><label class="save-manager-label">🔄 Sobrescribir:</label><div class="save-manager-controls"><select id="selectSobrescribir" class="save-manager-select"><option value="">-- Elige --</option></select><button onclick="sobrescribirTorneoSeleccionado()" class="save-btn" style="background:#3498db;">Actualizar</button></div></div>
         <div class="divider"></div>
-        <div class="save-manager-section"><label class="save-manager-label">📂 Cargar / Eliminar:</label><div class="save-manager-controls"><select id="selectTorneosGuardados" class="save-manager-select"><option value="">-- Mis Torneos --</option></select><button onclick="cargarTorneoGuardado()" class="load-btn">Cargar</button><button onclick="eliminarTorneoGuardado()" class="del-torneo-btn">🗑️</button></div></div>
+        <div class="save-manager-section"><label class="save-manager-label">📂 Cargar / Eliminar:</label><div class="save-manager-controls"><select id="selectTorneosGuardados" class="save-manager-select"><option value="">-- Mis Torneos --</option></select><button onclick="cargarTorneoGuardado()" class="load-btn">Cargar</button><button onclick="eliminarTorneoGuardado()" class="del-torneo-btn">🗑️️</button></div></div>
     </div>
 
     <!-- PANEL PÚBLICO DE EXPLORACIÓN -->
@@ -184,8 +191,6 @@
 
     <!-- PESTAÑA 1: EQUIPOS Y CANCHAS (MODULARIZADO) -->
     <div id="tab-equipos" class="tab-content active">
-        
-        <!-- Bloque Equipos -->
         <div class="section">
             <div class="hide-in-viewer">
                 <h2>Registrar Equipos</h2>
@@ -194,14 +199,11 @@
                     <button onclick="addTeam()">Agregar Equipo</button>
                 </div>
             </div>
-            <!-- Botón toggle visible para todos -->
             <button class="toggle-visibility-btn" onclick="toggleVisibility('teamsListContainer')" style="margin-top: 10px;">👁️ Ver / Ocultar Equipos Registrados</button>
             <div id="teamsListContainer" style="display: none; margin-top: 8px; background: #ecf0f1; padding: 6px; border-radius: 4px;">
                 <div id="teamsList" style="display:flex; flex-wrap:wrap; gap: 4px;"></div>
             </div>
         </div>
-
-        <!-- Bloque Canchas -->
         <div class="section" style="background: #eaf2f8; padding: 10px; border-radius: 4px; border: 1px solid #3498db;">
             <div class="hide-in-viewer">
                 <h2 style="color: #2980b9;">🏟️ Gestión de Campos</h2>
@@ -210,28 +212,24 @@
                     <button onclick="addCampo()" style="background-color: #2980b9;">Añadir Cancha</button>
                 </div>
             </div>
-            <!-- Botón toggle visible para todos -->
             <button class="toggle-visibility-btn" style="background-color: #3498db; margin-top: 10px;" onclick="toggleVisibility('camposListContainer')">👁️ Ver / Ocultar Canchas Registradas</button>
             <div id="camposListContainer" style="display: none; margin-top: 8px; background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #bdc3c7;">
                 <div id="camposList" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
             </div>
         </div>
-
     </div>
 
     <!-- PESTAÑA 2: TORNEO -->
     <div id="tab-torneo" class="tab-content">
         <div class="section hide-in-viewer" style="background: #fdfefe; padding: 15px; border: 2px solid #2c3e50; border-radius: 4px;">
             <h2 style="font-size: 14px; color: #2c3e50; text-align: center;">⚙️ Generador de Competición</h2>
-            <p style="font-size: 11px; color: #7f8c8d; text-align: center; margin-bottom: 10px;">Presiona este botón para generar automáticamente el fixture completo con los equipos registrados. (La creación manual de partidos está deshabilitada por seguridad).</p>
+            <p style="font-size: 11px; color: #7f8c8d; text-align: center; margin-bottom: 10px;">Presiona este botón para generar automáticamente el fixture completo con los equipos registrados.</p>
             <button onclick="generateAutomaticFixture()" style="background-color: #2c3e50; width: 100%; padding: 10px; font-size: 13px;">Generar Torneo Automático</button>
         </div>
-        
         <div class="section hide-in-viewer" style="display: none;">
             <h2>Programar Partidos (Deshabilitado)</h2>
             <select id="selectJornada"></select><select id="teamA"></select><select id="teamB"></select><select id="teamRest"></select>
         </div>
-
         <div class="section">
             <h2 style="margin-bottom: 8px; font-size: 13px;">Fixture y Resultados</h2>
             <div id="matchesContainer"></div>
@@ -449,20 +447,9 @@ const firebaseConfig = {
         const sP=document.getElementById('teamSelectPlayers'), sD=document.getElementById('selectTeamDelegado'), sJ=document.getElementById('discJornada'); 
         const fT=document.getElementById('filterTeamSelect');
         const cP=sP.value, cD=sD.value, cFT=fT.value; 
-        
-        sP.innerHTML='<option value="">-- Equipo --</option>'; 
-        sD.innerHTML='<option value="">-- Equipo --</option>'; 
-        fT.innerHTML='<option value="">Todos los equipos</option>';
-        
-        teams.forEach(t => { 
-            const o=`<option value="${t}">${t}</option>`; 
-            sP.innerHTML+=o; sD.innerHTML+=o; fT.innerHTML+=o; 
-        }); 
-        
-        if(teams.includes(cP)) sP.value=cP; 
-        if(teams.includes(cD)) sD.value=cD; 
-        if(teams.includes(cFT)) fT.value=cFT;
-        
+        sP.innerHTML='<option value="">-- Equipo --</option>'; sD.innerHTML='<option value="">-- Equipo --</option>'; fT.innerHTML='<option value="">Todos los equipos</option>';
+        teams.forEach(t => { const o=`<option value="${t}">${t}</option>`; sP.innerHTML+=o; sD.innerHTML+=o; fT.innerHTML+=o; }); 
+        if(teams.includes(cP)) sP.value=cP; if(teams.includes(cD)) sD.value=cD; if(teams.includes(cFT)) fT.value=cFT;
         if (sJ) { sJ.innerHTML=''; jornadas.forEach(j => sJ.innerHTML+=`<option value="${j.nombre}">${j.nombre}</option>`); } 
         renderPlayersList(); 
     }
@@ -510,7 +497,6 @@ const firebaseConfig = {
     function closeEvidenciasModal() { document.getElementById('modalEvidencias').style.display = "none"; document.getElementById('inputEvidencias').value = ''; }
     function procesarYSubirEvidencias(evt) { if (currentUserRole === 3) return; const f = evt.target.files; if (!f || f.length === 0) return; const m = matches.find(x => x.id === currentMatchIdForEvidencias); if (!m.evidencias) m.evidencias = []; Array.from(f).forEach(file => { const r = new FileReader(); r.onload = function(e) { const img = new Image(); img.onload = function() { const c = document.createElement('canvas'); const M_W = 600; let w = img.width; let h = img.height; if (w > M_W) { h = Math.round((h * M_W) / w); w = M_W; } c.width = w; c.height = h; const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, w, h); m.evidencias.push(c.toDataURL('image/jpeg', 0.5)); interceptCloudUpdates(); renderEvidenciasGallery(); }; img.src = e.target.result; }; r.readAsDataURL(file); }); evt.target.value = ''; }
     function renderEvidenciasGallery() { const m = matches.find(x => x.id === currentMatchIdForEvidencias); const g = document.getElementById('evidenciasGallery'); g.innerHTML = ''; if (!m.evidencias || m.evidencias.length === 0) { g.innerHTML = '<p style="font-size:10px;">Sin fotos.</p>'; return; } m.evidencias.forEach((b, i) => { g.innerHTML += `<div class="evidencia-item"><img src="${b}" onclick="verImagenCompleta('${b}')"><button class="evidencia-delete hide-in-viewer" onclick="borrarEvidencia(${i})">✖</button></div>`; }); }
-    function borrarEvidencia(i) { const m = matches.find(x => x.id === currentMatchIdForEvidencias); m.evidencias.splice(i, 1); interceptCloudUpdates(); renderEvidenciasGallery(); }
     function verImagenCompleta(src) { const w = window.open(""); w.document.write(`<body style="background:#2c3e50; display:flex; justify-content:center; align-items:center; margin:0; height:100vh;"><img src="${src}" style="max-width: 100%; max-height: 100vh;"></body>`); }
 
     function renderStandings() { const c = document.getElementById('standingsContainer'); c.innerHTML = ''; if (teams.length === 0) return; let st = {}; teams.forEach(t => st[t] = { n: t, jj: 0, jg: 0, je: 0, jp: 0, gf: 0, gc: 0, dg: 0, pts: 0 }); matches.forEach(m => { if (st[m.local] && st[m.visitante]) { if (m.golesLocal !== null && m.golesVisitante !== null) { st[m.local].jj++; st[m.visitante].jj++; st[m.local].gf += m.golesLocal; st[m.local].gc += m.golesVisitante; st[m.visitante].gf += m.golesVisitante; st[m.visitante].gc += m.golesLocal; if (m.golesLocal > m.golesVisitante) { st[m.local].jg++; st[m.local].pts += 3; st[m.visitante].jp++; } else if (m.golesLocal < m.golesVisitante) { st[m.visitante].jg++; st[m.visitante].pts += 3; st[m.local].jp++; } else { st[m.local].je++; st[m.visitante].je++; st[m.local].pts++; st[m.visitante].pts++; } } } }); jornadas.forEach(jor => { jor.descansos.forEach(d => { let eq = typeof d === 'string' ? d : d.equipo; let b = typeof d === 'string' ? false : (d.bono || false); if(b && st[eq]) { st[eq].jj++; st[eq].jg++; st[eq].gf += 2; st[eq].pts += 3; } }); }); delegados.forEach(d => { if (st[d.equipo]) { let cnt = 0; juntasDelegados.forEach(j => { if (d.asistencias[j.id]) cnt++; }); st[d.equipo].pts -= Math.floor((juntasDelegados.length - cnt) / 2); } }); let arr = Object.values(st); arr.forEach(e => e.dg = e.gf - e.gc); arr.sort((a, b) => { if (b.pts !== a.pts) return b.pts - a.pts; if (b.dg !== a.dg) return b.dg - a.dg; return b.gf - a.gf; }); let h = `<table class="standings-table"><thead><tr><th>P</th><th class="team-name">Equipo</th><th>J</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr></thead><tbody>`; arr.forEach((e, i) => h += `<tr><td>${i+1}</td><td class="team-name">${e.n}</td><td>${e.jj}</td><td>${e.jg}</td><td>${e.je}</td><td>${e.jp}</td><td>${e.gf}</td><td>${e.gc}</td><td>${e.dg}</td><td style="font-weight:bold; color:#27ae60;">${e.pts}</td></tr>`); c.innerHTML = h + `</tbody></table>`; }
@@ -521,42 +507,62 @@ const firebaseConfig = {
     function updatePlayerStat(t, id, jId, f, o) { const p = playersByTeam[t].find(x => x.id === id); if (!p.jornadasStats[jId]) p.jornadasStats[jId] = { jugado: false, goles: 0 }; if (f === 'jugado') p.jornadasStats[jId].jugado = o.checked; else p.jornadasStats[jId].goles = parseInt(o.value) || 0; let tP = 0; let tG = 0; for (const j in p.jornadasStats) { if (p.jornadasStats[j].jugado) tP++; tG += p.jornadasStats[j].goles; } p.partidos = tP; p.goles = tG; interceptCloudUpdates(); document.getElementById(`total_partidos_${id}`).innerText = tP; document.getElementById(`total_goles_${id}`).innerText = tG; renderTopScorers(); }
     function renderPlayersList() { const t = document.getElementById('teamSelectPlayers').value; const l = document.getElementById('playersList'); l.innerHTML = ''; if (!t || !playersByTeam[t]) return; playersByTeam[t].forEach(p => l.innerHTML += buildPlayerCardHTML(t, p)); }
     
-    // NUEVA FUNCIÓN DE BÚSQUEDA ALFABÉTICA CON FILTRO DE EQUIPO
     function searchPlayers() { 
         const q = document.getElementById('searchPlayerInput').value.trim().toLowerCase(); 
         const sT = document.getElementById('filterTeamSelect').value;
         const r = document.getElementById('searchResults'); 
         r.innerHTML = ''; 
-        
         let arrJugadores = [];
-        
         for (const t in playersByTeam) { 
-            // Si hay un equipo seleccionado y este no es, saltamos
             if (sT !== "" && t !== sT) continue;
-            
             playersByTeam[t].forEach(p => { 
-                // Si está vacío muestra todo. Si no, fuerza coincidencia de inicio (.startsWith)
-                if (q === '' || p.nombre.toLowerCase().startsWith(q) || p.id.toLowerCase().startsWith(q)) {
-                    arrJugadores.push({ team: t, player: p });
-                }
+                if (q === '' || p.nombre.toLowerCase().startsWith(q) || p.id.toLowerCase().startsWith(q)) { arrJugadores.push({ team: t, player: p }); }
             }); 
         } 
-        
-        // Ordenamiento alfabético estricto de la A a la Z
         arrJugadores.sort((a, b) => a.player.nombre.localeCompare(b.player.nombre));
-        
-        if (arrJugadores.length === 0) { 
-            r.innerHTML = '<p style="font-size:11px; color:#7f8c8d; margin: 4px 0;">No se encontraron jugadores.</p>'; 
-            return; 
-        }
-        
-        // Renderizado
-        arrJugadores.forEach(data => {
-            r.innerHTML += buildPlayerCardHTML(data.team, data.player);
-        });
+        if (arrJugadores.length === 0) { r.innerHTML = '<p style="font-size:11px; color:#7f8c8d; margin: 4px 0;">No se encontraron jugadores.</p>'; return; }
+        arrJugadores.forEach(data => { r.innerHTML += buildPlayerCardHTML(data.team, data.player); });
     }
 
-    function buildPlayerCardHTML(t, p) { let jH = ''; jornadas.forEach((j, i) => { const s = p.jornadasStats?.[j.id] || { jugado: false, goles: 0 }; const ch = s.jugado ? 'checked' : ''; jH += `<div class="jornada-stat-box"><div class="jor-title">J${i+1}</div><input type="checkbox" ${ch} onchange="updatePlayerStat('${t}', '${p.id}', ${j.id}, 'jugado', this)"><br><input type="number" value="${s.goles}" onchange="updatePlayerStat('${t}', '${p.id}', ${j.id}, 'goles', this)" style="width: 25px; height:15px; font-size:9px; padding:1px;"></div>`; }); return `<div class="player-card"><div class="player-info"><div style="font-size:10px; color:#2980b9;">ID: ${p.id}</div><div class="player-name-container"><strong style="font-size:11px;">${p.nombre}</strong> <input type="checkbox" class="sancion-checkbox" ${p.castigadoActivo ? 'checked' : ''} onchange="toggleCastigoActivo('${t}', '${p.id}', this)"></div><div style="font-size:9px; color:#7f8c8d; margin-bottom:4px;">${t}</div><button onclick="openDisciplinaModal('${t}', '${p.id}')" class="btn-disciplina hide-in-viewer" style="padding:2px 4px; font-size:9px;">Sancionar</button><button onclick="deletePlayer('${t}', '${p.id}')" class="delete-btn hide-in-viewer" style="padding:2px 4px; font-size:9px;">Baja</button></div><div style="display:flex; gap:3px; overflow-x:auto;">${jH}</div><div style="font-size:10px; text-align:center;">J: <span id="total_partidos_${p.id}">${p.partidos||0}</span><br>G: <span id="total_goles_${p.id}">${p.goles||0}</span></div></div>`; }
+    // ============================================================================
+    // NUEVA FUNCIÓN: RENDERIZADO EN RENGLÓN COMPACTO (LIST VIEW)
+    // ============================================================================
+    function buildPlayerCardHTML(t, p) { 
+        // 1. Generamos el menú oculto (acordeón) con los inputs
+        let jH = `<div id="stats-${p.id}" class="player-stats-menu hide-in-viewer">`;
+        jornadas.forEach((j, i) => { 
+            const s = p.jornadasStats?.[j.id] || { jugado: false, goles: 0 }; 
+            const ch = s.jugado ? 'checked' : ''; 
+            jH += `<div class="jornada-stat-box"><div class="jor-title">J${i+1}</div><input type="checkbox" ${ch} onchange="updatePlayerStat('${t}', '${p.id}', ${j.id}, 'jugado', this)"><br><input type="number" value="${s.goles}" onchange="updatePlayerStat('${t}', '${p.id}', ${j.id}, 'goles', this)" style="width: 25px; height:15px; font-size:9px; padding:1px; text-align:center;"></div>`; 
+        }); 
+        jH += `</div>`; 
+
+        // 2. Evaluamos si el jugador está sancionado para mostrar su etiqueta roja
+        let castigoBadge = p.castigadoActivo ? `<span class="badge-sancion">⚠️ Sancionado</span>` : '';
+
+        // 3. Devolvemos el HTML con el renglón flexbox alineado a la perfección
+        return `
+        <div class="player-compact-row">
+            <div class="player-row-header">
+                <div class="player-identity">
+                    <span style="font-size:10px; color:#7f8c8d;">#${p.id}</span>
+                    <strong style="font-size:12px; color:#2c3e50;">${p.nombre}</strong>
+                    ${castigoBadge}
+                </div>
+                <div class="player-team-tag">🛡️ ${t}</div>
+                <div class="player-stats-totals">
+                    <span>👟 J: <span id="total_partidos_${p.id}">${p.partidos||0}</span></span>
+                    <span style="color:#e67e22;">⚽ G: <span id="total_goles_${p.id}">${p.goles||0}</span></span>
+                </div>
+                <div class="player-controls">
+                    <button onclick="toggleVisibility('stats-${p.id}')" class="hide-in-viewer" style="background:#f39c12; font-size:9px; padding:2px 6px;">⚙️ Stats</button>
+                    <button onclick="openDisciplinaModal('${t}', '${p.id}')" class="btn-disciplina hide-in-viewer" style="background:#8e44ad; font-size:9px; padding:2px 6px;">⚖️</button>
+                    <button onclick="deletePlayer('${t}', '${p.id}')" class="delete-btn hide-in-viewer" style="font-size:9px; padding:2px 6px;">✖</button>
+                </div>
+            </div>
+            ${jH}
+        </div>`; 
+    }
     
     function addDelegado() { const tN = document.getElementById('selectTeamDelegado').value; const dN = document.getElementById('delegadoName').value.trim(); if (!tN || !dN) return; delegados.push({ id: Date.now(), nombre: dN, equipo: tN, asistencias: {} }); interceptCloudUpdates(); renderTablaDelegados(); renderStandings(); }
     function deleteDelegado(id) { delegados = delegados.filter(d => d.id !== id); interceptCloudUpdates(); renderTablaDelegados(); renderStandings(); }
