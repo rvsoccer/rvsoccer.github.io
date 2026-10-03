@@ -44,7 +44,6 @@
         .save-btn, .load-btn, .del-torneo-btn { margin: 0; padding: 2px 8px; white-space: nowrap; font-size: 11px; height: 22px; }
         .divider { width: 1px; background: #34495e; align-self: stretch; margin: 0 4px; }
 
-        /* CSS GRID PARA PARTIDOS (ALINEACIÓN PERFECTA) */
         .match-row { display: grid; grid-template-columns: 1fr 32px 15px 32px 1fr 70px 65px 25px 25px; align-items: center; gap: 4px; padding: 2px 5px; background: #fff; border-bottom: 1px solid #ecf0f1; min-width: 520px; }
         .match-row:last-child { border-bottom: none; }
         .match-row input[type="number"] { width: 100%; height: 18px; text-align: center; padding: 0px 2px; border: 1px solid #bdc3c7; border-radius: 3px; font-weight: bold; font-size: 11px; box-sizing: border-box; }
@@ -93,9 +92,10 @@
         .role-1 { background: #8e44ad; } .role-2 { background: #27ae60; } .role-3 { background: #7f8c8d; }
         .logout-btn { background: #e74c3c; padding: 4px 8px; font-size: 10px; margin: 0; }
 
+        /* BLINDAJE NIVEL 3 CON EXCEPCIONES PARA EL BUSCADOR */
         body.viewer-mode .hide-in-viewer { display: none !important; }
-        body.viewer-mode input, body.viewer-mode select:not(#selectCommunityTorneos), body.viewer-mode textarea, body.viewer-mode .sancion-checkbox { pointer-events: none; opacity: 0.7; background-color: #f4f6f7; border-color: #d5dbdb; }
-        body.viewer-mode button:not(.tab-button):not(.logout-btn):not(.view-only-btn) { display: none !important; }
+        body.viewer-mode input:not(#searchPlayerInput), body.viewer-mode select:not(#selectCommunityTorneos):not(#filterTeamSelect), body.viewer-mode textarea, body.viewer-mode .sancion-checkbox { pointer-events: none; opacity: 0.7; background-color: #f4f6f7; border-color: #d5dbdb; }
+        body.viewer-mode button:not(.tab-button):not(.logout-btn):not(.view-only-btn):not(.toggle-visibility-btn) { display: none !important; }
 
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
         .admin-table th, .admin-table td { padding: 6px; border-bottom: 1px solid #bdc3c7; text-align: left; }
@@ -186,28 +186,32 @@
     <div id="tab-equipos" class="tab-content active">
         
         <!-- Bloque Equipos -->
-        <div class="section hide-in-viewer">
-            <h2>Registrar Equipos</h2>
-            <div style="display: flex; gap: 6px; align-items: flex-end;">
-                <div class="form-group" style="flex:1; margin:0;"><input type="text" id="teamName" placeholder="Ej. Real Madrid..."></div>
-                <button onclick="addTeam()">Agregar Equipo</button>
+        <div class="section">
+            <div class="hide-in-viewer">
+                <h2>Registrar Equipos</h2>
+                <div style="display: flex; gap: 6px; align-items: flex-end;">
+                    <div class="form-group" style="flex:1; margin:0;"><input type="text" id="teamName" placeholder="Ej. Real Madrid..."></div>
+                    <button onclick="addTeam()">Agregar Equipo</button>
+                </div>
             </div>
-            <!-- Botón toggle para limpiar la pantalla -->
-            <button class="toggle-visibility-btn" onclick="toggleVisibility('teamsListContainer')">👁️ Ver / Ocultar Equipos Registrados</button>
+            <!-- Botón toggle visible para todos -->
+            <button class="toggle-visibility-btn" onclick="toggleVisibility('teamsListContainer')" style="margin-top: 10px;">👁️ Ver / Ocultar Equipos Registrados</button>
             <div id="teamsListContainer" style="display: none; margin-top: 8px; background: #ecf0f1; padding: 6px; border-radius: 4px;">
                 <div id="teamsList" style="display:flex; flex-wrap:wrap; gap: 4px;"></div>
             </div>
         </div>
 
-        <!-- Bloque Canchas (Movido desde la pestaña 2) -->
-        <div class="section hide-in-viewer" style="background: #eaf2f8; padding: 10px; border-radius: 4px; border: 1px solid #3498db;">
-            <h2 style="color: #2980b9;">🏟️ Gestión de Campos</h2>
-            <div style="display: flex; gap: 6px; align-items: flex-end;">
-                <div style="flex: 1;"><input type="text" id="campoName" placeholder="Nueva cancha..." style="border: 1px solid #3498db;"></div>
-                <button onclick="addCampo()" style="background-color: #2980b9;">Añadir Cancha</button>
+        <!-- Bloque Canchas -->
+        <div class="section" style="background: #eaf2f8; padding: 10px; border-radius: 4px; border: 1px solid #3498db;">
+            <div class="hide-in-viewer">
+                <h2 style="color: #2980b9;">🏟️ Gestión de Campos</h2>
+                <div style="display: flex; gap: 6px; align-items: flex-end;">
+                    <div style="flex: 1;"><input type="text" id="campoName" placeholder="Nueva cancha..." style="border: 1px solid #3498db;"></div>
+                    <button onclick="addCampo()" style="background-color: #2980b9;">Añadir Cancha</button>
+                </div>
             </div>
-            <!-- Botón toggle para limpiar la pantalla -->
-            <button class="toggle-visibility-btn" style="background-color: #3498db;" onclick="toggleVisibility('camposListContainer')">👁️ Ver / Ocultar Canchas Registradas</button>
+            <!-- Botón toggle visible para todos -->
+            <button class="toggle-visibility-btn" style="background-color: #3498db; margin-top: 10px;" onclick="toggleVisibility('camposListContainer')">👁️ Ver / Ocultar Canchas Registradas</button>
             <div id="camposListContainer" style="display: none; margin-top: 8px; background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #bdc3c7;">
                 <div id="camposList" style="display: flex; flex-wrap: wrap; gap: 4px;"></div>
             </div>
@@ -223,7 +227,6 @@
             <button onclick="generateAutomaticFixture()" style="background-color: #2c3e50; width: 100%; padding: 10px; font-size: 13px;">Generar Torneo Automático</button>
         </div>
         
-        <!-- Bloque de creación manual oculto explícitamente -->
         <div class="section hide-in-viewer" style="display: none;">
             <h2>Programar Partidos (Deshabilitado)</h2>
             <select id="selectJornada"></select><select id="teamA"></select><select id="teamB"></select><select id="teamRest"></select>
@@ -235,16 +238,21 @@
         </div>
     </div>
 
-    <!-- PESTAÑA 3: ROSTER -->
+    <!-- PESTAÑA 3: ROSTER Y BUSCADOR AVANZADO -->
     <div id="tab-roster" class="tab-content">
         <div class="section" style="background: #e8f8f5; padding: 10px; border-radius: 4px; border: 1px solid #1abc9c;">
-            <h2 style="color: #16a085; font-size: 13px; margin-top: 0;">🔍 Buscador General</h2>
-            <input type="text" id="searchPlayerInput" onkeyup="searchPlayers()" placeholder="Buscar por ID, nombre..." style="border: 1px solid #1abc9c;">
-            <div id="searchResults" style="margin-top: 6px;"></div>
+            <h2 style="color: #16a085; font-size: 13px; margin-top: 0;">🔍 Consultas y Buscador de Jugadores</h2>
+            <div style="display: flex; gap: 6px; align-items: center;">
+                <input type="text" id="searchPlayerInput" onkeyup="searchPlayers()" onfocus="searchPlayers()" placeholder="Escribe la letra inicial o el ID..." style="border: 1px solid #1abc9c; flex: 2;">
+                <select id="filterTeamSelect" onchange="searchPlayers()" style="border: 1px solid #1abc9c; flex: 1; background: #fff;">
+                    <option value="">Todos los equipos</option>
+                </select>
+            </div>
+            <div id="searchResults" style="margin-top: 10px;"></div>
         </div>
         <div class="section">
             <h2 style="font-size: 13px;">Administrar Plantillas</h2>
-            <div class="form-group hide-in-viewer"><select id="teamSelectPlayers" onchange="renderPlayersList()"><option value="">-- Selecciona equipo --</option></select></div>
+            <div class="form-group hide-in-viewer"><select id="teamSelectPlayers" onchange="renderPlayersList()"><option value="">-- Selecciona equipo para editar --</option></select></div>
             <div class="hide-in-viewer" style="display: flex; gap: 6px; margin-bottom: 8px; align-items: flex-end;">
                 <div style="flex: 1;"><label style="font-size: 10px;">ID:</label><input type="text" id="playerId" placeholder="Ej. 10"></div>
                 <div style="flex: 2;"><label style="font-size: 10px;">Nombre:</label><input type="text" id="playerName" placeholder="Jugador..."></div>
@@ -365,31 +373,17 @@ const firebaseConfig = {
     const db = firebase.firestore();
     document.getElementById('cloudStatusText').innerText = "☁️ Firebase Firestore Activo";
 
-    // ARQUITECTURA DE DATOS GLOBALES
     let teams = []; let matches = []; let playersByTeam = {}; let jornadas = []; let delegados = []; let juntasDelegados = []; let campos = []; let actas = { reglas: [], acuerdos: [], castigos: [] };
     let currentDiscTeam = null; let currentDiscPlayerId = null; let currentMatchIdForEvidencias = null;
     let currentUserEmail = null; let authMode = 'login'; let currentUserRole = 3;
+    let currentTournamentName = "Tablero Local"; let isCurrentTournamentPublic = true;
     
-    // ESTADO DEL TORNEO ACTIVO
-    let currentTournamentName = "Tablero Local";
-    let isCurrentTournamentPublic = true;
-    
-    // FUNCIONES DE INTERFAZ Y PRIVACIDAD
-    function updateAppTitle(name) { 
-        currentTournamentName = name;
-        document.getElementById('tNameSpan').innerText = name; 
-    }
-
-    function toggleVisibility(id) {
-        const el = document.getElementById(id);
-        el.style.display = (el.style.display === 'none') ? 'block' : 'none';
-    }
+    function updateAppTitle(name) { currentTournamentName = name; document.getElementById('tNameSpan').innerText = name; }
+    function toggleVisibility(id) { const el = document.getElementById(id); el.style.display = (el.style.display === 'none') ? 'block' : 'none'; }
 
     async function togglePublicidad() {
         isCurrentTournamentPublic = document.getElementById('checkPublicTournament').checked;
-        interceptCloudUpdates(); // Guarda en el tablero activo en tiempo real
-        
-        // Si hay un torneo guardado cargado, actualiza la bandera en su memoria permanente
+        interceptCloudUpdates();
         if (currentTournamentName !== "Tablero Local" && currentTournamentName !== "") {
             const p = await descargarPerfilDeLaNube(currentUserEmail);
             if (p.torneosGuardados && p.torneosGuardados[currentTournamentName]) {
@@ -400,33 +394,21 @@ const firebaseConfig = {
     }
 
     async function renombrarTorneoActivo() {
-        if (currentTournamentName === "Tablero Local" || currentTournamentName === "") {
-            alert("Primero guarda tu torneo con un nombre usando el panel de guardado (💾 Nuevo torneo)."); return;
-        }
+        if (currentTournamentName === "Tablero Local" || currentTournamentName === "") { alert("Primero guarda tu torneo con un nombre usando el panel de guardado (💾 Nuevo torneo)."); return; }
         let nuevoNombre = prompt("Escribe el nuevo nombre para este torneo:", currentTournamentName);
-        if (!nuevoNombre || nuevoNombre.trim() === "" || nuevoNombre === currentTournamentName) return;
-        nuevoNombre = nuevoNombre.trim();
-        
+        if (!nuevoNombre || nuevoNombre.trim() === "" || nuevoNombre === currentTournamentName) return; nuevoNombre = nuevoNombre.trim();
         const p = await descargarPerfilDeLaNube(currentUserEmail);
-        if (p.torneosGuardados[nuevoNombre]) {
-            alert("Ya existe un torneo guardado con ese nombre. Elige otro distinto para no sobrescribirlo accidentalmente."); return;
-        }
-        
-        // Magia en la nube: Clonar datos a la nueva llave y destruir la vieja
+        if (p.torneosGuardados[nuevoNombre]) { alert("Ya existe un torneo guardado con ese nombre."); return; }
         p.torneosGuardados[nuevoNombre] = p.torneosGuardados[currentTournamentName];
         delete p.torneosGuardados[currentTournamentName];
-        
         await guardarPerfilEnLaNube(currentUserEmail, p);
-        updateAppTitle(nuevoNombre);
-        await updateDropdownTorneosGuardados();
-        document.getElementById('selectSobrescribir').value = nuevoNombre;
-        alert("Torneo renombrado exitosamente en la base de datos.");
+        updateAppTitle(nuevoNombre); await updateDropdownTorneosGuardados(); document.getElementById('selectSobrescribir').value = nuevoNombre;
+        alert("Torneo renombrado exitosamente.");
     }
 
     const causalesAmarilla = [{val: 1, text: "1 - Conducta Antideportiva"},{val: 2, text: "2 - Desaprobación"},{val: 3, text: "3 - Infracción persistente"},{val: 4, text: "4 - Retardar reanudación"},{val: 5, text: "5 - No respetar distancia"},{val: 6, text: "6 - Entrar sin permiso"},{val: 7, text: "7 - Abandonar terreno"}];
     const causalesRoja = [{val: 1, text: "1 - Juego brusco"},{val: 2, text: "2 - Conducta violenta"},{val: 3, text: "3 - Escupir"},{val: 4, text: "4 - Mano (no portero)"},{val: 5, text: "5 - Falta oportunidad gol"},{val: 6, text: "6 - Lenguaje ofensivo"},{val: 7, text: "7 - Doble amarilla"},{val: 8, text: "8 - Acumulación"}];
     
-    // MÓDULO AUTENTICACIÓN
     window.onload = function() { checkAuthSession(); const hoy = new Date(); hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset()); document.getElementById('actaFecha').value = hoy.toISOString().split('T')[0]; };
     function toggleAuthMode() { authMode = authMode === 'login' ? 'register' : 'login'; document.getElementById('authTitle').innerText = authMode === 'login' ? 'Iniciar Sesión' : 'Nueva Cuenta'; document.getElementById('authSubmitBtn').innerText = authMode === 'login' ? 'Entrar' : 'Registrar (Nivel 3)'; document.getElementById('authSwitchText').innerHTML = authMode === 'login' ? '¿No tienes cuenta? <span>Crea una aquí</span>' : '¿Ya tienes cuenta? <span>Inicia sesión</span>'; }
     async function handleAuth() { const email = document.getElementById('authEmail').value.trim().toLowerCase(); const pass = document.getElementById('authPassword').value.trim(); if (!email || !pass) return; const btn = document.getElementById('authSubmitBtn'); const btnOriginalText = btn.innerText; btn.innerText = "Conectando..."; btn.disabled = true; try { if (authMode === 'register') { const userExists = await verificarSiUsuarioExisteEnLaNube(email); if (userExists) { alert("Este correo ya está registrado."); btn.innerText = btnOriginalText; btn.disabled = false; return; } const nuevoPerfil = { password: pass, role: 3, torneosGuardados: {}, tableroActivo: { teams: [], matches: [], playersByTeam: {}, jornadas: [], delegados: [], juntasDelegados: [], campos: [], actas: { reglas: [], acuerdos: [], castigos: [] }, isPublic: true, tournamentName: "Tablero Local" } }; await guardarPerfilEnLaNube(email, nuevoPerfil); await iniciarSesionUI(email); } else { const perfilEnLaNube = await descargarPerfilDeLaNube(email); if (!perfilEnLaNube || perfilEnLaNube.password !== pass) { alert("Datos incorrectos."); btn.innerText = btnOriginalText; btn.disabled = false; return; } await iniciarSesionUI(email); } } catch (e) { alert("Error Firebase."); } finally { btn.innerText = btnOriginalText; btn.disabled = false; } }
@@ -439,54 +421,59 @@ const firebaseConfig = {
     async function guardarTableroActivoEnLaNube() { if (!currentUserEmail || currentUserRole === 3 || currentUserRole === 4) return; const p = await descargarPerfilDeLaNube(currentUserEmail); if (p) { p.tableroActivo = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas, isPublic: isCurrentTournamentPublic, tournamentName: currentTournamentName }; await guardarPerfilEnLaNube(currentUserEmail, p); } }
     let cloudSaveTimeout = null; function interceptCloudUpdates() { if (currentUserRole === 3 || currentUserRole === 4) return; clearTimeout(cloudSaveTimeout); cloudSaveTimeout = setTimeout(() => { guardarTableroActivoEnLaNube(); }, 1500); }
     async function cargarTableroActivoDelUsuario() { const p = await descargarPerfilDeLaNube(currentUserEmail); if (p && p.tableroActivo) { const u = p.tableroActivo; teams = u.teams || []; matches = u.matches || []; playersByTeam = u.playersByTeam || {}; jornadas = u.jornadas || []; delegados = u.delegados || []; juntasDelegados = u.juntasDelegados || []; campos = u.campos || []; actas = u.actas || { reglas: [], acuerdos: [], castigos: [] }; isCurrentTournamentPublic = u.isPublic !== false; currentTournamentName = u.tournamentName || "Tablero Local"; document.getElementById('checkPublicTournament').checked = isCurrentTournamentPublic; updateAppTitle(currentTournamentName); executeRenderCycle(); } }
-    function executeRenderCycle() { renderTeamsList(); renderCamposList(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab(); renderActas(); }
+    function executeRenderCycle() { renderTeamsList(); renderCamposList(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab(); renderActas(); searchPlayers(); }
 
-    // ADMIN (NIVEL 1)
     async function renderAdminPanel() { const tbody = document.getElementById('adminUsersTableBody'); const snap = await db.collection('usuarios_futbol').get(); let html = ''; snap.forEach(doc => { let d = doc.data(); let r = d.role || 3; let s1 = r===1?'selected':''; let s2 = r===2?'selected':''; let s3 = r===3?'selected':''; let s4 = r===4?'selected':''; html += `<tr><td style="color:#2980b9; font-weight:bold;">${doc.id}</td><td>Nivel ${r}</td><td><select class="admin-select" onchange="changeUserRoleFromAdmin('${doc.id}', parseInt(this.value))"><option value="1" ${s1}>Nivel 1</option><option value="2" ${s2}>Nivel 2</option><option value="3" ${s3}>Nivel 3</option><option value="4" ${s4}>Nivel 4 (Ban)</option></select></td></tr>`; }); tbody.innerHTML = html; }
     async function changeUserRoleFromAdmin(tEmail, nRole) { if(confirm(`¿Cambiar a Nivel ${nRole}?`)) { const pTarget = await descargarPerfilDeLaNube(tEmail); if(pTarget) { pTarget.role = nRole; await guardarPerfilEnLaNube(tEmail, pTarget); renderAdminPanel(); } } }
 
-    // ESPECTADOR (NIVEL 3) - FILTRA LOS PRIVADOS
-    async function loadCommunityTournamentsDropdown() { 
-        const sel = document.getElementById('selectCommunityTorneos'); sel.innerHTML = '<option value="">-- Elige un torneo --</option>'; 
-        const snap = await db.collection('usuarios_futbol').get(); 
-        snap.forEach(doc => { 
-            let d = doc.data(); 
-            if(d.role === 1 || d.role === 2) { 
-                let ts = d.torneosGuardados || {}; 
-                for (let n in ts) { 
-                    // Solo inyecta el torneo si NO es privado
-                    if (ts[n].isPublic !== false) {
-                        sel.innerHTML += `<option value="${doc.id}|${n}">[${doc.id}] - ${n}</option>`; 
-                    }
-                } 
-            } 
-        }); 
-    }
+    async function loadCommunityTournamentsDropdown() { const sel = document.getElementById('selectCommunityTorneos'); sel.innerHTML = '<option value="">-- Elige un torneo --</option>'; const snap = await db.collection('usuarios_futbol').get(); snap.forEach(doc => { let d = doc.data(); if(d.role === 1 || d.role === 2) { let ts = d.torneosGuardados || {}; for (let n in ts) { if (ts[n].isPublic !== false) { sel.innerHTML += `<option value="${doc.id}|${n}">[${doc.id}] - ${n}</option>`; } } } }); }
     async function cargarTorneoDeLaComunidad() { const v = document.getElementById('selectCommunityTorneos').value; if(!v) return; const [e, t] = v.split('|'); const p = await descargarPerfilDeLaNube(e); if(p && p.torneosGuardados && p.torneosGuardados[t]) { const d = p.torneosGuardados[t]; teams = d.teams||[]; matches = d.matches||[]; playersByTeam = d.playersByTeam||{}; jornadas = d.jornadas||[]; delegados = d.delegados||[]; juntasDelegados = d.juntasDelegados||[]; campos = d.campos||[]; actas = d.actas||{reglas:[],acuerdos:[],castigos:[]}; executeRenderCycle(); updateAppTitle(t); } }
 
-    // GUARDADO (NIVEL 1 Y 2)
     async function updateDropdownTorneosGuardados() { const s = document.getElementById('selectTorneosGuardados'); const sS = document.getElementById('selectSobrescribir'); s.innerHTML = '<option value="">-- Mis Torneos --</option>'; sS.innerHTML = '<option value="">-- Elige --</option>'; const p = await descargarPerfilDeLaNube(currentUserEmail); const mt = p.torneosGuardados || {}; for (let n in mt) { s.innerHTML += `<option value="${n}">${n}</option>`; sS.innerHTML += `<option value="${n}">${n}</option>`; } }
     async function guardarTorneoComo() { const n = document.getElementById('saveTorneoName').value.trim(); if (n === '') return; const p = await descargarPerfilDeLaNube(currentUserEmail); const mt = p.torneosGuardados || {}; if (mt[n] && !confirm(`¿Sobrescribir "${n}"?`)) return; mt[n] = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas, isPublic: isCurrentTournamentPublic }; p.torneosGuardados = mt; await guardarPerfilEnLaNube(currentUserEmail, p); await updateDropdownTorneosGuardados(); document.getElementById('saveTorneoName').value = ''; updateAppTitle(n); }
     async function sobrescribirTorneoSeleccionado() { const n = document.getElementById('selectSobrescribir').value; if (n === '') return; if (confirm(`¿Actualizar "${n}"?`)) { const p = await descargarPerfilDeLaNube(currentUserEmail); p.torneosGuardados[n] = { teams, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas, isPublic: isCurrentTournamentPublic }; await guardarPerfilEnLaNube(currentUserEmail, p); updateAppTitle(n); } }
     async function cargarTorneoGuardado() { const n = document.getElementById('selectTorneosGuardados').value; if (n === '') return; const p = await descargarPerfilDeLaNube(currentUserEmail); const d = p.torneosGuardados[n]; teams=d.teams||[]; matches=d.matches||[]; playersByTeam=d.playersByTeam||{}; jornadas=d.jornadas||[]; delegados=d.delegados||[]; juntasDelegados=d.juntasDelegados||[]; campos=d.campos||[]; actas=d.actas||{reglas:[],acuerdos:[],castigos:[]}; isCurrentTournamentPublic = d.isPublic !== false; document.getElementById('checkPublicTournament').checked = isCurrentTournamentPublic; updateAppTitle(n); await guardarTableroActivoEnLaNube(); executeRenderCycle(); document.getElementById('selectSobrescribir').value = n; }
     async function eliminarTorneoGuardado() { const n = document.getElementById('selectTorneosGuardados').value; if (n === '') return; if (confirm(`¿Eliminar "${n}"?`)) { const p = await descargarPerfilDeLaNube(currentUserEmail); delete p.torneosGuardados[n]; await guardarPerfilEnLaNube(currentUserEmail, p); await updateDropdownTorneosGuardados(); } }
 
-    // LOGICA APP
-    function openTab(evt, tId) { const cs = document.getElementsByClassName("tab-content"); for (let i=0;i<cs.length;i++) cs[i].classList.remove("active"); const bs = document.getElementsByClassName("tab-button"); for (let i=0;i<bs.length;i++) bs[i].classList.remove("active"); document.getElementById(tId).classList.add("active"); evt.currentTarget.classList.add("active"); if (tId==='tab-estadisticas'){renderStandings();renderTopScorers();} if (tId==='tab-delegados'){renderTablaDelegados();renderActas();} if (tId==='tab-roster')renderPlayersList(); if (tId==='tab-amonestaciones')renderAmonestacionesTab(); if(tId==='tab-admin')renderAdminPanel();}
+    function openTab(evt, tId) { const cs = document.getElementsByClassName("tab-content"); for (let i=0;i<cs.length;i++) cs[i].classList.remove("active"); const bs = document.getElementsByClassName("tab-button"); for (let i=0;i<bs.length;i++) bs[i].classList.remove("active"); document.getElementById(tId).classList.add("active"); evt.currentTarget.classList.add("active"); if (tId==='tab-estadisticas'){renderStandings();renderTopScorers();} if (tId==='tab-delegados'){renderTablaDelegados();renderActas();} if (tId==='tab-roster'){renderPlayersList(); searchPlayers();} if (tId==='tab-amonestaciones')renderAmonestacionesTab(); if(tId==='tab-admin')renderAdminPanel();}
+    
     function addCampo() { const nm = document.getElementById('campoName').value.trim(); if (nm === '' || campos.includes(nm)) return; campos.push(nm); interceptCloudUpdates(); renderCamposList(); renderMatchesHTML(); document.getElementById('campoName').value = ''; document.getElementById('camposListContainer').style.display = 'block'; }
     function deleteCampo(nm) { campos = campos.filter(c => c !== nm); matches.forEach(m => { if (m.campo === nm) m.campo = ''; }); interceptCloudUpdates(); renderCamposList(); renderMatchesHTML(); }
     function renderCamposList() { const el = document.getElementById('camposList'); el.innerHTML = ''; campos.forEach(c => { el.innerHTML += `<div style="background: #f4f6f7; border: 1px solid #3498db; border-radius: 3px; padding: 2px 6px; display: flex; align-items: center; gap: 4px; font-size: 10px;"><span style="color: #2980b9;">${c}</span><button onclick="deleteCampo('${c}')" class="delete-btn hide-in-viewer" style="margin: 0; padding: 1px 3px; font-size: 8px;">✖</button></div>`; }); }
+    
     function addTeam() { const nm = document.getElementById('teamName').value.trim(); if (nm === '' || teams.includes(nm)) return; teams.push(nm); playersByTeam[nm] = []; interceptCloudUpdates(); renderTeamsList(); updateSelectOptions(); renderStandings(); document.getElementById('teamName').value = ''; document.getElementById('teamsListContainer').style.display = 'block'; }
+    function deleteTeam(tm) { teams = teams.filter(t => t !== tm); delete playersByTeam[tm]; matches = matches.filter(m => m.local !== tm && m.visitante !== tm); jornadas.forEach(j => { j.descansos = j.descansos.filter(x => (typeof x === 'string' ? x : x.equipo) !== tm); }); delegados = delegados.filter(d => d.equipo !== tm); interceptCloudUpdates(); executeRenderCycle(); }
+    function renderTeamsList() { const el = document.getElementById('teamsList'); el.innerHTML = ''; teams.forEach(t => { el.innerHTML += `<div style="background:#fff; border: 1px solid #bdc3c7; padding:3px 6px; border-radius:3px; font-size:11px;">${t} <button onclick="deleteTeam('${t}')" class="delete-btn hide-in-viewer" style="padding:1px 3px; font-size:8px;">✖</button></div>`; }); }
+    
+    function updateSelectOptions() { 
+        const sP=document.getElementById('teamSelectPlayers'), sD=document.getElementById('selectTeamDelegado'), sJ=document.getElementById('discJornada'); 
+        const fT=document.getElementById('filterTeamSelect');
+        const cP=sP.value, cD=sD.value, cFT=fT.value; 
+        
+        sP.innerHTML='<option value="">-- Equipo --</option>'; 
+        sD.innerHTML='<option value="">-- Equipo --</option>'; 
+        fT.innerHTML='<option value="">Todos los equipos</option>';
+        
+        teams.forEach(t => { 
+            const o=`<option value="${t}">${t}</option>`; 
+            sP.innerHTML+=o; sD.innerHTML+=o; fT.innerHTML+=o; 
+        }); 
+        
+        if(teams.includes(cP)) sP.value=cP; 
+        if(teams.includes(cD)) sD.value=cD; 
+        if(teams.includes(cFT)) fT.value=cFT;
+        
+        if (sJ) { sJ.innerHTML=''; jornadas.forEach(j => sJ.innerHTML+=`<option value="${j.nombre}">${j.nombre}</option>`); } 
+        renderPlayersList(); 
+    }
+
     function generateAutomaticFixture() { if (teams.length < 2) { alert("Registra al menos 2 equipos primero en la Pestaña 1."); return; } jornadas = []; matches = []; let t = [...teams]; if (t.length % 2 !== 0) t.push('FANTASMA'); const nR = t.length - 1; const pR = t.length / 2; const bt = Date.now(); for (let r = 0; r < nR; r++) { const jId = bt + r; const nJ = { id: jId, nombre: `Jornada ${r + 1}`, descansos: [] }; jornadas.push(nJ); for (let i = 0; i < pR; i++) { const eA = t[i]; const eB = t[t.length - 1 - i]; if (eA === 'FANTASMA') nJ.descansos.push({ equipo: eB, bono: false }); else if (eB === 'FANTASMA') nJ.descansos.push({ equipo: eA, bono: false }); else matches.push({ id: bt + r + (i * 100), jornadaId: jId, local: eA, visitante: eB, golesLocal: null, golesVisitante: null, campo: '', hora: '', evidencias: [] }); } t.splice(1, 0, t.pop()); } interceptCloudUpdates(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderPlayersList(); alert("Fixture generado automáticamente y bloqueado."); }
     function autoSaveScore(mId, type, val) { const m = matches.find(x => x.id === mId); if (m) { let v = val === '' ? null : parseInt(val); if (type === 'local') m.golesLocal = v; else m.golesVisitante = v; interceptCloudUpdates(); renderStandings(); } }
     function autoSaveCampo(mId, val) { const m = matches.find(x => x.id === mId); if (m) { m.campo = val; interceptCloudUpdates(); } }
     function autoSaveHora(mId, val) { const m = matches.find(x => x.id === mId); if (m) { m.hora = val; interceptCloudUpdates(); } }
     function toggleJornadaVisibility(jId) { const c = document.getElementById(`jornada-content-${jId}`); const i = document.getElementById(`icon-jor-${jId}`); if (c.style.display === 'none') { c.style.display = 'block'; i.innerText = '➖'; } else { c.style.display = 'none'; i.innerText = '➕'; } }
-    function deleteTeam(tm) { teams = teams.filter(t => t !== tm); delete playersByTeam[tm]; matches = matches.filter(m => m.local !== tm && m.visitante !== tm); jornadas.forEach(j => { j.descansos = j.descansos.filter(x => (typeof x === 'string' ? x : x.equipo) !== tm); }); delegados = delegados.filter(d => d.equipo !== tm); interceptCloudUpdates(); executeRenderCycle(); }
     function deleteMatch(mId) { matches = matches.filter(m => m.id !== mId); interceptCloudUpdates(); renderMatchesHTML(); renderStandings(); }
     function deleteJornada(jId) { jornadas = jornadas.filter(j => j.id !== jId); matches = matches.filter(m => m.jornadaId !== jId); interceptCloudUpdates(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); }
-    function renderTeamsList() { const el = document.getElementById('teamsList'); el.innerHTML = ''; teams.forEach(t => { el.innerHTML += `<div style="background:#fff; border: 1px solid #bdc3c7; padding:3px 6px; border-radius:3px; font-size:11px;">${t} <button onclick="deleteTeam('${t}')" class="delete-btn hide-in-viewer" style="padding:1px 3px; font-size:8px;">✖</button></div>`; }); }
-    function updateSelectOptions() { const sP=document.getElementById('teamSelectPlayers'), sD=document.getElementById('selectTeamDelegado'), sJ=document.getElementById('discJornada'); const cP=sP.value, cD=sD.value; sP.innerHTML='<option value="">-- Equipo --</option>'; sD.innerHTML='<option value="">-- Equipo --</option>'; teams.forEach(t => { const o=`<option value="${t}">${t}</option>`; sP.innerHTML+=o; sD.innerHTML+=o; }); if(teams.includes(cP))sP.value=cP; if(teams.includes(cD))sD.value=cD; if (sJ) { sJ.innerHTML=''; jornadas.forEach(j => sJ.innerHTML+=`<option value="${j.nombre}">${j.nombre}</option>`); } renderPlayersList(); }
 
     function renderMatchesHTML() {
         const c = document.getElementById('matchesContainer'); c.innerHTML = ''; if (jornadas.length === 0) return;
@@ -498,7 +485,6 @@ const firebaseConfig = {
             matches.filter(m => m.jornadaId == jor.id).forEach(m => { 
                 let gL = m.golesLocal !== null ? m.golesLocal : ''; let gV = m.golesVisitante !== null ? m.golesVisitante : ''; let mH = m.hora || '';
                 let sCL = opC; if(m.campo) sCL = sCL.replace(`value="${m.campo}"`, `value="${m.campo}" selected`);
-                
                 cnt += `<div class="match-row">
                     <span class="match-team left" title="${m.local}">${m.local}</span>
                     <input type="number" value="${gL}" oninput="autoSaveScore(${m.id}, 'local', this.value)" placeholder="-">
@@ -530,11 +516,46 @@ const firebaseConfig = {
     function renderStandings() { const c = document.getElementById('standingsContainer'); c.innerHTML = ''; if (teams.length === 0) return; let st = {}; teams.forEach(t => st[t] = { n: t, jj: 0, jg: 0, je: 0, jp: 0, gf: 0, gc: 0, dg: 0, pts: 0 }); matches.forEach(m => { if (st[m.local] && st[m.visitante]) { if (m.golesLocal !== null && m.golesVisitante !== null) { st[m.local].jj++; st[m.visitante].jj++; st[m.local].gf += m.golesLocal; st[m.local].gc += m.golesVisitante; st[m.visitante].gf += m.golesVisitante; st[m.visitante].gc += m.golesLocal; if (m.golesLocal > m.golesVisitante) { st[m.local].jg++; st[m.local].pts += 3; st[m.visitante].jp++; } else if (m.golesLocal < m.golesVisitante) { st[m.visitante].jg++; st[m.visitante].pts += 3; st[m.local].jp++; } else { st[m.local].je++; st[m.visitante].je++; st[m.local].pts++; st[m.visitante].pts++; } } } }); jornadas.forEach(jor => { jor.descansos.forEach(d => { let eq = typeof d === 'string' ? d : d.equipo; let b = typeof d === 'string' ? false : (d.bono || false); if(b && st[eq]) { st[eq].jj++; st[eq].jg++; st[eq].gf += 2; st[eq].pts += 3; } }); }); delegados.forEach(d => { if (st[d.equipo]) { let cnt = 0; juntasDelegados.forEach(j => { if (d.asistencias[j.id]) cnt++; }); st[d.equipo].pts -= Math.floor((juntasDelegados.length - cnt) / 2); } }); let arr = Object.values(st); arr.forEach(e => e.dg = e.gf - e.gc); arr.sort((a, b) => { if (b.pts !== a.pts) return b.pts - a.pts; if (b.dg !== a.dg) return b.dg - a.dg; return b.gf - a.gf; }); let h = `<table class="standings-table"><thead><tr><th>P</th><th class="team-name">Equipo</th><th>J</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr></thead><tbody>`; arr.forEach((e, i) => h += `<tr><td>${i+1}</td><td class="team-name">${e.n}</td><td>${e.jj}</td><td>${e.jg}</td><td>${e.je}</td><td>${e.jp}</td><td>${e.gf}</td><td>${e.gc}</td><td>${e.dg}</td><td style="font-weight:bold; color:#27ae60;">${e.pts}</td></tr>`); c.innerHTML = h + `</tbody></table>`; }
     function renderTopScorers() { const c = document.getElementById('topScorersContainer'); c.innerHTML = ''; let tJ = []; for (const t in playersByTeam) { playersByTeam[t].forEach(p => tJ.push({ id: p.id, nombre: p.nombre, equipo: t, goles: p.goles || 0 })); } tJ.sort((a, b) => b.goles - a.goles); let h = `<table class="standings-table"><thead><tr><th>P</th><th>ID</th><th class="team-name">Jugador</th><th>Equipo</th><th>G</th></tr></thead><tbody>`; tJ.slice(0, 15).forEach((j, i) => h += `<tr><td>${i+1}</td><td>${j.id}</td><td class="team-name">${j.nombre}</td><td>${j.equipo}</td><td style="font-weight:bold; color:#e67e22;">${j.goles}</td></tr>`); c.innerHTML = h + `</tbody></table>`; }
     
-    function addPlayer() { const t = document.getElementById('teamSelectPlayers').value; const id = document.getElementById('playerId').value.trim(); const nm = document.getElementById('playerName').value.trim(); if (!t || !id || !nm) return; playersByTeam[t].push({ id, nombre: nm, goles: 0, partidos: 0, jornadasStats: {}, castigadoActivo: false, historialCastigos: [], amonestaciones: [], suspensiones: [] }); interceptCloudUpdates(); renderPlayersList(); }
-    function deletePlayer(t, id) { playersByTeam[t] = playersByTeam[t].filter(p => p.id !== id); interceptCloudUpdates(); renderPlayersList(); renderTopScorers(); }
+    function addPlayer() { const t = document.getElementById('teamSelectPlayers').value; const id = document.getElementById('playerId').value.trim(); const nm = document.getElementById('playerName').value.trim(); if (!t || !id || !nm) return; playersByTeam[t].push({ id, nombre: nm, goles: 0, partidos: 0, jornadasStats: {}, castigadoActivo: false, historialCastigos: [], amonestaciones: [], suspensiones: [] }); interceptCloudUpdates(); renderPlayersList(); searchPlayers(); }
+    function deletePlayer(t, id) { playersByTeam[t] = playersByTeam[t].filter(p => p.id !== id); interceptCloudUpdates(); renderPlayersList(); renderTopScorers(); searchPlayers(); }
     function updatePlayerStat(t, id, jId, f, o) { const p = playersByTeam[t].find(x => x.id === id); if (!p.jornadasStats[jId]) p.jornadasStats[jId] = { jugado: false, goles: 0 }; if (f === 'jugado') p.jornadasStats[jId].jugado = o.checked; else p.jornadasStats[jId].goles = parseInt(o.value) || 0; let tP = 0; let tG = 0; for (const j in p.jornadasStats) { if (p.jornadasStats[j].jugado) tP++; tG += p.jornadasStats[j].goles; } p.partidos = tP; p.goles = tG; interceptCloudUpdates(); document.getElementById(`total_partidos_${id}`).innerText = tP; document.getElementById(`total_goles_${id}`).innerText = tG; renderTopScorers(); }
     function renderPlayersList() { const t = document.getElementById('teamSelectPlayers').value; const l = document.getElementById('playersList'); l.innerHTML = ''; if (!t || !playersByTeam[t]) return; playersByTeam[t].forEach(p => l.innerHTML += buildPlayerCardHTML(t, p)); }
-    function searchPlayers() { const q = document.getElementById('searchPlayerInput').value.trim().toLowerCase(); const r = document.getElementById('searchResults'); r.innerHTML = ''; if (!q) return; for (const t in playersByTeam) { playersByTeam[t].forEach(p => { if (p.nombre.toLowerCase().includes(q) || p.id.toLowerCase().includes(q)) r.innerHTML += buildPlayerCardHTML(t, p); }); } }
+    
+    // NUEVA FUNCIÓN DE BÚSQUEDA ALFABÉTICA CON FILTRO DE EQUIPO
+    function searchPlayers() { 
+        const q = document.getElementById('searchPlayerInput').value.trim().toLowerCase(); 
+        const sT = document.getElementById('filterTeamSelect').value;
+        const r = document.getElementById('searchResults'); 
+        r.innerHTML = ''; 
+        
+        let arrJugadores = [];
+        
+        for (const t in playersByTeam) { 
+            // Si hay un equipo seleccionado y este no es, saltamos
+            if (sT !== "" && t !== sT) continue;
+            
+            playersByTeam[t].forEach(p => { 
+                // Si está vacío muestra todo. Si no, fuerza coincidencia de inicio (.startsWith)
+                if (q === '' || p.nombre.toLowerCase().startsWith(q) || p.id.toLowerCase().startsWith(q)) {
+                    arrJugadores.push({ team: t, player: p });
+                }
+            }); 
+        } 
+        
+        // Ordenamiento alfabético estricto de la A a la Z
+        arrJugadores.sort((a, b) => a.player.nombre.localeCompare(b.player.nombre));
+        
+        if (arrJugadores.length === 0) { 
+            r.innerHTML = '<p style="font-size:11px; color:#7f8c8d; margin: 4px 0;">No se encontraron jugadores.</p>'; 
+            return; 
+        }
+        
+        // Renderizado
+        arrJugadores.forEach(data => {
+            r.innerHTML += buildPlayerCardHTML(data.team, data.player);
+        });
+    }
+
     function buildPlayerCardHTML(t, p) { let jH = ''; jornadas.forEach((j, i) => { const s = p.jornadasStats?.[j.id] || { jugado: false, goles: 0 }; const ch = s.jugado ? 'checked' : ''; jH += `<div class="jornada-stat-box"><div class="jor-title">J${i+1}</div><input type="checkbox" ${ch} onchange="updatePlayerStat('${t}', '${p.id}', ${j.id}, 'jugado', this)"><br><input type="number" value="${s.goles}" onchange="updatePlayerStat('${t}', '${p.id}', ${j.id}, 'goles', this)" style="width: 25px; height:15px; font-size:9px; padding:1px;"></div>`; }); return `<div class="player-card"><div class="player-info"><div style="font-size:10px; color:#2980b9;">ID: ${p.id}</div><div class="player-name-container"><strong style="font-size:11px;">${p.nombre}</strong> <input type="checkbox" class="sancion-checkbox" ${p.castigadoActivo ? 'checked' : ''} onchange="toggleCastigoActivo('${t}', '${p.id}', this)"></div><div style="font-size:9px; color:#7f8c8d; margin-bottom:4px;">${t}</div><button onclick="openDisciplinaModal('${t}', '${p.id}')" class="btn-disciplina hide-in-viewer" style="padding:2px 4px; font-size:9px;">Sancionar</button><button onclick="deletePlayer('${t}', '${p.id}')" class="delete-btn hide-in-viewer" style="padding:2px 4px; font-size:9px;">Baja</button></div><div style="display:flex; gap:3px; overflow-x:auto;">${jH}</div><div style="font-size:10px; text-align:center;">J: <span id="total_partidos_${p.id}">${p.partidos||0}</span><br>G: <span id="total_goles_${p.id}">${p.goles||0}</span></div></div>`; }
     
     function addDelegado() { const tN = document.getElementById('selectTeamDelegado').value; const dN = document.getElementById('delegadoName').value.trim(); if (!tN || !dN) return; delegados.push({ id: Date.now(), nombre: dN, equipo: tN, asistencias: {} }); interceptCloudUpdates(); renderTablaDelegados(); renderStandings(); }
@@ -550,7 +571,7 @@ const firebaseConfig = {
     function openDisciplinaModal(t, id) { currentDiscTeam = t; currentDiscPlayerId = id; const p = playersByTeam[t].find(x => x.id === id); document.getElementById('discPlayerTitle').innerText = p.nombre; const sJ = document.getElementById('discJornada'); sJ.innerHTML = ''; jornadas.forEach(j => sJ.innerHTML += `<option value="${j.nombre}">${j.nombre}</option>`); document.getElementById('modalDisciplina').style.display = "flex"; updateCausalesDropdowns(); renderHistorialSanciones(); }
     function closeDisciplinaModal() { document.getElementById('modalDisciplina').style.display = "none"; }
     function updateCausalesDropdowns() { const g = document.getElementById('discGravedad').value; const s1 = document.getElementById('discCausal1'); const s2 = document.getElementById('discCausal2'); s1.innerHTML = ''; s2.innerHTML = ''; if (g === 'amonestado' || g === 'doble amonestado') { causalesAmarilla.forEach(c => { s1.innerHTML += `<option value="${c.val}">${c.text}</option>`; s2.innerHTML += `<option value="${c.val}">${c.text}</option>`; }); document.getElementById('discBoxCausal2').style.display = g==='doble amonestado'?'block':'none'; document.getElementById('discBoxPartidos').style.display = g==='doble amonestado'?'block':'none'; } else { causalesRoja.slice(0,7).forEach(c => s1.innerHTML += `<option value="${c.val}">${c.text}</option>`); document.getElementById('discBoxCausal2').style.display = 'none'; document.getElementById('discBoxPartidos').style.display = 'block'; } }
-    function guardarSancion() { const p = playersByTeam[currentDiscTeam].find(x => x.id === currentDiscPlayerId); const j = document.getElementById('discJornada').value; const g = document.getElementById('discGravedad').value; const c1 = parseInt(document.getElementById('discCausal1').value); let t = ""; if (g === 'amonestado') { p.amonestaciones.push({ jornada: j, causal: c1 }); t = `Amon. causal ${c1}`; if (p.amonestaciones.length >= 3) { p.suspensiones.push({ causal: 8, partidos: 1 }); p.amonestaciones = []; t += " (Susp. Acumulación)"; } } else if (g === 'doble amonestado') { p.suspensiones.push({ causal: 7, partidos: parseInt(document.getElementById('discPartidosSuspendidos').value) }); t = `Doble amarilla causales ${c1} y ${document.getElementById('discCausal2').value}`; } else { p.suspensiones.push({ causal: c1, partidos: parseInt(document.getElementById('discPartidosSuspendidos').value) }); t = `Expulsado causal ${c1}`; } p.historialCastigos.push(`[${j}] ${t}`); p.castigadoActivo = true; interceptCloudUpdates(); closeDisciplinaModal(); renderPlayersList(); }
+    function guardarSancion() { const p = playersByTeam[currentDiscTeam].find(x => x.id === currentDiscPlayerId); const j = document.getElementById('discJornada').value; const g = document.getElementById('discGravedad').value; const c1 = parseInt(document.getElementById('discCausal1').value); let t = ""; if (g === 'amonestado') { p.amonestaciones.push({ jornada: j, causal: c1 }); t = `Amon. causal ${c1}`; if (p.amonestaciones.length >= 3) { p.suspensiones.push({ causal: 8, partidos: 1 }); p.amonestaciones = []; t += " (Susp. Acumulación)"; } } else if (g === 'doble amonestado') { p.suspensiones.push({ causal: 7, partidos: parseInt(document.getElementById('discPartidosSuspendidos').value) }); t = `Doble amarilla causales ${c1} y ${document.getElementById('discCausal2').value}`; } else { p.suspensiones.push({ causal: c1, partidos: parseInt(document.getElementById('discPartidosSuspendidos').value) }); t = `Expulsado causal ${c1}`; } p.historialCastigos.push(`[${j}] ${t}`); p.castigadoActivo = true; interceptCloudUpdates(); closeDisciplinaModal(); renderPlayersList(); searchPlayers(); }
     function renderHistorialSanciones() { const p = playersByTeam[currentDiscTeam].find(x => x.id === currentDiscPlayerId); const c = document.getElementById('discHistorialContainer'); c.innerHTML = ''; p.historialCastigos.forEach((tx, i) => c.innerHTML += `<div style="border-bottom:1px solid #ccc; padding:2px 0;">${tx} <button onclick="eliminarSancion(${i})" class="delete-btn hide-in-viewer" style="padding:0 3px; font-size:8px;">✖</button></div>`); }
     function eliminarSancion(i) { const p = playersByTeam[currentDiscTeam].find(x => x.id === currentDiscPlayerId); p.historialCastigos.splice(i, 1); interceptCloudUpdates(); renderHistorialSanciones(); }
     function toggleCastigoActivo(t, id, cb) { const p = playersByTeam[t].find(x => x.id === id); p.castigadoActivo = cb.checked; if(!cb.checked){p.amonestaciones=[]; p.suspensiones=[];} interceptCloudUpdates(); }
