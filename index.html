@@ -273,11 +273,17 @@
         <div class="section">
             <h2 style="font-size: 13px;">Administrar Plantillas</h2>
             <div class="form-group hide-in-viewer"><select id="teamSelectPlayers" onchange="renderPlayersList()"><option value="">-- Selecciona equipo para editar --</option></select></div>
-            <div class="hide-in-viewer" style="display: flex; gap: 6px; margin-bottom: 8px; align-items: flex-end;">
-                <div style="flex: 1;"><label style="font-size: 10px;">ID:</label><input type="text" id="playerId" placeholder="Ej. 10"></div>
-                <div style="flex: 2;"><label style="font-size: 10px;">Nombre:</label><input type="text" id="playerName" placeholder="Jugador..."></div>
-                <button onclick="addPlayer()">Añadir</button>
+            
+            <!-- NUEVO SISTEMA DE BULK INSERT (INSERCIÓN POR LOTES) -->
+            <div class="hide-in-viewer" style="margin-bottom: 8px; background: #fdfefe; border: 1px dashed #1abc9c; padding: 8px; border-radius: 4px;">
+                <label style="font-size: 11px; color: #16a085; font-weight: bold;">➕ Añadir Jugadores (Pega tu lista aquí):</label>
+                <p style="margin: 2px 0 6px 0; font-size: 10px; color: #7f8c8d;">Formato: <strong style="color: #2c3e50;">ID Nombre</strong> separados por Enter. Ej: <em>10 Messi</em></p>
+                <div style="display: flex; gap: 6px; align-items: stretch;">
+                    <textarea id="bulkPlayersInput" rows="3" placeholder="10 Lionel Messi&#10;7 Cristiano Ronaldo&#10;11 Neymar Jr" style="flex: 1; padding: 6px; border: 1px solid #1abc9c; border-radius: 3px; font-size: 11px; resize: vertical; box-sizing: border-box; font-family: inherit;"></textarea>
+                    <button onclick="addBulkPlayers()" style="background-color: #16a085; font-size: 11px; padding: 0 15px;">Añadir<br>Lista</button>
+                </div>
             </div>
+
             <div id="playersList" style="margin-top: 10px;"></div>
         </div>
     </div>
@@ -366,7 +372,6 @@
         <h3 style="color: #8e44ad; margin-top: 0; font-size: 13px;">📸 Evidencias del Partido</h3>
         <p style="font-weight: bold; font-size: 11px; margin-bottom: 8px;" id="evidenciasMatchTitle"></p>
         
-        <!-- ESTA CAJA SE MUESTRA PARA NIVELES 1, 2 Y 3 (Prensa) PERO SE OCULTA PARA EL NIVEL 4 (Espectador) -->
         <div id="evidenceUploadBox" style="background: #f4f6f7; padding: 6px; border-radius: 3px; border: 1px dashed #9b59b6; margin-bottom: 10px;">
             <label style="font-size: 10px; color: #8e44ad; font-weight: bold;">Agregar Foto:</label>
             <input type="file" id="inputEvidencias" multiple accept="image/*" onchange="procesarYSubirEvidencias(event)" style="width: 100%; font-size: 10px;">
@@ -409,7 +414,6 @@ const firebaseConfig = {
     let isCurrentTournamentPublic = true;
     let editingTeamLogo = ""; 
     
-    // VARIABLES PARA EL NIVEL 3 (Saber a qué dueño mandarle la foto)
     let currentViewedOwnerEmail = null;
     let currentViewedTournamentName = null;
     
@@ -441,7 +445,6 @@ const firebaseConfig = {
                 const userExists = await verificarSiUsuarioExisteEnLaNube(email); 
                 if (userExists) { alert("Este correo ya está registrado."); btn.innerText = btnOriginalText; btn.disabled = false; return; } 
                 
-                // Creación estricta de nuevo usuario como NIVEL 4
                 const nuevoPerfil = { password: pass, role: 4, torneosGuardados: {}, tableroActivo: { teams: [], teamLogos: {}, matches: [], playersByTeam: {}, jornadas: [], delegados: [], juntasDelegados: [], campos: [], actas: { reglas: [], acuerdos: [], castigos: [] }, isPublic: true, tournamentName: "Tablero Local" } }; 
                 await guardarPerfilEnLaNube(email, nuevoPerfil); 
                 await iniciarSesionUI(email); 
@@ -457,10 +460,10 @@ const firebaseConfig = {
         currentUserEmail = email; 
         localStorage.setItem('futbol_active_session', email); 
         const perfil = await descargarPerfilDeLaNube(email); 
-        currentUserRole = perfil.role || 4; // Caída segura a Nivel 4
+        currentUserRole = perfil.role || 4; 
         document.getElementById('authScreen').style.display = 'none'; 
         
-        if (currentUserRole === 5) { // BANEADO
+        if (currentUserRole === 5) { 
             document.getElementById('appContainer').style.display = 'none'; 
             document.getElementById('bannedScreen').style.display = 'flex'; 
             return; 
@@ -752,30 +755,18 @@ const firebaseConfig = {
     function toggleBonoDescanso(jId, t, isChecked) { const jor = jornadas.find(j => j.id == jId); const idx = jor.descansos.findIndex(d => (typeof d === 'string' ? d : d.equipo) === t); if (idx !== -1) { jor.descansos[idx] = { equipo: t, bono: isChecked }; interceptCloudUpdates(); renderStandings(); } }
     function removeRest(jId, t) { const jor = jornadas.find(j => j.id == jId); jor.descansos = jor.descansos.filter(x => (typeof x === 'string' ? x : x.equipo) !== t); interceptCloudUpdates(); renderMatchesHTML(); renderStandings(); }
 
-    // ====================================================================================
-    // MOTOR DE EVIDENCIAS FOTOGRÁFICAS (SOPORTA NIVEL 3)
-    // ====================================================================================
-
     function openEvidenciasModal(mId) { 
         currentMatchIdForEvidencias = mId; 
         const m = matches.find(x => x.id === mId); 
         document.getElementById('evidenciasMatchTitle').innerText = `${m.local} VS ${m.visitante}`; 
         
         const uploadBox = document.getElementById('evidenceUploadBox');
-        if (currentUserRole >= 4) {
-            uploadBox.style.display = 'none';
-        } else {
-            uploadBox.style.display = 'block';
-        }
-
+        if (currentUserRole >= 4) { uploadBox.style.display = 'none'; } else { uploadBox.style.display = 'block'; }
         renderEvidenciasGallery(); 
         document.getElementById('modalEvidencias').style.display = "flex"; 
     }
 
-    function closeEvidenciasModal() { 
-        document.getElementById('modalEvidencias').style.display = "none"; 
-        document.getElementById('inputEvidencias').value = ''; 
-    }
+    function closeEvidenciasModal() { document.getElementById('modalEvidencias').style.display = "none"; document.getElementById('inputEvidencias').value = ''; }
 
     async function syncEvidenciasAlPropietario() {
         if (!currentViewedOwnerEmail || !currentViewedTournamentName) return;
@@ -785,9 +776,7 @@ const firebaseConfig = {
                 p.torneosGuardados[currentViewedTournamentName].matches = matches; 
                 await guardarPerfilEnLaNube(currentViewedOwnerEmail, p);
             }
-        } catch (e) {
-            console.error("Error en sync Nivel 3:", e);
-        }
+        } catch (e) { console.error("Error en sync Nivel 3:", e); }
     }
 
     function procesarYSubirEvidencias(evt) { 
@@ -808,11 +797,7 @@ const firebaseConfig = {
                     const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, w, h); 
                     m.evidencias.push(c.toDataURL('image/jpeg', 0.5)); 
                     
-                    if (currentUserRole === 3) {
-                        await syncEvidenciasAlPropietario(); 
-                    } else {
-                        interceptCloudUpdates(); 
-                    }
+                    if (currentUserRole === 3) { await syncEvidenciasAlPropietario(); } else { interceptCloudUpdates(); }
                     renderEvidenciasGallery(); 
                 }; 
                 img.src = e.target.result; 
@@ -822,26 +807,18 @@ const firebaseConfig = {
         evt.target.value = ''; 
     }
 
-    // EL NIVEL 3 YA NO PUEDE BORRAR EVIDENCIAS
     function borrarEvidencia(i) {
-        if (currentUserRole >= 3) return; // BLOQUEO ACTIVO PARA NIVEL 3 Y 4
+        if (currentUserRole >= 3) return; 
         const m = matches.find(x => x.id === currentMatchIdForEvidencias); 
-        if (m && m.evidencias) {
-            m.evidencias.splice(i, 1);
-            interceptCloudUpdates();
-            renderEvidenciasGallery();
-        }
+        if (m && m.evidencias) { m.evidencias.splice(i, 1); interceptCloudUpdates(); renderEvidenciasGallery(); }
     }
 
     function renderEvidenciasGallery() { 
         const m = matches.find(x => x.id === currentMatchIdForEvidencias); 
         const g = document.getElementById('evidenciasGallery'); 
         g.innerHTML = ''; 
-        if (!m.evidencias || m.evidencias.length === 0) { 
-            g.innerHTML = '<p style="font-size:10px; color:#7f8c8d;">Sin fotos registradas.</p>'; return; 
-        } 
+        if (!m.evidencias || m.evidencias.length === 0) { g.innerHTML = '<p style="font-size:10px; color:#7f8c8d;">Sin fotos registradas.</p>'; return; } 
         m.evidencias.forEach((b, i) => { 
-            // EL BOTÓN DE BORRAR SOLO SE INYECTA SI ES NIVEL 1 O 2
             let btnDelete = (currentUserRole <= 2) ? `<button class="evidencia-delete" onclick="borrarEvidencia(${i})">✖</button>` : '';
             g.innerHTML += `<div class="evidencia-item"><img src="${b}" onclick="verImagenCompleta('${b}')">${btnDelete}</div>`; 
         }); 
@@ -849,12 +826,57 @@ const firebaseConfig = {
 
     function verImagenCompleta(src) { const w = window.open(""); w.document.write(`<body style="background:#2c3e50; display:flex; justify-content:center; align-items:center; margin:0; height:100vh;"><img src="${src}" style="max-width: 100%; max-height: 100vh;"></body>`); }
 
-    // ====================================================================================
-
     function renderStandings() { const c = document.getElementById('standingsContainer'); c.innerHTML = ''; if (teams.length === 0) return; let st = {}; teams.forEach(t => st[t] = { n: t, jj: 0, jg: 0, je: 0, jp: 0, gf: 0, gc: 0, dg: 0, pts: 0 }); matches.forEach(m => { if (st[m.local] && st[m.visitante]) { if (m.golesLocal !== null && m.golesVisitante !== null) { st[m.local].jj++; st[m.visitante].jj++; st[m.local].gf += m.golesLocal; st[m.local].gc += m.golesVisitante; st[m.visitante].gf += m.golesVisitante; st[m.visitante].gc += m.golesLocal; if (m.golesLocal > m.golesVisitante) { st[m.local].jg++; st[m.local].pts += 3; st[m.visitante].jp++; } else if (m.golesLocal < m.golesVisitante) { st[m.visitante].jg++; st[m.visitante].pts += 3; st[m.local].jp++; } else { st[m.local].je++; st[m.visitante].je++; st[m.local].pts++; st[m.visitante].pts++; } } } }); jornadas.forEach(jor => { jor.descansos.forEach(d => { let eq = typeof d === 'string' ? d : d.equipo; let b = typeof d === 'string' ? false : (d.bono || false); if(b && st[eq]) { st[eq].jj++; st[eq].jg++; st[eq].gf += 2; st[eq].pts += 3; } }); }); delegados.forEach(d => { if (st[d.equipo]) { let cnt = 0; juntasDelegados.forEach(j => { if (d.asistencias[j.id]) cnt++; }); st[d.equipo].pts -= Math.floor((juntasDelegados.length - cnt) / 2); } }); let arr = Object.values(st); arr.forEach(e => e.dg = e.gf - e.gc); arr.sort((a, b) => { if (b.pts !== a.pts) return b.pts - a.pts; if (b.dg !== a.dg) return b.dg - a.dg; return b.gf - a.gf; }); let h = `<table class="standings-table"><thead><tr><th>P</th><th class="team-name">Equipo</th><th>J</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr></thead><tbody>`; arr.forEach((e, i) => h += `<tr><td>${i+1}</td><td class="team-name">${getLogoHtml(e.n, 'team-logo-mini')} ${e.n}</td><td>${e.jj}</td><td>${e.jg}</td><td>${e.je}</td><td>${e.jp}</td><td>${e.gf}</td><td>${e.gc}</td><td>${e.dg}</td><td style="font-weight:bold; color:#27ae60;">${e.pts}</td></tr>`); c.innerHTML = h + `</tbody></table>`; }
     function renderTopScorers() { const c = document.getElementById('topScorersContainer'); c.innerHTML = ''; let tJ = []; for (const t in playersByTeam) { playersByTeam[t].forEach(p => tJ.push({ id: p.id, nombre: p.nombre, equipo: t, goles: p.goles || 0 })); } tJ.sort((a, b) => b.goles - a.goles); let h = `<table class="standings-table"><thead><tr><th>P</th><th>ID</th><th class="team-name">Jugador</th><th class="team-name">Equipo</th><th>G</th></tr></thead><tbody>`; tJ.slice(0, 15).forEach((j, i) => h += `<tr><td>${i+1}</td><td>${j.id}</td><td class="team-name">${j.nombre}</td><td class="team-name">${getLogoHtml(j.equipo, 'team-logo-mini')} ${j.equipo}</td><td style="font-weight:bold; color:#e67e22;">${j.goles}</td></tr>`); c.innerHTML = h + `</tbody></table>`; }
     
-    function addPlayer() { const t = document.getElementById('teamSelectPlayers').value; const id = document.getElementById('playerId').value.trim(); const nm = document.getElementById('playerName').value.trim(); if (!t || !id || !nm) return; playersByTeam[t].push({ id, nombre: nm, goles: 0, partidos: 0, jornadasStats: {}, castigadoActivo: false, historialCastigos: [], amonestaciones: [], suspensiones: [] }); interceptCloudUpdates(); renderPlayersList(); searchPlayers(); }
+    // =========================================================================
+    // NUEVA INGENIERÍA DE EXTRACCIÓN MASIVA (BULK INSERT CON REGEX)
+    // =========================================================================
+    function addBulkPlayers() { 
+        const t = document.getElementById('teamSelectPlayers').value; 
+        const text = document.getElementById('bulkPlayersInput').value.trim(); 
+        
+        if (!t || !text) { 
+            alert("⚠️ Por favor selecciona un equipo y escribe al menos un jugador en la caja de texto."); 
+            return; 
+        } 
+        
+        const lines = text.split('\n'); 
+        let addedCount = 0; 
+        let duplicatedCount = 0;
+        
+        lines.forEach(l => { 
+            // Expresión Regular: Busca una cadena inicial sin espacios (ID), y guarda el resto (Nombre)
+            const m = l.trim().match(/^([^\s]+)\s+(.+)$/); 
+            if (m) { 
+                // Filtros de Saneamiento: Elimina #, guiones y comas basura del ID y del Nombre
+                const id = m[1].replace(/^#/, '').replace(/[\-\,]$/, ''); 
+                const nm = m[2].replace(/^[\-\,]\s*/, ''); 
+                
+                // Evitar Duplicados: Busca si en la matriz del equipo ya existe ese ID
+                if (!playersByTeam[t].find(p => p.id === id)) { 
+                    playersByTeam[t].push({ id, nombre: nm, goles: 0, partidos: 0, jornadasStats: {}, castigadoActivo: false, historialCastigos: [], amonestaciones: [], suspensiones: [] }); 
+                    addedCount++; 
+                } else {
+                    duplicatedCount++;
+                }
+            } 
+        }); 
+        
+        if (addedCount > 0) { 
+            interceptCloudUpdates(); 
+            renderPlayersList(); 
+            searchPlayers(); 
+            document.getElementById('bulkPlayersInput').value = ''; 
+            
+            let msg = `✅ Se agregaron ${addedCount} jugadores correctamente.`;
+            if(duplicatedCount > 0) msg += `\n⚠️ Se ignoraron ${duplicatedCount} jugadores porque el ID/Dorsal ya existía.`;
+            alert(msg);
+        } else { 
+            alert("❌ No se pudo agregar a ningún jugador. Verifica que el formato sea estricto:\n\n[Dorsal] [Espacio] [Nombre]\n\nEjemplo:\n10 Lionel Messi\n7 Cristiano Ronaldo"); 
+        } 
+    }
+    
     function deletePlayer(t, id) { playersByTeam[t] = playersByTeam[t].filter(p => p.id !== id); interceptCloudUpdates(); renderPlayersList(); renderTopScorers(); searchPlayers(); }
     function updatePlayerStat(t, id, jId, f, o) { const p = playersByTeam[t].find(x => x.id === id); if (!p.jornadasStats[jId]) p.jornadasStats[jId] = { jugado: false, goles: 0 }; if (f === 'jugado') p.jornadasStats[jId].jugado = o.checked; else p.jornadasStats[jId].goles = parseInt(o.value) || 0; let tP = 0; let tG = 0; for (const j in p.jornadasStats) { if (p.jornadasStats[j].jugado) tP++; tG += p.jornadasStats[j].goles; } p.partidos = tP; p.goles = tG; interceptCloudUpdates(); document.getElementById(`total_partidos_${id}`).innerText = tP; document.getElementById(`total_goles_${id}`).innerText = tG; renderTopScorers(); }
     function renderPlayersList() { const t = document.getElementById('teamSelectPlayers').value; const l = document.getElementById('playersList'); l.innerHTML = ''; if (!t || !playersByTeam[t]) return; playersByTeam[t].forEach(p => l.innerHTML += buildPlayerCardHTML(t, p)); }
@@ -916,20 +938,15 @@ const firebaseConfig = {
     function deleteJunta(jId) { juntasDelegados = juntasDelegados.filter(j => j.id !== jId); interceptCloudUpdates(); renderTablaDelegados(); renderStandings(); }
     function toggleAsistencia(dId, jId, chk) { const d = delegados.find(x => x.id === dId); if (d) { d.asistencias[jId] = chk.checked; interceptCloudUpdates(); renderTablaDelegados(); renderStandings(); } }
     
-    // ORDENAMIENTO CRONOLÓGICO DE JUNTAS
     function renderTablaDelegados() { 
         const c = document.getElementById('tablaDelegadosContainer'); 
         c.innerHTML = ''; 
-        
-        // Reordenamiento matemático usando el valor string de fecha (ej. "2026-10-15")
         juntasDelegados.sort((a, b) => a.fecha.localeCompare(b.fecha));
-
         let h = '<div style="display:flex; gap:4px; margin-bottom:8px; overflow-x:auto;">'; 
         juntasDelegados.forEach(j => { 
             h += `<div style="background:#fad7a1; padding:3px 6px; border-radius:3px; font-size:10px;">${j.fecha} <button onclick="deleteJunta(${j.id})" class="delete-btn hide-in-viewer" style="padding:1px 3px; font-size:8px;">✖</button></div>`; 
         }); 
         h += '</div>'; 
-        
         delegados.forEach(d => { 
             let aH = ''; let faltas = 0; 
             juntasDelegados.forEach(j => { 
