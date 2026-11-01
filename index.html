@@ -30,7 +30,7 @@
         
         .form-group { margin-bottom: 8px; }
         .form-group label { display: block; margin-bottom: 2px; font-weight: bold; font-size: 11px; color: #7f8c8d; }
-        input[type="text"], input[type="number"], input[type="date"], select { width: 100%; padding: 4px; border: 1px solid #bdc3c7; border-radius: 3px; box-sizing: border-box; font-size: 12px; height: 24px; }
+        input[type="text"], input[type="number"], input[type="date"], select { width: 100%; padding: 4px; border: 1px solid #bdc3c7; border-radius: 3px; box-sizing: border-box; font-size: 12px; height: 24px; transition: border-color 0.3s, background-color 0.3s; }
 
         .jornada-header-toggle { display: flex; justify-content: space-between; align-items: center; background: #ecf0f1; padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: background 0.2s; margin-bottom: 4px; }
         .jornada-header-toggle:hover { background: #dfe6e9; }
@@ -62,9 +62,11 @@
         .player-compact-row { border: 1px solid #bdc3c7; background: #fff; border-radius: 4px; margin-bottom: 4px; padding: 6px 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background 0.2s; }
         .player-compact-row:hover { background: #fdfefe; border-color: #3498db; }
         .player-row-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: nowrap; }
-        .player-identity { display: flex; align-items: center; gap: 6px; flex: 1; overflow: hidden; }
-        .player-stats-totals { display: flex; gap: 12px; font-size: 11px; font-weight: bold; justify-content: center; min-width: 80px; flex-shrink: 0; }
-        .player-controls { display: flex; gap: 4px; justify-content: flex-end; flex-shrink: 0; }
+        .player-identity { display: flex; align-items: center; gap: 8px; flex: 1; overflow: hidden; }
+        
+        .player-stats-totals { display: flex; gap: 12px; font-size: 11px; font-weight: bold; justify-content: center; width: 85px; flex-shrink: 0; }
+        .player-controls { display: flex; gap: 4px; justify-content: flex-end; width: 115px; flex-shrink: 0; }
+        
         .badge-sancion { background: #e74c3c; color: white; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: bold; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
         .player-stats-menu { display: none; margin-top: 8px; padding: 8px; background: #ecf0f1; border-radius: 4px; border: 1px dashed #bdc3c7; }
         
@@ -279,15 +281,19 @@
             <div style="display: flex; gap: 6px; margin-bottom: 8px; align-items: flex-end;">
                 <div style="flex: 1;"><label style="font-size: 10px;">Nº Tarjetón:</label><input type="text" id="playerTarjeton" placeholder="Ej. 10"></div>
                 <div style="flex: 2;"><label style="font-size: 10px;">Nombre Completo:</label><input type="text" id="playerName" placeholder="Jugador..."></div>
-                <div style="flex: 2;"><label style="font-size: 10px;">ID CURP:</label><input type="text" id="playerCurp" placeholder="Ej. ABCD123456..."></div>
+                <div style="flex: 2;">
+                    <label style="font-size: 10px;">ID CURP (Con validación mágica):</label>
+                    <input type="text" id="playerCurp" placeholder="Ej. ABCD123456..." onkeyup="verificarCurpUI(this)">
+                </div>
                 <button onclick="addPlayer()" style="background-color: #16a085;">Añadir Uno</button>
             </div>
 
             <div style="margin-bottom: 8px; background: #fdfefe; border: 1px dashed #1abc9c; padding: 8px; border-radius: 4px;">
                 <label style="font-size: 11px; color: #16a085; font-weight: bold;">📋 Inserción por Lista (Pegar datos):</label>
-                <p style="margin: 2px 0 6px 0; font-size: 10px; color: #7f8c8d;">Formato: <strong style="color: #2c3e50;">Tarjetón Nombre Completo CURP</strong> (separados por espacios). Ej: <em>10 Lionel Messi ABCD123456...</em></p>
+                <p style="margin: 2px 0 6px 0; font-size: 10px; color: #7f8c8d;">Formato: <strong style="color: #2c3e50;">Tarjetón Nombre Completo CURP</strong>. (Se bloquearán duplicados y CURPs falsos).</p>
                 <div style="display: flex; gap: 6px; align-items: stretch;">
-                    <textarea id="bulkPlayersInput" rows="3" placeholder="10 Lionel Messi ABCD123456...&#10;7 Cristiano Ronaldo EFGH123456...&#10;11 Neymar Jr" style="flex: 1; padding: 6px; border: 1px solid #1abc9c; border-radius: 3px; font-size: 11px; resize: vertical; box-sizing: border-box; font-family: inherit;"></textarea>
+                    <textarea id="bulkPlayersInput" rows="3" placeholder="10 Lionel Messi ABCD123456...
+7 Cristiano Ronaldo EFGH123456..." style="flex: 1; padding: 6px; border: 1px solid #1abc9c; border-radius: 3px; font-size: 11px; resize: vertical; box-sizing: border-box; font-family: inherit;"></textarea>
                     <button onclick="addBulkPlayers()" style="background-color: #16a085; font-size: 11px; padding: 0 15px;">Añadir<br>Lista</button>
                 </div>
             </div>
@@ -414,18 +420,48 @@
 </div>
 
 <script>
-    // ============================================================================
-    // FUNCION DE DECODIFICACION DE CURP (EXTRACCIÓN DE EDAD)
-    // ============================================================================
+    function validarCURP(curp) {
+        if (!curp || curp.length !== 18) return false;
+        curp = curp.toUpperCase();
+        const regex = /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/;
+        if (!regex.test(curp)) return false;
+        const diccionario = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
+        let suma = 0;
+        for (let i = 0; i < 17; i++) {
+            const char = curp.charAt(i);
+            const val = diccionario.indexOf(char);
+            if (val === -1) return false;
+            suma += val * (18 - i);
+        }
+        let digitoCalculado = 10 - (suma % 10);
+        if (digitoCalculado === 10) digitoCalculado = 0;
+        return digitoCalculado === parseInt(curp.charAt(17));
+    }
+
+    function verificarCurpUI(input) {
+        const v = input.value.trim().toUpperCase();
+        if (v === "") {
+            input.style.borderColor = "#bdc3c7";
+            input.style.backgroundColor = "#fff";
+            return;
+        }
+        if (validarCURP(v)) {
+            input.style.borderColor = "#27ae60";
+            input.style.backgroundColor = "#eafaf1";
+        } else {
+            input.style.borderColor = "#e74c3c";
+            input.style.backgroundColor = "#fadbd8";
+        }
+    }
+
     function calcularEdadDesdeCURP(curp) {
-        if (!curp || curp.length < 18) return "S/Edad";
+        if (!curp || !validarCURP(curp)) return "S/Edad"; 
+        
         let yy = parseInt(curp.substr(4, 2));
         let mm = parseInt(curp.substr(6, 2));
         let dd = parseInt(curp.substr(8, 2));
         let siglo = curp.charAt(16);
-        if (isNaN(yy) || isNaN(mm) || isNaN(dd)) return "S/Edad";
         
-        // Si el caracter 17 es número, nació en 19XX. Si es letra, nació en 20XX.
         let year = (siglo.match(/[0-9]/)) ? 1900 + yy : 2000 + yy;
         let dob = new Date(year, mm - 1, dd);
         let today = new Date();
@@ -447,9 +483,8 @@
     }
 
     // ============================================================================
-    // 1. CONFIGURACIÓN DE GOOGLE FIREBASE
+    // CONFIGURACIÓN DE GOOGLE FIREBASE
     // ============================================================================
-    // ↓↓↓ PEGA TU CONFIGURACIÓN AQUÍ ↓↓↓
     // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAaZg2H_AytmlOcaA6oaB1sQWh0c1BUKG4",
@@ -459,7 +494,6 @@ const firebaseConfig = {
   messagingSenderId: "823280750540",
   appId: "1:823280750540:web:e29ccdee0e5a0a68a2d769"
 };
-    // ↑↑↑ HASTA AQUÍ ↑↑↑
 
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
@@ -628,10 +662,79 @@ const firebaseConfig = {
         if (fileInput.files && fileInput.files.length > 0) { const r = new FileReader(); r.onload = function(e) { const img = new Image(); img.onload = function() { const c = document.createElement('canvas'); const M_W = 100; let w = img.width; let h = img.height; if (w > M_W) { h = Math.round((h * M_W) / w); w = M_W; } c.width = w; c.height = h; const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, w, h); teamLogos[nm] = c.toDataURL('image/jpeg', 0.8); finishAddTeam(nm); }; img.src = e.target.result; }; r.readAsDataURL(fileInput.files[0]); } else { teamLogos[nm] = null; finishAddTeam(nm); }
     }
     function finishAddTeam(nm) { teams.push(nm); playersByTeam[nm] = []; interceptCloudUpdates(); renderTeamsList(); updateSelectOptions(); renderStandings(); document.getElementById('teamName').value = ''; document.getElementById('teamLogoInput').value = ''; document.getElementById('teamsListContainer').style.display = 'block'; }
+    
+    // ============================================================================
+    // NUEVA FUNCIÓN MAESTRA: ACTUALIZACIÓN DE NOMBRES EN CASCADA
+    // ============================================================================
+    function renameTeam(oldName) {
+        if (currentUserRole >= 3) return; // Por seguridad, espectadores y prensa no editan.
+        
+        let newName = prompt(`Renombrar equipo "${oldName}".\nEscribe el nuevo nombre:`, oldName);
+        if (!newName || newName.trim() === "" || newName === oldName) return;
+        newName = newName.trim();
+        
+        // Bloqueo Anti-Duplicados
+        if (teams.includes(newName)) { 
+            alert(`⚠️ Error: El equipo "${newName}" ya existe en este torneo.`); 
+            return; 
+        }
+
+        // 1. Array Principal
+        const idx = teams.indexOf(oldName);
+        if (idx !== -1) teams[idx] = newName;
+
+        // 2. Base de datos de Logos
+        if (teamLogos[oldName] !== undefined) { 
+            teamLogos[newName] = teamLogos[oldName]; 
+            delete teamLogos[oldName]; 
+        }
+
+        // 3. Roster de Jugadores
+        if (playersByTeam[oldName]) { 
+            playersByTeam[newName] = playersByTeam[oldName]; 
+            delete playersByTeam[oldName]; 
+        }
+
+        // 4. Fixture de Partidos (Local y Visitante)
+        matches.forEach(m => {
+            if (m.local === oldName) m.local = newName;
+            if (m.visitante === oldName) m.visitante = newName;
+        });
+
+        // 5. Descansos en las Jornadas
+        jornadas.forEach(j => {
+            j.descansos.forEach((d, i) => {
+                // Soporte retroactivo para formatos de datos viejos y nuevos
+                if (typeof d === 'string') { 
+                    if (d === oldName) j.descansos[i] = newName; 
+                } else { 
+                    if (d.equipo === oldName) d.equipo = newName; 
+                }
+            });
+        });
+
+        // 6. Registro de Delegados
+        delegados.forEach(d => { 
+            if (d.equipo === oldName) d.equipo = newName; 
+        });
+
+        // Guardamos en la nube y forzamos el redibujado absoluto de toda la interfaz
+        interceptCloudUpdates();
+        executeRenderCycle();
+    }
+
     function triggerLogoEdit(teamName) { editingTeamLogo = teamName; document.getElementById('globalLogoEditor').click(); }
     function processEditedLogo(evt) { if(currentUserRole >= 3) return; const fileInput = evt.target; if(fileInput.files && fileInput.files.length > 0) { const r = new FileReader(); r.onload = function(e) { const img = new Image(); img.onload = function() { const c = document.createElement('canvas'); const M_W = 100; let w = img.width; let h = img.height; if (w > M_W) { h = Math.round((h * M_W) / w); w = M_W; } c.width = w; c.height = h; const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, w, h); teamLogos[editingTeamLogo] = c.toDataURL('image/jpeg', 0.8); interceptCloudUpdates(); executeRenderCycle(); fileInput.value = ''; }; img.src = e.target.result; }; r.readAsDataURL(fileInput.files[0]); } }
     function deleteTeam(tm) { teams = teams.filter(t => t !== tm); delete playersByTeam[tm]; delete teamLogos[tm]; matches = matches.filter(m => m.local !== tm && m.visitante !== tm); jornadas.forEach(j => { j.descansos = j.descansos.filter(x => (typeof x === 'string' ? x : x.equipo) !== tm); }); delegados = delegados.filter(d => d.equipo !== tm); interceptCloudUpdates(); executeRenderCycle(); }
-    function renderTeamsList() { const el = document.getElementById('teamsList'); el.innerHTML = ''; teams.forEach(t => { el.innerHTML += `<div style="background:#fff; border: 1px solid #bdc3c7; padding:4px 8px; border-radius:3px; font-size:12px; display:flex; align-items:center; justify-content: space-between;"> <div style="display:flex; align-items:center;">${getLogoHtml(t, 'team-logo-medium')} <strong style="margin-left:4px;">${t}</strong></div> <div><button onclick="triggerLogoEdit('${t}')" class="hide-in-viewer" style="background:#f39c12; padding:2px 6px; font-size:9px; margin-right: 4px;">📸 Edit</button><button onclick="deleteTeam('${t}')" class="delete-btn hide-in-viewer" style="padding:2px 6px; font-size:9px;">✖</button></div></div>`; }); }
+    
+    function renderTeamsList() { 
+        const el = document.getElementById('teamsList'); 
+        el.innerHTML = ''; 
+        teams.forEach(t => { 
+            // AÑADIDO EL BOTÓN ✏️ Nom PARA LLAMAR A renameTeam()
+            el.innerHTML += `<div style="background:#fff; border: 1px solid #bdc3c7; padding:4px 8px; border-radius:3px; font-size:12px; display:flex; align-items:center; justify-content: space-between;"> <div style="display:flex; align-items:center;">${getLogoHtml(t, 'team-logo-medium')} <strong style="margin-left:4px;">${t}</strong></div> <div><button onclick="renameTeam('${t}')" class="hide-in-viewer" style="background:#3498db; padding:2px 6px; font-size:9px; margin-right: 4px;">✏️ Nom</button><button onclick="triggerLogoEdit('${t}')" class="hide-in-viewer" style="background:#f39c12; padding:2px 6px; font-size:9px; margin-right: 4px;">📸 Logo</button><button onclick="deleteTeam('${t}')" class="delete-btn hide-in-viewer" style="padding:2px 6px; font-size:9px;">✖</button></div></div>`; 
+        }); 
+    }
     
     function updateSelectOptions() { 
         const sP=document.getElementById('teamSelectPlayers'), sD=document.getElementById('selectTeamDelegado'), sJ=document.getElementById('discJornada'); 
@@ -724,18 +827,49 @@ const firebaseConfig = {
         tJ.slice(0, 15).forEach((j, i) => h += `<tr><td>${i+1}</td><td class="team-name">${j.nombre}</td><td class="team-name">${getLogoHtml(j.equipo, 'team-logo-mini')} ${j.equipo}</td><td style="font-weight:bold; color:#e67e22;">${j.goles}</td></tr>`); 
         c.innerHTML = h + `</tbody></table>`; 
     }
-    
+
     function addPlayer() { 
         const t = document.getElementById('teamSelectPlayers').value; 
         const id = document.getElementById('playerTarjeton').value.trim(); 
         const nm = document.getElementById('playerName').value.trim(); 
-        const cp = document.getElementById('playerCurp').value.trim(); 
+        const cp = document.getElementById('playerCurp').value.trim().toUpperCase(); 
+        
         if (!t || !id || !nm) return; 
+
+        if (cp !== "" && !validarCURP(cp)) {
+            alert("❌ PROTECCIÓN ACTIVADA: El CURP ingresado no es válido. Revisa que el formato y la fecha de nacimiento sean correctos.");
+            return;
+        }
+
+        let errores = "";
+        
+        if (playersByTeam[t].find(p => p.id === id)) {
+            errores += `- El Nº Tarjetón "${id}" ya le pertenece a otro jugador en el equipo ${t}.\n`;
+        }
+        
+        if (cp !== "") {
+            for (const equipo in playersByTeam) {
+                const dup = playersByTeam[equipo].find(p => p.curp === cp);
+                if (dup) {
+                    errores += `- El CURP "${cp}" ya está registrado por el jugador "${dup.nombre}" en el equipo "${equipo}".\n`;
+                    break;
+                }
+            }
+        }
+        
+        if (errores !== "") {
+            alert("⚠️ NO SE PUDO REGISTRAR EL JUGADOR DEBIDO A DATOS DUPLICADOS:\n\n" + errores);
+            return;
+        }
+
         playersByTeam[t].push({ id, nombre: nm, curp: cp, goles: 0, partidos: 0, jornadasStats: {}, castigadoActivo: false, historialCastigos: [], amonestaciones: [], suspensiones: [] }); 
         interceptCloudUpdates(); renderPlayersList(); searchPlayers(); 
+        
         document.getElementById('playerTarjeton').value = ''; 
         document.getElementById('playerName').value = ''; 
         document.getElementById('playerCurp').value = ''; 
+        document.getElementById('playerCurp').style.borderColor = "#bdc3c7";
+        document.getElementById('playerCurp').style.backgroundColor = "#fff";
     }
 
     function addBulkPlayers() { 
@@ -744,35 +878,65 @@ const firebaseConfig = {
         if (!t || !text) { alert("⚠️ Por favor selecciona un equipo y pega la lista en la caja de texto."); return; } 
         
         const lines = text.split('\n'); 
-        let addedCount = 0; let duplicatedCount = 0;
+        let addedCount = 0; 
+        let duplicatedTarjCount = 0; 
+        let duplicatedCurpCount = 0; 
+        let invalidCurpCount = 0;
         
         lines.forEach(l => { 
             const parts = l.trim().split(/\s+/); 
-            if (parts.length >= 3) { 
+            if (parts.length >= 2) { 
                 const id = parts[0].replace(/^#/, '').replace(/[\-\,]$/, ''); 
-                const cp = parts[parts.length - 1]; 
-                const nm = parts.slice(1, -1).join(' ').replace(/^[\-\,]\s*/, ''); 
-                if (!playersByTeam[t].find(p => p.id === id)) { 
-                    playersByTeam[t].push({ id, nombre: nm, curp: cp, goles: 0, partidos: 0, jornadasStats: {}, castigadoActivo: false, historialCastigos: [], amonestaciones: [], suspensiones: [] }); 
-                    addedCount++; 
-                } else { duplicatedCount++; }
-            } else if (parts.length === 2) {
-                const id = parts[0].replace(/^#/, '').replace(/[\-\,]$/, ''); 
-                const nm = parts[1].replace(/^[\-\,]\s*/, ''); 
-                if (!playersByTeam[t].find(p => p.id === id)) { 
-                    playersByTeam[t].push({ id, nombre: nm, curp: '', goles: 0, partidos: 0, jornadasStats: {}, castigadoActivo: false, historialCastigos: [], amonestaciones: [], suspensiones: [] }); 
-                    addedCount++; 
-                } else { duplicatedCount++; }
+                let cp = "";
+                let nm = "";
+
+                if (parts.length >= 3) {
+                    cp = parts[parts.length - 1].toUpperCase(); 
+                    nm = parts.slice(1, -1).join(' ').replace(/^[\-\,]\s*/, ''); 
+                } else {
+                    nm = parts[1].replace(/^[\-\,]\s*/, ''); 
+                }
+                
+                if (cp !== "" && !validarCURP(cp)) {
+                    invalidCurpCount++;
+                    return; 
+                }
+
+                if (playersByTeam[t].find(p => p.id === id)) { 
+                    duplicatedTarjCount++;
+                    return;
+                }
+                
+                let curpExiste = false;
+                if (cp !== "") {
+                    for (const eq in playersByTeam) {
+                        if (playersByTeam[eq].find(p => p.curp === cp)) {
+                            curpExiste = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (curpExiste) {
+                    duplicatedCurpCount++;
+                    return;
+                }
+
+                playersByTeam[t].push({ id, nombre: nm, curp: cp, goles: 0, partidos: 0, jornadasStats: {}, castigadoActivo: false, historialCastigos: [], amonestaciones: [], suspensiones: [] }); 
+                addedCount++; 
             }
         }); 
         
-        if (addedCount > 0) { 
+        if (addedCount > 0 || invalidCurpCount > 0 || duplicatedTarjCount > 0 || duplicatedCurpCount > 0) { 
             interceptCloudUpdates(); renderPlayersList(); searchPlayers(); document.getElementById('bulkPlayersInput').value = ''; 
-            let msg = `✅ Se agregaron ${addedCount} jugadores correctamente.`;
-            if(duplicatedCount > 0) msg += `\n⚠️ Se ignoraron ${duplicatedCount} jugadores porque el Nº Tarjetón ya existía.`;
+            
+            let msg = `✅ Se agregaron ${addedCount} jugadores correctamente.\n\n`;
+            if (duplicatedTarjCount > 0) msg += `⚠️ Se ignoraron ${duplicatedTarjCount} jugadores porque el Nº Tarjetón ya estaba ocupado en este equipo.\n`;
+            if (duplicatedCurpCount > 0) msg += `⚠️ Se ignoraron ${duplicatedCurpCount} jugadores porque su CURP ya estaba registrado previamente en el torneo.\n`;
+            if (invalidCurpCount > 0) msg += `❌ SEGURIDAD: Se bloquearon ${invalidCurpCount} jugadores por intentar usar un CURP falso o mal escrito.`;
             alert(msg);
         } else { 
-            alert("❌ No se detectó el formato correcto.\nAsegúrate de usar: Tarjetón + Nombre + CURP\nEj: 10 Lionel Messi ABCD123456..."); 
+            alert("❌ No se detectó el formato correcto o todos los datos proporcionados estaban duplicados/inválidos.\nAsegúrate de usar: Tarjetón + Nombre + CURP"); 
         } 
     }
     
@@ -807,7 +971,6 @@ const firebaseConfig = {
         l.innerHTML = ''; 
         if (!t || !playersByTeam[t]) return; 
         
-        // ORDENAMIENTO POR TARJETÓN (NÚMEROS PRIMERO, LUEGO LETRAS SI HAY)
         let pList = [...playersByTeam[t]];
         pList.sort((a, b) => {
             let numA = parseInt(a.id);
@@ -837,7 +1000,6 @@ const firebaseConfig = {
             }); 
         } 
         
-        // ORDENAMIENTO POR TARJETÓN TAMBIÉN EN EL BUSCADOR
         arrJugadores.sort((a, b) => {
             let numA = parseInt(a.player.id);
             let numB = parseInt(b.player.id);
@@ -870,19 +1032,18 @@ const firebaseConfig = {
                 <input type="checkbox" class="sync-chk-${p.id}-${qJId}" ${isChecked} onchange="updatePlayerStat('${t}', '${p.id}', '${qJId}', 'jugado', this)" style="margin:0; width:auto; height:auto;"> Jugó J${jornadas.findIndex(j=>j.id==qJId)+1}
             </div>`;
         }
-
-        // AQUÍ RE-DISEÑAMOS EL FLEXBOX PARA INCLUIR EL EQUIPO Y LA EDAD EXACTA
+        
         return `
         <div class="player-compact-row">
             <div class="player-row-header">
                 
-                <div class="player-identity" style="display: flex; align-items: center; gap: 6px; flex: 1; overflow: hidden;">
-                    <span style="width: 30px; font-size:10px; color:#2980b9; font-weight:bold; text-align:center; background:#eaf2f8; border-radius:3px; padding:2px;">#${p.id}</span>
-                    <strong style="font-size:12px; color:#2c3e50; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">${p.nombre}</strong>
-                    <span style="font-size:9px; color:#7f8c8d; background:#ecf0f1; padding:2px 6px; border-radius:10px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;">🛡️ ${t}</span>
-                    <span style="font-size:10px; font-family: monospace; color:#000000; background:#ebf5fb; padding:2px 4px; border-radius:2px; text-align:center; flex-shrink: 0;">${p.curp || 'S/N'}</span>
-                    <span style="font-size:9px; color:#16a085; background:#e8f8f5; border:1px solid #1abc9c; padding:2px 4px; border-radius:2px; text-align:center; flex-shrink: 0; font-weight:bold;">🎂 ${edadStr}</span>
+                <div class="player-identity">
+                    <span style="width: 35px; font-size:10px; color:#2980b9; font-weight:bold; text-align:center; background:#eaf2f8; border-radius:3px; padding:2px; flex-shrink: 0;">#${p.id}</span>
+                    <strong style="flex: 1; font-size:12px; color:#2c3e50; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 100px;">${p.nombre}</strong>
                     ${castigoBadge}
+                    <span style="width: 85px; font-size:9px; color:#7f8c8d; background:#ecf0f1; padding:2px 6px; border-radius:10px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; flex-shrink: 0;">🛡️ ${t}</span>
+                    <span style="width: 135px; font-size:10px; font-family: monospace; color:#000000; background:#ebf5fb; padding:2px 4px; border-radius:2px; text-align:center; flex-shrink: 0;">${p.curp || 'S/N'}</span>
+                    <span style="width: 75px; font-size:9px; color:#16a085; background:#e8f8f5; border:1px solid #1abc9c; padding:2px 4px; border-radius:2px; text-align:center; flex-shrink: 0; font-weight:bold;">🎂 ${edadStr}</span>
                 </div>
                 
                 ${quickCheckHtml}
