@@ -101,19 +101,17 @@
         .user-header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 6px 12px; border-radius: 4px; margin-bottom: 12px; border: 1px solid #ecf0f1; font-size: 11px; }
         .user-header .user-info { font-weight: bold; color: #2980b9; display: flex; align-items: center; gap: 6px; }
         
-        /* ESCALA RBAC EXPANDIDA */
         .role-badge { padding: 2px 5px; border-radius: 3px; font-size: 9px; color: white; font-weight: bold; text-transform: uppercase; }
-        .role-1 { background: #8e44ad; } /* Admin */
-        .role-2 { background: #27ae60; } /* Creador */
-        .role-3 { background: #f39c12; } /* Prensa/Fotógrafo */
-        .role-4 { background: #7f8c8d; } /* Espectador */
+        .role-1 { background: #8e44ad; } 
+        .role-2 { background: #27ae60; } 
+        .role-3 { background: #f39c12; } 
+        .role-4 { background: #7f8c8d; } 
 
         .logout-btn { background: #e74c3c; padding: 4px 8px; font-size: 10px; margin: 0; }
 
-        /* MODO VISOR */
         body.viewer-mode .hide-in-viewer { display: none !important; }
         body.viewer-mode input:not(#searchPlayerInput), body.viewer-mode select:not(#selectCommunityTorneos):not(#filterTeamSelect):not(#filterMatchTeam):not(#filterMatchJornada), body.viewer-mode textarea, body.viewer-mode .sancion-checkbox { pointer-events: none; opacity: 0.7; background-color: #f4f6f7; border-color: #d5dbdb; }
-        body.viewer-mode button:not(.tab-button):not(.logout-btn):not(.view-only-btn):not(.toggle-visibility-btn):not(.match-grid-btn) { display: none !important; }
+        body.viewer-mode button:not(.tab-button):not(.logout-btn):not(.view-only-btn):not(.toggle-visibility-btn):not(.match-grid-btn):not(.uniform-zoom-btn) { display: none !important; }
 
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
         .admin-table th, .admin-table td { padding: 6px; border-bottom: 1px solid #bdc3c7; text-align: left; }
@@ -122,12 +120,28 @@
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+
+        /* GALERÍA DE UNIFORMES - GRID CSS */
+        .uniform-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 15px; }
+        @media (max-width: 900px) { .uniform-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 500px) { .uniform-grid { grid-template-columns: repeat(2, 1fr); } }
+        
+        .uniform-card { background: #fff; border: 1px solid #bdc3c7; border-radius: 6px; padding: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+        .uniform-title { font-size: 12px; font-weight: bold; color: #2c3e50; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .uniform-img-box { width: 100%; aspect-ratio: 3/4; background: #ecf0f1; border: 2px dashed #95a5a6; border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; cursor: pointer; transition: border-color 0.2s; }
+        .uniform-img-box:hover { border-color: #3498db; }
+        .uniform-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
+        .uniform-img-box:hover img { transform: scale(1.02); }
+        .uniform-placeholder { color: #7f8c8d; font-size: 10px; font-weight: bold; pointer-events: none; }
+        .uniform-controls { display: flex; justify-content: space-between; gap: 5px; margin-top: 10px; }
+        .uniform-btn { flex: 1; padding: 4px 0; font-size: 10px; }
     </style>
 </head>
 <body>
 
-<!-- INPUT GLOBAL OCULTO PARA EDICIÓN DE LOGOS -->
+<!-- INPUTS GLOBALES OCULTOS -->
 <input type="file" id="globalLogoEditor" accept="image/*" style="display: none;" onchange="processEditedLogo(event)">
+<input type="file" id="globalUniformEditor" accept="image/*" style="display: none;" onchange="processEditedUniform(event)">
 
 <!-- PANTALLA DE NIVEL 5: BLOQUEO ABSOLUTO -->
 <div id="bannedScreen" class="banned-overlay">
@@ -210,7 +224,8 @@
         <button class="tab-button" onclick="openTab(event, 'tab-estadisticas')">4-Estadisticas</button>
         <button class="tab-button" onclick="openTab(event, 'tab-delegados')">5-Delegados</button>
         <button class="tab-button" onclick="openTab(event, 'tab-amonestaciones')">6-Amonestaciones</button>
-        <button class="tab-button hide-in-viewer" id="adminTabBtn" onclick="openTab(event, 'tab-admin')" style="display: none; background-color: #8e44ad; color: white;">7-Admin 👑</button>
+        <button class="tab-button" onclick="openTab(event, 'tab-uniformes')">7-Uniformes 👕</button>
+        <button class="tab-button hide-in-viewer" id="adminTabBtn" onclick="openTab(event, 'tab-admin')" style="display: none; background-color: #8e44ad; color: white;">8-Admin 👑</button>
     </div>
 
     <!-- PESTAÑA 1: EQUIPOS Y CANCHAS -->
@@ -370,7 +385,18 @@
         <div class="section" style="background: #fdfefe; padding: 10px; border-radius: 4px; border: 1px solid #e74c3c;"><h2 style="color: #c0392b; font-size: 13px; margin-top: 0;">🟥 Suspendidos</h2><div id="tablaSuspendidosContainer" style="overflow-x: auto;"></div></div>
     </div>
 
-    <!-- PESTAÑA 7: ADMINISTRADOR -->
+    <!-- PESTAÑA 7: UNIFORMES -->
+    <div id="tab-uniformes" class="tab-content">
+        <div class="section" style="background: #fdfefe; padding: 10px; border: 1px solid #95a5a6; border-radius: 4px;">
+            <h2 style="color: #2c3e50; font-size: 14px; margin-top: 0;">👕 Galería de Uniformes</h2>
+            <p style="font-size: 11px; color: #7f8c8d; margin-top: 0;">Registro visual de las equipaciones para evitar confusiones de color en la cancha.</p>
+            <div id="uniformsGrid" class="uniform-grid">
+                <!-- Se llenará dinámicamente con JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- PESTAÑA 8: ADMINISTRADOR -->
     <div id="tab-admin" class="tab-content">
         <div class="section" style="background: #fdfefe; padding: 10px; border: 2px solid #8e44ad; border-radius: 4px;">
             <h2 style="color: #8e44ad; margin-top: 0; font-size: 13px;">👑 Panel Maestro (Aprobaciones y Roles)</h2>
@@ -499,11 +525,13 @@ const firebaseConfig = {
     const db = firebase.firestore();
     document.getElementById('cloudStatusText').innerText = "☁️ Firebase Firestore Activo";
 
-    let teams = []; let teamLogos = {}; let matches = []; let playersByTeam = {}; let jornadas = []; let delegados = []; let juntasDelegados = []; let campos = []; let actas = { reglas: [], acuerdos: [], castigos: [] };
+    // NUEVA VARIABLE GLOBAL: teamUniforms
+    let teams = []; let teamLogos = {}; let teamUniforms = {}; let matches = []; let playersByTeam = {}; let jornadas = []; let delegados = []; let juntasDelegados = []; let campos = []; let actas = { reglas: [], acuerdos: [], castigos: [] };
     let currentDiscTeam = null; let currentDiscPlayerId = null; let currentMatchIdForEvidencias = null;
     
     let currentUserEmail = null; let authMode = 'login'; let currentUserRole = 4;
-    let currentTournamentName = "Tablero Local"; let isCurrentTournamentPublic = true; let editingTeamLogo = ""; 
+    let currentTournamentName = "Tablero Local"; let isCurrentTournamentPublic = true; 
+    let editingTeamLogo = ""; let editingTeamUniform = ""; 
     let currentViewedOwnerEmail = null; let currentViewedTournamentName = null;
     
     function getLogoHtml(teamName, sizeClass) {
@@ -515,6 +543,7 @@ const firebaseConfig = {
     function toggleVisibility(id) { const el = document.getElementById(id); el.style.display = (el.style.display === 'none') ? 'block' : 'none'; }
 
     async function togglePublicidad() { isCurrentTournamentPublic = document.getElementById('checkPublicTournament').checked; interceptCloudUpdates(); if (currentTournamentName !== "Tablero Local" && currentTournamentName !== "") { const p = await descargarPerfilDeLaNube(currentUserEmail); if (p.torneosGuardados && p.torneosGuardados[currentTournamentName]) { p.torneosGuardados[currentTournamentName].isPublic = isCurrentTournamentPublic; await guardarPerfilEnLaNube(currentUserEmail, p); } } }
+    
     async function renombrarTorneoActivo() { if (currentTournamentName === "Tablero Local" || currentTournamentName === "") { alert("Primero guarda tu torneo con un nombre usando el panel de guardado (💾 Nuevo torneo)."); return; } let nuevoNombre = prompt("Escribe el nuevo nombre para este torneo:", currentTournamentName); if (!nuevoNombre || nuevoNombre.trim() === "" || nuevoNombre === currentTournamentName) return; nuevoNombre = nuevoNombre.trim(); const p = await descargarPerfilDeLaNube(currentUserEmail); if (p.torneosGuardados[nuevoNombre]) { alert("Ya existe un torneo guardado con ese nombre."); return; } p.torneosGuardados[nuevoNombre] = p.torneosGuardados[currentTournamentName]; delete p.torneosGuardados[currentTournamentName]; await guardarPerfilEnLaNube(currentUserEmail, p); updateAppTitle(nuevoNombre); await updateDropdownTorneosGuardados(); document.getElementById('selectSobrescribir').value = nuevoNombre; alert("Torneo renombrado exitosamente."); }
 
     const causalesAmarilla = [{val: 1, text: "1 - Conducta Antideportiva"},{val: 2, text: "2 - Desaprobación"},{val: 3, text: "3 - Infracción persistente"},{val: 4, text: "4 - Retardar reanudación"},{val: 5, text: "5 - No respetar distancia"},{val: 6, text: "6 - Entrar sin permiso"},{val: 7, text: "7 - Abandonar terreno"}];
@@ -536,7 +565,7 @@ const firebaseConfig = {
                 
                 let initialRole = email.includes('admin') ? 1 : 0;
 
-                const nuevoPerfil = { password: pass, role: initialRole, torneosGuardados: {}, tableroActivo: { teams: [], teamLogos: {}, matches: [], playersByTeam: {}, jornadas: [], delegados: [], juntasDelegados: [], campos: [], actas: { reglas: [], acuerdos: [], castigos: [] }, isPublic: true, tournamentName: "Tablero Local" } }; 
+                const nuevoPerfil = { password: pass, role: initialRole, torneosGuardados: {}, tableroActivo: { teams: [], teamLogos: {}, teamUniforms: {}, matches: [], playersByTeam: {}, jornadas: [], delegados: [], juntasDelegados: [], campos: [], actas: { reglas: [], acuerdos: [], castigos: [] }, isPublic: true, tournamentName: "Tablero Local" } }; 
                 await guardarPerfilEnLaNube(email, nuevoPerfil); 
                 await iniciarSesionUI(email); 
             } else { 
@@ -587,70 +616,53 @@ const firebaseConfig = {
     async function descargarPerfilDeLaNube(email) { const d = await db.collection('usuarios_futbol').doc(email).get(); return d.exists ? d.data() : null; }
     async function guardarPerfilEnLaNube(email, perfilData) { await db.collection('usuarios_futbol').doc(email).set(perfilData); }
     
-    async function guardarTableroActivoEnLaNube() { if (!currentUserEmail || currentUserRole >= 3) return; const p = await descargarPerfilDeLaNube(currentUserEmail); if (p) { p.tableroActivo = { teams, teamLogos, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas, isPublic: isCurrentTournamentPublic, tournamentName: currentTournamentName }; await guardarPerfilEnLaNube(currentUserEmail, p); } }
+    // GUARDADO EN LA NUBE INCLUYENDO teamUniforms
+    async function guardarTableroActivoEnLaNube() { if (!currentUserEmail || currentUserRole >= 3) return; const p = await descargarPerfilDeLaNube(currentUserEmail); if (p) { p.tableroActivo = { teams, teamLogos, teamUniforms, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas, isPublic: isCurrentTournamentPublic, tournamentName: currentTournamentName }; await guardarPerfilEnLaNube(currentUserEmail, p); } }
     
     let cloudSaveTimeout = null; 
     function interceptCloudUpdates() { if (currentUserRole >= 3) return; clearTimeout(cloudSaveTimeout); cloudSaveTimeout = setTimeout(() => { guardarTableroActivoEnLaNube(); }, 1500); }
     
-    async function cargarTableroActivoDelUsuario() { const p = await descargarPerfilDeLaNube(currentUserEmail); if (p && p.tableroActivo) { const u = p.tableroActivo; teams = u.teams || []; teamLogos = u.teamLogos || {}; matches = u.matches || []; playersByTeam = u.playersByTeam || {}; jornadas = u.jornadas || []; delegados = u.delegados || []; juntasDelegados = u.juntasDelegados || []; campos = u.campos || []; actas = u.actas || { reglas: [], acuerdos: [], castigos: [] }; isCurrentTournamentPublic = u.isPublic !== false; currentTournamentName = u.tournamentName || "Tablero Local"; document.getElementById('checkPublicTournament').checked = isCurrentTournamentPublic; updateAppTitle(currentTournamentName); executeRenderCycle(); } }
-    function executeRenderCycle() { renderTeamsList(); renderCamposList(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab(); renderActas(); searchPlayers(); }
+    // CARGA DESDE LA NUBE INCLUYENDO teamUniforms
+    async function cargarTableroActivoDelUsuario() { const p = await descargarPerfilDeLaNube(currentUserEmail); if (p && p.tableroActivo) { const u = p.tableroActivo; teams = u.teams || []; teamLogos = u.teamLogos || {}; teamUniforms = u.teamUniforms || {}; matches = u.matches || []; playersByTeam = u.playersByTeam || {}; jornadas = u.jornadas || []; delegados = u.delegados || []; juntasDelegados = u.juntasDelegados || []; campos = u.campos || []; actas = u.actas || { reglas: [], acuerdos: [], castigos: [] }; isCurrentTournamentPublic = u.isPublic !== false; currentTournamentName = u.tournamentName || "Tablero Local"; document.getElementById('checkPublicTournament').checked = isCurrentTournamentPublic; updateAppTitle(currentTournamentName); executeRenderCycle(); } }
+    
+    function executeRenderCycle() { renderTeamsList(); renderUniformes(); renderCamposList(); updateSelectOptions(); renderMatchesHTML(); renderStandings(); renderTopScorers(); renderTablaDelegados(); renderAmonestacionesTab(); renderActas(); searchPlayers(); }
 
     async function renderAdminPanel() { 
         const tbody = document.getElementById('adminUsersTableBody'); 
         const snap = await db.collection('usuarios_futbol').get(); 
         
-        let htmlPendientes = ''; 
-        let htmlRegistrados = '';
-        
+        let htmlPendientes = ''; let htmlRegistrados = '';
         snap.forEach(doc => { 
-            let d = doc.data(); 
-            let r = d.role !== undefined ? d.role : 4; 
-            
-            let s0 = r===0?'selected':'';
-            let s1 = r===1?'selected':''; 
-            let s2 = r===2?'selected':''; 
-            let s3 = r===3?'selected':''; 
-            let s4 = r===4?'selected':''; 
-            let s5 = r===5?'selected':''; 
-            
-            let rowHtml = `
-            <tr style="${r === 0 ? 'background-color: #fef9e7;' : ''}">
-                <td style="color:#2980b9; font-weight:bold;">${doc.id}</td>
-                <td>${r === 0 ? '<span style="color:#d35400; font-weight:bold;">⏳ Pendiente</span>' : 'Nivel ' + r}</td>
-                <td>
-                    <select class="admin-select" onchange="changeUserRoleFromAdmin('${doc.id}', parseInt(this.value))">
-                        <option value="0" ${s0}>0 - Pendiente (Bloqueado)</option>
-                        <option value="1" ${s1}>1 - Admin</option>
-                        <option value="2" ${s2}>2 - Creador</option>
-                        <option value="3" ${s3}>3 - Prensa (Fotos)</option>
-                        <option value="4" ${s4}>4 - Espectador</option>
-                        <option value="5" ${s5}>5 - BANEADO</option>
-                    </select>
-                </td>
-            </tr>`;
-            
-            if (r === 0) {
-                htmlPendientes += rowHtml; 
-            } else {
-                htmlRegistrados += rowHtml;
-            }
+            let d = doc.data(); let r = d.role !== undefined ? d.role : 4; 
+            let s0 = r===0?'selected':''; let s1 = r===1?'selected':''; let s2 = r===2?'selected':''; let s3 = r===3?'selected':''; let s4 = r===4?'selected':''; let s5 = r===5?'selected':''; 
+            let rowHtml = `<tr style="${r === 0 ? 'background-color: #fef9e7;' : ''}"><td style="color:#2980b9; font-weight:bold;">${doc.id}</td><td>${r === 0 ? '<span style="color:#d35400; font-weight:bold;">⏳ Pendiente</span>' : 'Nivel ' + r}</td><td><select class="admin-select" onchange="changeUserRoleFromAdmin('${doc.id}', parseInt(this.value))"><option value="0" ${s0}>0 - Pendiente (Bloqueado)</option><option value="1" ${s1}>1 - Admin</option><option value="2" ${s2}>2 - Creador</option><option value="3" ${s3}>3 - Prensa (Fotos)</option><option value="4" ${s4}>4 - Espectador</option><option value="5" ${s5}>5 - BANEADO</option></select></td></tr>`;
+            if (r === 0) { htmlPendientes += rowHtml; } else { htmlRegistrados += rowHtml; }
         }); 
-        
         tbody.innerHTML = htmlPendientes + htmlRegistrados; 
     }
     
     async function changeUserRoleFromAdmin(tEmail, nRole) { if(confirm(`¿Cambiar a Nivel ${nRole}?`)) { const pTarget = await descargarPerfilDeLaNube(tEmail); if(pTarget) { pTarget.role = nRole; await guardarPerfilEnLaNube(tEmail, pTarget); renderAdminPanel(); } } }
 
     async function loadCommunityTournamentsDropdown() { const sel = document.getElementById('selectCommunityTorneos'); sel.innerHTML = '<option value="">-- Elige un torneo --</option>'; const snap = await db.collection('usuarios_futbol').get(); snap.forEach(doc => { let d = doc.data(); if(d.role === 1 || d.role === 2) { let ts = d.torneosGuardados || {}; for (let n in ts) { if (ts[n].isPublic !== false) { sel.innerHTML += `<option value="${doc.id}|${n}">[${doc.id}] - ${n}</option>`; } } } }); }
-    async function cargarTorneoDeLaComunidad() { const v = document.getElementById('selectCommunityTorneos').value; if(!v) return; const [e, t] = v.split('|'); currentViewedOwnerEmail = e; currentViewedTournamentName = t; const p = await descargarPerfilDeLaNube(e); if(p && p.torneosGuardados && p.torneosGuardados[t]) { const d = p.torneosGuardados[t]; teams = d.teams||[]; teamLogos = d.teamLogos||{}; matches = d.matches||[]; playersByTeam = d.playersByTeam||{}; jornadas = d.jornadas||[]; delegados = d.delegados||[]; juntasDelegados = d.juntasDelegados||[]; campos = d.campos||[]; actas = d.actas||{reglas:[],acuerdos:[],castigos:[]}; executeRenderCycle(); updateAppTitle(t); } }
+    async function cargarTorneoDeLaComunidad() { const v = document.getElementById('selectCommunityTorneos').value; if(!v) return; const [e, t] = v.split('|'); currentViewedOwnerEmail = e; currentViewedTournamentName = t; const p = await descargarPerfilDeLaNube(e); if(p && p.torneosGuardados && p.torneosGuardados[t]) { const d = p.torneosGuardados[t]; teams = d.teams||[]; teamLogos = d.teamLogos||{}; teamUniforms = d.teamUniforms||{}; matches = d.matches||[]; playersByTeam = d.playersByTeam||{}; jornadas = d.jornadas||[]; delegados = d.delegados||[]; juntasDelegados = d.juntasDelegados||[]; campos = d.campos||[]; actas = d.actas||{reglas:[],acuerdos:[],castigos:[]}; executeRenderCycle(); updateAppTitle(t); } }
 
     async function updateDropdownTorneosGuardados() { const s = document.getElementById('selectTorneosGuardados'); const sS = document.getElementById('selectSobrescribir'); s.innerHTML = '<option value="">-- Mis Torneos --</option>'; sS.innerHTML = '<option value="">-- Elige --</option>'; const p = await descargarPerfilDeLaNube(currentUserEmail); const mt = p.torneosGuardados || {}; for (let n in mt) { s.innerHTML += `<option value="${n}">${n}</option>`; sS.innerHTML += `<option value="${n}">${n}</option>`; } }
-    async function guardarTorneoComo() { const n = document.getElementById('saveTorneoName').value.trim(); if (n === '') return; const p = await descargarPerfilDeLaNube(currentUserEmail); const mt = p.torneosGuardados || {}; if (mt[n] && !confirm(`¿Sobrescribir "${n}"?`)) return; mt[n] = { teams, teamLogos, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas, isPublic: isCurrentTournamentPublic }; p.torneosGuardados = mt; await guardarPerfilEnLaNube(currentUserEmail, p); await updateDropdownTorneosGuardados(); document.getElementById('saveTorneoName').value = ''; updateAppTitle(n); }
-    async function sobrescribirTorneoSeleccionado() { const n = document.getElementById('selectSobrescribir').value; if (n === '') return; if (confirm(`¿Actualizar "${n}"?`)) { const p = await descargarPerfilDeLaNube(currentUserEmail); p.torneosGuardados[n] = { teams, teamLogos, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas, isPublic: isCurrentTournamentPublic }; await guardarPerfilEnLaNube(currentUserEmail, p); updateAppTitle(n); } }
-    async function cargarTorneoGuardado() { const n = document.getElementById('selectTorneosGuardados').value; if (n === '') return; const p = await descargarPerfilDeLaNube(currentUserEmail); const d = p.torneosGuardados[n]; teams=d.teams||[]; teamLogos=d.teamLogos||{}; matches=d.matches||[]; playersByTeam=d.playersByTeam||{}; jornadas=d.jornadas||[]; delegados=d.delegados||[]; juntasDelegados=d.juntasDelegados||[]; campos=d.campos||[]; actas=d.actas||{reglas:[],acuerdos:[],castigos:[]}; isCurrentTournamentPublic = d.isPublic !== false; document.getElementById('checkPublicTournament').checked = isCurrentTournamentPublic; updateAppTitle(n); await guardarTableroActivoEnLaNube(); executeRenderCycle(); document.getElementById('selectSobrescribir').value = n; }
+    async function guardarTorneoComo() { const n = document.getElementById('saveTorneoName').value.trim(); if (n === '') return; const p = await descargarPerfilDeLaNube(currentUserEmail); const mt = p.torneosGuardados || {}; if (mt[n] && !confirm(`¿Sobrescribir "${n}"?`)) return; mt[n] = { teams, teamLogos, teamUniforms, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas, isPublic: isCurrentTournamentPublic }; p.torneosGuardados = mt; await guardarPerfilEnLaNube(currentUserEmail, p); await updateDropdownTorneosGuardados(); document.getElementById('saveTorneoName').value = ''; updateAppTitle(n); }
+    async function sobrescribirTorneoSeleccionado() { const n = document.getElementById('selectSobrescribir').value; if (n === '') return; if (confirm(`¿Actualizar "${n}"?`)) { const p = await descargarPerfilDeLaNube(currentUserEmail); p.torneosGuardados[n] = { teams, teamLogos, teamUniforms, matches, playersByTeam, jornadas, delegados, juntasDelegados, campos, actas, isPublic: isCurrentTournamentPublic }; await guardarPerfilEnLaNube(currentUserEmail, p); updateAppTitle(n); } }
+    async function cargarTorneoGuardado() { const n = document.getElementById('selectTorneosGuardados').value; if (n === '') return; const p = await descargarPerfilDeLaNube(currentUserEmail); const d = p.torneosGuardados[n]; teams=d.teams||[]; teamLogos=d.teamLogos||{}; teamUniforms=d.teamUniforms||{}; matches=d.matches||[]; playersByTeam=d.playersByTeam||{}; jornadas=d.jornadas||[]; delegados=d.delegados||[]; juntasDelegados=d.juntasDelegados||[]; campos=d.campos||[]; actas=d.actas||{reglas:[],acuerdos:[],castigos:[]}; isCurrentTournamentPublic = d.isPublic !== false; document.getElementById('checkPublicTournament').checked = isCurrentTournamentPublic; updateAppTitle(n); await guardarTableroActivoEnLaNube(); executeRenderCycle(); document.getElementById('selectSobrescribir').value = n; }
     async function eliminarTorneoGuardado() { const n = document.getElementById('selectTorneosGuardados').value; if (n === '') return; if (confirm(`¿Eliminar "${n}"?`)) { const p = await descargarPerfilDeLaNube(currentUserEmail); delete p.torneosGuardados[n]; await guardarPerfilEnLaNube(currentUserEmail, p); await updateDropdownTorneosGuardados(); } }
 
-    function openTab(evt, tId) { const cs = document.getElementsByClassName("tab-content"); for (let i=0;i<cs.length;i++) cs[i].classList.remove("active"); const bs = document.getElementsByClassName("tab-button"); for (let i=0;i<bs.length;i++) bs[i].classList.remove("active"); document.getElementById(tId).classList.add("active"); evt.currentTarget.classList.add("active"); if (tId==='tab-estadisticas'){renderStandings();renderTopScorers();} if (tId==='tab-delegados'){renderTablaDelegados();renderActas();} if (tId==='tab-roster'){renderPlayersList(); searchPlayers();} if (tId==='tab-amonestaciones')renderAmonestacionesTab(); if(tId==='tab-admin')renderAdminPanel();}
+    function openTab(evt, tId) { 
+        const cs = document.getElementsByClassName("tab-content"); for (let i=0;i<cs.length;i++) cs[i].classList.remove("active"); 
+        const bs = document.getElementsByClassName("tab-button"); for (let i=0;i<bs.length;i++) bs[i].classList.remove("active"); 
+        document.getElementById(tId).classList.add("active"); evt.currentTarget.classList.add("active"); 
+        if (tId==='tab-estadisticas'){renderStandings();renderTopScorers();} 
+        if (tId==='tab-delegados'){renderTablaDelegados();renderActas();} 
+        if (tId==='tab-roster'){renderPlayersList(); searchPlayers();} 
+        if (tId==='tab-amonestaciones') renderAmonestacionesTab(); 
+        if (tId==='tab-uniformes') renderUniformes();
+        if (tId==='tab-admin') renderAdminPanel();
+    }
     
     function addCampo() { const nm = document.getElementById('campoName').value.trim(); if (nm === '' || campos.includes(nm)) return; campos.push(nm); interceptCloudUpdates(); renderCamposList(); renderMatchesHTML(); document.getElementById('campoName').value = ''; document.getElementById('camposListContainer').style.display = 'block'; }
     function deleteCampo(nm) { campos = campos.filter(c => c !== nm); matches.forEach(m => { if (m.campo === nm) m.campo = ''; }); interceptCloudUpdates(); renderCamposList(); renderMatchesHTML(); }
@@ -661,81 +673,146 @@ const firebaseConfig = {
         if (nm === '' || teams.includes(nm)) return; 
         if (fileInput.files && fileInput.files.length > 0) { const r = new FileReader(); r.onload = function(e) { const img = new Image(); img.onload = function() { const c = document.createElement('canvas'); const M_W = 100; let w = img.width; let h = img.height; if (w > M_W) { h = Math.round((h * M_W) / w); w = M_W; } c.width = w; c.height = h; const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, w, h); teamLogos[nm] = c.toDataURL('image/jpeg', 0.8); finishAddTeam(nm); }; img.src = e.target.result; }; r.readAsDataURL(fileInput.files[0]); } else { teamLogos[nm] = null; finishAddTeam(nm); }
     }
-    function finishAddTeam(nm) { teams.push(nm); playersByTeam[nm] = []; interceptCloudUpdates(); renderTeamsList(); updateSelectOptions(); renderStandings(); document.getElementById('teamName').value = ''; document.getElementById('teamLogoInput').value = ''; document.getElementById('teamsListContainer').style.display = 'block'; }
+    function finishAddTeam(nm) { teams.push(nm); playersByTeam[nm] = []; interceptCloudUpdates(); renderTeamsList(); renderUniformes(); updateSelectOptions(); renderStandings(); document.getElementById('teamName').value = ''; document.getElementById('teamLogoInput').value = ''; document.getElementById('teamsListContainer').style.display = 'block'; }
     
-    // ============================================================================
-    // NUEVA FUNCIÓN MAESTRA: ACTUALIZACIÓN DE NOMBRES EN CASCADA
-    // ============================================================================
+    // RENAME TEAM ACTUALIZADO (Soporte para Uniformes)
     function renameTeam(oldName) {
-        if (currentUserRole >= 3) return; // Por seguridad, espectadores y prensa no editan.
+        if (currentUserRole >= 3) return; 
         
         let newName = prompt(`Renombrar equipo "${oldName}".\nEscribe el nuevo nombre:`, oldName);
         if (!newName || newName.trim() === "" || newName === oldName) return;
         newName = newName.trim();
         
-        // Bloqueo Anti-Duplicados
         if (teams.includes(newName)) { 
             alert(`⚠️ Error: El equipo "${newName}" ya existe en este torneo.`); 
             return; 
         }
 
-        // 1. Array Principal
         const idx = teams.indexOf(oldName);
         if (idx !== -1) teams[idx] = newName;
 
-        // 2. Base de datos de Logos
-        if (teamLogos[oldName] !== undefined) { 
-            teamLogos[newName] = teamLogos[oldName]; 
-            delete teamLogos[oldName]; 
-        }
+        if (teamLogos[oldName] !== undefined) { teamLogos[newName] = teamLogos[oldName]; delete teamLogos[oldName]; }
+        if (teamUniforms[oldName] !== undefined) { teamUniforms[newName] = teamUniforms[oldName]; delete teamUniforms[oldName]; }
+        if (playersByTeam[oldName]) { playersByTeam[newName] = playersByTeam[oldName]; delete playersByTeam[oldName]; }
 
-        // 3. Roster de Jugadores
-        if (playersByTeam[oldName]) { 
-            playersByTeam[newName] = playersByTeam[oldName]; 
-            delete playersByTeam[oldName]; 
-        }
-
-        // 4. Fixture de Partidos (Local y Visitante)
         matches.forEach(m => {
             if (m.local === oldName) m.local = newName;
             if (m.visitante === oldName) m.visitante = newName;
         });
 
-        // 5. Descansos en las Jornadas
         jornadas.forEach(j => {
             j.descansos.forEach((d, i) => {
-                // Soporte retroactivo para formatos de datos viejos y nuevos
-                if (typeof d === 'string') { 
-                    if (d === oldName) j.descansos[i] = newName; 
-                } else { 
-                    if (d.equipo === oldName) d.equipo = newName; 
-                }
+                if (typeof d === 'string') { if (d === oldName) j.descansos[i] = newName; } 
+                else { if (d.equipo === oldName) d.equipo = newName; }
             });
         });
 
-        // 6. Registro de Delegados
-        delegados.forEach(d => { 
-            if (d.equipo === oldName) d.equipo = newName; 
-        });
+        delegados.forEach(d => { if (d.equipo === oldName) d.equipo = newName; });
 
-        // Guardamos en la nube y forzamos el redibujado absoluto de toda la interfaz
         interceptCloudUpdates();
         executeRenderCycle();
     }
 
     function triggerLogoEdit(teamName) { editingTeamLogo = teamName; document.getElementById('globalLogoEditor').click(); }
     function processEditedLogo(evt) { if(currentUserRole >= 3) return; const fileInput = evt.target; if(fileInput.files && fileInput.files.length > 0) { const r = new FileReader(); r.onload = function(e) { const img = new Image(); img.onload = function() { const c = document.createElement('canvas'); const M_W = 100; let w = img.width; let h = img.height; if (w > M_W) { h = Math.round((h * M_W) / w); w = M_W; } c.width = w; c.height = h; const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, w, h); teamLogos[editingTeamLogo] = c.toDataURL('image/jpeg', 0.8); interceptCloudUpdates(); executeRenderCycle(); fileInput.value = ''; }; img.src = e.target.result; }; r.readAsDataURL(fileInput.files[0]); } }
-    function deleteTeam(tm) { teams = teams.filter(t => t !== tm); delete playersByTeam[tm]; delete teamLogos[tm]; matches = matches.filter(m => m.local !== tm && m.visitante !== tm); jornadas.forEach(j => { j.descansos = j.descansos.filter(x => (typeof x === 'string' ? x : x.equipo) !== tm); }); delegados = delegados.filter(d => d.equipo !== tm); interceptCloudUpdates(); executeRenderCycle(); }
+    
+    // DELETE TEAM ACTUALIZADO (Soporte para Uniformes)
+    function deleteTeam(tm) { 
+        teams = teams.filter(t => t !== tm); 
+        delete playersByTeam[tm]; delete teamLogos[tm]; delete teamUniforms[tm]; 
+        matches = matches.filter(m => m.local !== tm && m.visitante !== tm); 
+        jornadas.forEach(j => { j.descansos = j.descansos.filter(x => (typeof x === 'string' ? x : x.equipo) !== tm); }); 
+        delegados = delegados.filter(d => d.equipo !== tm); 
+        interceptCloudUpdates(); executeRenderCycle(); 
+    }
     
     function renderTeamsList() { 
-        const el = document.getElementById('teamsList'); 
-        el.innerHTML = ''; 
+        const el = document.getElementById('teamsList'); el.innerHTML = ''; 
         teams.forEach(t => { 
-            // AÑADIDO EL BOTÓN ✏️ Nom PARA LLAMAR A renameTeam()
             el.innerHTML += `<div style="background:#fff; border: 1px solid #bdc3c7; padding:4px 8px; border-radius:3px; font-size:12px; display:flex; align-items:center; justify-content: space-between;"> <div style="display:flex; align-items:center;">${getLogoHtml(t, 'team-logo-medium')} <strong style="margin-left:4px;">${t}</strong></div> <div><button onclick="renameTeam('${t}')" class="hide-in-viewer" style="background:#3498db; padding:2px 6px; font-size:9px; margin-right: 4px;">✏️ Nom</button><button onclick="triggerLogoEdit('${t}')" class="hide-in-viewer" style="background:#f39c12; padding:2px 6px; font-size:9px; margin-right: 4px;">📸 Logo</button><button onclick="deleteTeam('${t}')" class="delete-btn hide-in-viewer" style="padding:2px 6px; font-size:9px;">✖</button></div></div>`; 
         }); 
     }
+
+    // ============================================================================
+    // MOTOR DE GALERÍA DE UNIFORMES
+    // ============================================================================
+    function triggerUniformEdit(teamName) { 
+        editingTeamUniform = teamName; 
+        document.getElementById('globalUniformEditor').click(); 
+    }
     
+    function processEditedUniform(evt) { 
+        if(currentUserRole >= 3) return; 
+        const fileInput = evt.target; 
+        if(fileInput.files && fileInput.files.length > 0) { 
+            const r = new FileReader(); 
+            r.onload = function(e) { 
+                const img = new Image(); 
+                img.onload = function() { 
+                    const c = document.createElement('canvas'); 
+                    const M_W = 600; // Resolución más alta para apreciar la camiseta
+                    let w = img.width; let h = img.height; 
+                    if (w > M_W) { h = Math.round((h * M_W) / w); w = M_W; } 
+                    c.width = w; c.height = h; 
+                    const ctx = c.getContext('2d'); 
+                    ctx.drawImage(img, 0, 0, w, h); 
+                    teamUniforms[editingTeamUniform] = c.toDataURL('image/jpeg', 0.6); // Compresión al 60%
+                    interceptCloudUpdates(); 
+                    renderUniformes(); 
+                    fileInput.value = ''; 
+                }; 
+                img.src = e.target.result; 
+            }; 
+            r.readAsDataURL(fileInput.files[0]); 
+        } 
+    }
+    
+    function deleteUniform(teamName) {
+        if(currentUserRole >= 3) return;
+        delete teamUniforms[teamName];
+        interceptCloudUpdates();
+        renderUniformes();
+    }
+
+    function renderUniformes() {
+        const grid = document.getElementById('uniformsGrid');
+        grid.innerHTML = '';
+        if (teams.length === 0) {
+            grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; font-size: 12px;">Registra equipos en la Pestaña 1 para añadir sus uniformes.</p>';
+            return;
+        }
+
+        teams.forEach(t => {
+            let imgContent = '<div class="uniform-placeholder">👕<br>Sin foto</div>';
+            let onclickImg = `onclick="triggerUniformEdit('${t}')"`;
+            let deleteBtn = '';
+
+            if (teamUniforms[t]) {
+                imgContent = `<img src="${teamUniforms[t]}" alt="Uniforme de ${t}">`;
+                onclickImg = `onclick="verImagenCompleta('${teamUniforms[t]}')" class="uniform-zoom-btn"`;
+                deleteBtn = `<button onclick="deleteUniform('${t}')" class="delete-btn hide-in-viewer uniform-btn">✖ Quitar</button>`;
+            }
+
+            grid.innerHTML += `
+            <div class="uniform-card">
+                <div class="uniform-title">${getLogoHtml(t, 'team-logo-mini')} ${t}</div>
+                <div class="uniform-img-box hide-in-viewer" ${onclickImg}>
+                    ${imgContent}
+                </div>
+                <!-- Vista exclusiva para visores cuando sí hay imagen -->
+                <div class="uniform-img-box uniform-zoom-btn" style="${teamUniforms[t] ? '' : 'display: none !important;'}" onclick="verImagenCompleta('${teamUniforms[t]}')">
+                    ${teamUniforms[t] ? `<img src="${teamUniforms[t]}" alt="Uniforme">` : ''}
+                </div>
+                <div class="uniform-controls hide-in-viewer">
+                    <button onclick="triggerUniformEdit('${t}')" class="uniform-btn" style="background-color: #3498db;">📸 Subir Foto</button>
+                    ${deleteBtn}
+                </div>
+            </div>`;
+        });
+    }
+    
+    // ... [Resto del código idéntico sin modificar] ...
+
     function updateSelectOptions() { 
         const sP=document.getElementById('teamSelectPlayers'), sD=document.getElementById('selectTeamDelegado'), sJ=document.getElementById('discJornada'); 
         const fT=document.getElementById('filterTeamSelect'), fMT=document.getElementById('filterMatchTeam'), fMJ=document.getElementById('filterMatchJornada'); 
