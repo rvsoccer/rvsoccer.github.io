@@ -1,471 +1,1399 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f7f6;
-    color: #333;
-    margin: 0;
-    padding: 20px;
-}
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-h1, h2 {
-    color: #2c3e50;
-    border-bottom: 2px solid #ecf0f1;
-    padding-bottom: 8px;
+/* ============================================================================
+   SISTEMA DE GESTIÓN DE TORNEO DE FÚTBOL - EDICIÓN VERDE ESTADIO & ROJO OSCURO
+   Paleta: Verde Dominante, Rellenos en Rojo Oscuro Profundo y Tipografía de Alto Contraste
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@600;700&display=swap');
+
+:root {
+    /* Verdes de Cancha */
+    --pitch-abyss: #05140c;
+    --pitch-darkest: #0a2214;
+    --pitch-container: #0e2e1c;
+    --pitch-card: #133b24;
+    --pitch-surface: #194b2e;
+    --pitch-elevated: #205e3a;
+    --pitch-vibrant: #2e8b47;
+    --pitch-neon: #52c458;
+    --pitch-border: #2a7348;
+    --pitch-border-bright: #43a36b;
+
+    /* Rojos Oscuros para Rellenos y Acentos */
+    --crimson-abyss: #220609;
+    --crimson-darkest: #2e090d;
+    --crimson-dark: #3d0c12;
+    --crimson-surface: #4f1018;
+    --crimson-accent: #c62828;
+    --crimson-deep: #8e0000;
+    --crimson-border: #7a1c26;
+
+    /* Textos de Alto Contraste */
+    --white-pure: #ffffff;
+    --text-bright: #f2f9f4;
+    --text-gold: #ffe082;
+    --text-coral: #ffcdd2;
+    --placeholder-bright: #cfd8dc;
+
+    --shadow-sm: 0 3px 8px rgba(2, 10, 5, 0.42);
+    --shadow-md: 0 8px 22px rgba(2, 10, 5, 0.55);
+    --shadow-lg: 0 16px 38px rgba(0, 0, 0, 0.75);
+    --radius-sm: 5px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
 }
 
-/* PESTAÑAS (TABS) */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--pitch-abyss);
+    background-image: radial-gradient(circle at 50% 0%, #143f26 0%, var(--pitch-abyss) 78%);
+    color: var(--text-bright);
+    margin: 0;
+    padding: 16px;
+    line-height: 1.4;
+    min-height: 100vh;
+}
+
+/* --- SCROLLBARS CON CARRIL EN ROJO OSCURO --- */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--crimson-darkest);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--pitch-vibrant);
+    border: 1px solid var(--crimson-border);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--pitch-neon);
+}
+
+/* --- CONTENEDOR PRINCIPAL DEL DASHBOARD --- */
+.container {
+    max-width: 1240px;
+    margin: 0 auto;
+    background: var(--pitch-container);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    border: 1px solid var(--pitch-border-bright);
+}
+
+.workspace-body {
+    padding: 20px 24px 28px 24px;
+    background: linear-gradient(180deg, var(--pitch-container) 0%, var(--pitch-darkest) 100%);
+}
+
+/* --- BARRA SUPERIOR DE SESIÓN --- */
+.user-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, var(--crimson-darkest) 0%, var(--pitch-abyss) 50%, var(--crimson-darkest) 100%);
+    color: var(--white-pure);
+    padding: 9px 24px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--crimson-border);
+}
+
+.user-header .user-info {
+    font-weight: 700;
+    color: var(--white-pure);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.role-badge {
+    padding: 3px 13px 3px 9px;
+    font-size: 10px;
+    color: var(--white-pure);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 50%, calc(100% - 7px) 100%, 0 100%);
+}
+
+.role-1 { background-color: var(--crimson-accent); }
+.role-2 { background-color: var(--pitch-vibrant); }
+.role-3 { background-color: #2e7d32; }
+.role-4 { background-color: var(--crimson-surface); }
+
+.logout-btn {
+    background-color: var(--crimson-accent);
+    padding: 5px 14px;
+    font-size: 11px;
+    border-radius: var(--radius-sm);
+    color: var(--white-pure);
+    margin: 0;
+    font-weight: 700;
+    border: 1px solid #ef5350;
+}
+
+.logout-btn:hover {
+    background-color: var(--crimson-deep);
+}
+
+/* --- HERO BANNER DEL TORNEO CON FLECHAS ESTILIZADAS --- */
+.tournament-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: repeating-linear-gradient(
+        -45deg,
+        #0f331f,
+        #0f331f 16px,
+        #143f27 16px,
+        #143f27 32px
+    );
+    color: var(--white-pure);
+    padding: 16px 24px;
+    border-bottom: 2px solid var(--pitch-neon);
+    position: relative;
+}
+
+.tournament-hero-title {
+    margin: 0;
+    font-family: 'Oswald', sans-serif;
+    font-size: 23px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    padding: 4px 12px;
+    color: var(--white-pure);
+    background: var(--crimson-dark);
+    border-radius: var(--radius-sm);
+    border-left: 4px solid var(--pitch-neon);
+    clip-path: none;
+}
+
+.tournament-hero-title::before,
+.tournament-hero-title::after {
+    display: none;
+}
+
+.tournament-hero-title span {
+    color: var(--white-pure);
+    background: linear-gradient(90deg, var(--pitch-vibrant) 0%, #1e6b36 72%, var(--crimson-surface) 100%);
+    padding: 4px 24px 4px 14px;
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tournament-hero-title span::after {
+    content: "❯❯";
+    font-size: 13px;
+    color: var(--text-gold);
+    letter-spacing: -2px;
+}
+
+.tournament-hero-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.public-toggle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--white-pure);
+    font-weight: 700;
+    background: var(--crimson-dark);
+    border: 1px solid var(--crimson-border);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin: 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.public-toggle-pill input {
+    accent-color: var(--pitch-neon);
+    cursor: pointer;
+    margin: 0;
+}
+
+/* --- PANEL DE GUARDADO MULTI-TORNEO --- */
+.save-manager-panel {
+    background: linear-gradient(180deg, var(--pitch-card) 0%, var(--crimson-darkest) 100%);
+    color: var(--white-pure);
+    padding: 12px 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--crimson-border);
+}
+
+.save-manager-section {
+    flex: 1;
+    min-width: 210px;
+}
+
+.save-manager-label {
+    display: block;
+    font-size: 10px;
+    margin-bottom: 4px;
+    color: var(--text-gold);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.save-manager-label::before {
+    content: "▸ ";
+    color: var(--pitch-neon);
+}
+
+.save-manager-controls {
+    display: flex;
+    gap: 6px;
+    align-items: stretch;
+}
+
+.save-manager-input,
+.save-manager-select {
+    flex: 1;
+    min-width: 110px;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--crimson-border);
+    background: var(--crimson-darkest);
+    color: var(--white-pure);
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0;
+    height: 30px;
+}
+
+.save-btn {
+    background-color: var(--pitch-vibrant);
+    color: var(--white-pure);
+    margin: 0;
+    padding: 0 12px;
+    white-space: nowrap;
+    font-size: 11px;
+    height: 30px;
+}
+
+.save-btn:hover {
+    background-color: var(--pitch-neon);
+    color: var(--pitch-abyss);
+}
+
+.load-btn {
+    background-color: var(--crimson-surface);
+    color: var(--white-pure);
+    border: 1px solid var(--crimson-border);
+    margin: 0;
+    padding: 0 12px;
+    white-space: nowrap;
+    font-size: 11px;
+    height: 30px;
+}
+
+.load-btn:hover {
+    background-color: var(--pitch-vibrant);
+    border-color: var(--pitch-neon);
+}
+
+.del-torneo-btn {
+    background-color: var(--crimson-accent);
+    color: var(--white-pure);
+    margin: 0;
+    padding: 0 10px;
+    font-size: 11px;
+    height: 30px;
+}
+
+.del-torneo-btn:hover {
+    background-color: var(--crimson-deep);
+}
+
+.divider {
+    width: 2px;
+    background: var(--crimson-border);
+    align-self: stretch;
+}
+
+/* --- NAVEGACIÓN POR PESTAÑAS ESTILO HUD DEPORTIVO --- */
 .tab-menu {
     display: flex;
-    border-bottom: 2px solid #ccc;
-    margin-bottom: 20px;
+    background: linear-gradient(90deg, var(--crimson-darkest) 0%, var(--pitch-darkest) 50%, var(--crimson-darkest) 100%);
+    border-bottom: 2px solid var(--pitch-neon);
+    padding: 10px 24px 0 24px;
+    flex-wrap: wrap;
+    gap: 5px;
 }
+
 .tab-button {
-    background-color: #eee;
+    background-color: var(--crimson-dark);
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    transition: 0.3s;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    margin-right: 4px;
-    color: #555;
+    padding: 9px 18px;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    margin: 0;
+    color: var(--text-bright);
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    letter-spacing: 0.25px;
 }
+
 .tab-button:hover {
-    background-color: #ddd;
+    background-color: var(--crimson-surface);
+    color: var(--text-gold);
 }
+
 .tab-button.active {
-    background-color: #2c3e50;
-    color: white;
-    border-bottom: 2px solid #2c3e50;
+    background: linear-gradient(135deg, var(--pitch-vibrant) 0%, #1d6934 100%);
+    color: var(--white-pure);
+    box-shadow: 0 -2px 10px rgba(82, 196, 88, 0.45);
+}
+
+.tab-button.active::after {
+    content: " ▾";
+    font-size: 10px;
+    color: var(--text-gold);
 }
 
 .tab-content {
     display: none;
+    animation: fadeIn 0.22s ease-out;
 }
+
 .tab-content.active {
     display: block;
 }
 
-/* Formularios y elementos */
-.section {
-    margin-bottom: 30px;
-}
-.form-group {
-    margin-bottom: 15px;
-}
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-input[type="text"], input[type="number"], select {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-input[type="number"] {
-    width: 70px;
-    text-align: center;
-}
-button {
-    background-color: #27ae60;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-}
-button:hover {
-    background-color: #219653;
-}
-.match-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #f9f9f9;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-left: 4px solid #3498db;
-    border-radius: 4px;
-}
-.match-team {
-    flex: 1;
-    font-size: 16px;
-}
-.match-team.left { text-align: right; margin-right: 15px; font-weight: bold; }
-.match-team.right { text-align: left; margin-left: 15px; font-weight: bold; }
-.vs {
-    font-weight: bold;
-    color: #7f8c8d;
-    margin: 0 10px;
-}
-ul {
-    list-style-type: square;
-    padding-left: 20px;
-}
-.clear-btn {
-    background-color: #e74c3c;
-    margin-top: 20px;
-}
-.clear-btn:hover {
-    background-color: #c0392b;
-}
-/* --- NUEVOS ESTILOS PARA LOS BOTONES DE ELIMINAR --- */
-
-.delete-btn {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    padding: 6px 12px;
-    font-size: 12px;
-    margin-left: 15px;
-    transition: 0.2s;
-}
-.delete-btn:hover {
-    background-color: #c0392b;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Estilo para alinear los elementos de las listas con su botón */
-.list-item {
-    display: flex;
-    justify-content: space- space-between;
-    align-items: center;
-    background: #fff;
-    padding: 8px 12px;
-    margin-bottom: 8px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-.list-text {
-    flex: 1;
-    font-size: 16px;
-}
-/* --- ESTILOS PARA LA TABLA DE CLASIFICACIÓN --- */
-.standings-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-    background-color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-.standings-table th, .standings-table td {
-    padding: 12px 10px;
-    text-align: center;
-    border-bottom: 1px solid #e0e0e0;
-}
-.standings-table th {
-    background-color: #2c3e50;
-    color: white;
-    font-size: 14px;
-}
-.standings-table .team-name {
-    text-align: left;
-    font-weight: bold;
-}
-.standings-table tr:last-child td {
-    border-bottom: none;
-}
-.standings-table tr:hover {
-    background-color: #f1f2f6;
-}
-/* --- NUEVOS ESTILOS PARA LAS JORNADAS Y DESCANSOS --- */
-.jornada-header {
-    background-color: #34495e;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 4px;
-    margin-top: 25px;
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.jornada-title {
-    margin: 0;
-    font-size: 18px;
-}
-.rest-team {
-    color: #d35400;
-    font-weight: bold;
-    background: #fff3e0;
-    padding: 10px 15px;
-    border-radius: 4px;
-    border-left: 5px solid #e67e22;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.btn-jornada {
-    background-color: #8e44ad;
-}
-.btn-jornada:hover {
-    background-color: #732d91;
-}
-.btn-descanso {
-    background-color: #f39c12;
-}
-.btn-descanso:hover {
-    background-color: #d68910;
-}
-/* --- ESTILOS PARA EL EXPEDIENTE DEL JUGADOR --- */
-textarea {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-family: inherit;
-    resize: vertical;
-}
-.btn-edit {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    padding: 6px 12px;
-    font-size: 12px;
-    margin-left: 10px;
-    transition: 0.2s;
-}
-.btn-edit:hover {
-    background-color: #2980b9;
-}
-/* --- NUEVOS ESTILOS PARA LAS TARJETAS DE LOS JUGADORES (ROSTER) --- */
-.player-card {
-    display: flex;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    margin-bottom: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    overflow: hidden;
+/* --- TARJETAS Y CUADRÍCULAS DE ORGANIZACIÓN --- */
+.grid-2-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
 }
 
-/* Sección Izquierda: Identidad del jugador */
-.player-info {
-    flex: 0 0 180px;
-    padding: 12px;
-    background: #fdfefe;
-    border-right: 1px solid #ecf0f1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.grid-3-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    align-items: start;
 }
 
-/* Sección Central: Cuadrícula con scroll horizontal para las Jornadas */
-.player-jornadas-scroll {
-    flex: 1;
-    display: flex;
-    overflow-x: auto;
-    padding: 12px;
-    background: #f8f9f9;
-    gap: 10px;
+.grid-stats-layout {
+    display: grid;
+    grid-template-columns: 1.65fr 1fr;
+    gap: 20px;
+    align-items: start;
 }
 
-/* Cada cuadrito individual de jornada */
-.jornada-stat-box {
-    background: #fff;
-    border: 1px solid #d5dbdb;
-    border-radius: 4px;
-    padding: 8px;
-    min-width: 65px;
-    text-align: center;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
-}
-.jornada-stat-box .jor-title {
-    font-size: 13px;
-    font-weight: bold;
-    color: #34495e;
-    margin-bottom: 6px;
-    border-bottom: 1px solid #ecf0f1;
-    padding-bottom: 4px;
+@media (max-width: 920px) {
+    .grid-2-col,
+    .grid-3-col,
+    .grid-stats-layout {
+        grid-template-columns: 1fr;
+    }
 }
 
-/* Sección Derecha: Sumatorias totales */
-.player-totals {
-    flex: 0 0 130px;
-    padding: 12px;
-    background: #ebf5fb;
-    border-left: 1px solid #d6eaf8;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: right;
+.section,
+.dashboard-card {
+    background: var(--pitch-card);
+    border: 1px solid var(--pitch-border-bright);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
 }
-/* --- ESTILOS PARA EL SISTEMA DISCIPLINARIO --- */
-.btn-disciplina {
-    background-color: #f39c12;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 6px 10px;
-    font-size: 11px;
-    cursor: pointer;
-    transition: 0.2s;
+
+.card-accent-green {
+    border-left: 4px solid var(--pitch-neon);
 }
-.btn-disciplina:hover {
-    background-color: #d68910;
+
+.card-accent-red {
+    border-left: 4px solid var(--crimson-accent);
 }
-.player-name-container {
+
+/* --- ENCABEZADOS DE SECCIÓN CON RELLENO ROJO OSCURO Y FLECHA --- */
+h1, h2 {
+    color: var(--white-pure);
+    margin-top: 0;
+}
+
+h2 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--pitch-surface) 0%, var(--crimson-surface) 100%);
+    padding: 8px 22px 8px 12px;
+    margin-bottom: 14px;
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 5px 0;
-}
-.sancion-checkbox {
-    accent-color: #e74c3c;
-    transform: scale(1.2);
-    cursor: pointer;
+    border: none;
+    border-left: 4px solid var(--pitch-neon);
+    clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 50%, calc(100% - 13px) 100%, 0 100%);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-/* Panel Modal Flotante */
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex;
+h2::after {
+    content: "❯";
+    margin-left: auto;
+    color: var(--text-gold);
+    font-size: 13px;
+}
+
+.card-accent-red h2 {
+    background: linear-gradient(90deg, var(--crimson-surface) 0%, var(--crimson-dark) 100%);
+    border-left-color: var(--crimson-accent);
+}
+
+.card-accent-red h2::after {
+    color: var(--white-pure);
+}
+
+/* --- FORMULARIOS, INPUTS Y BOTONES (ROJO OSCURO + ALTO CONTRASTE) --- */
+.form-group {
+    margin-bottom: 10px;
+}
+
+label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--text-gold);
+    letter-spacing: 0.2px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid var(--crimson-border);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    background-color: var(--crimson-darkest);
+    color: var(--white-pure);
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+input[type="file"] {
+    color: var(--white-pure);
+    background-color: var(--crimson-darkest);
+    border: 1px dashed var(--crimson-border);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--placeholder-bright);
+    opacity: 0.85;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+    height: 30px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--pitch-neon);
+    background-color: var(--crimson-dark);
+    box-shadow: 0 0 0 2px rgba(82, 196, 88, 0.3);
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    background: linear-gradient(135deg, var(--pitch-vibrant) 0%, #226b36 100%);
+    color: var(--white-pure);
+    padding: 7px 14px;
+    border: 1px solid var(--pitch-neon);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    transition: all 0.18s ease;
+    margin: 1px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    gap: 5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
-.modal-content {
-    background: #fff;
-    padding: 25px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+
+button:hover {
+    background: linear-gradient(135deg, var(--pitch-neon) 0%, var(--pitch-vibrant) 100%);
+    box-shadow: 0 3px 10px rgba(82, 196, 88, 0.35);
 }
-.sancion-item {
-    background: #fae5d3;
-    border-left: 4px solid #e67e22;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
+
+button:active {
+    transform: scale(0.98);
+}
+
+.delete-btn,
+.clear-btn {
+    background: linear-gradient(135deg, var(--crimson-accent) 0%, var(--crimson-deep) 100%);
+    border-color: #ff6659;
+    color: var(--white-pure);
+}
+
+.delete-btn:hover,
+.clear-btn:hover {
+    background: #d32f2f;
+    box-shadow: 0 3px 10px rgba(198, 40, 40, 0.45);
+}
+
+.btn-secondary {
+    background: var(--crimson-surface);
+    color: var(--white-pure);
+    border: 1px solid var(--crimson-border);
+}
+
+.btn-secondary:hover {
+    background: var(--crimson-accent);
+    border-color: var(--white-pure);
+}
+
+.toggle-visibility-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px 14px;
+    font-size: 11px;
+    background: linear-gradient(90deg, var(--crimson-dark) 0%, var(--crimson-surface) 100%);
+    color: var(--white-pure);
+    border: 1px solid var(--crimson-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 700;
+    justify-content: space-between;
+}
+
+.toggle-visibility-btn::after {
+    content: "⇅";
+    color: var(--text-gold);
+    font-weight: 800;
+}
+
+.toggle-visibility-btn:hover {
+    background: var(--crimson-surface);
+    color: var(--text-gold);
+    border-color: var(--pitch-neon);
+}
+
+/* --- LISTAS DE EQUIPOS Y CANCHAS --- */
+.entity-item-card {
+    background: linear-gradient(90deg, var(--pitch-surface) 0%, var(--crimson-dark) 100%);
+    border: 1px solid var(--crimson-border);
+    border-left: 4px solid var(--pitch-neon);
+    padding: 7px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--white-pure);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.15s, background-color 0.15s;
+}
+
+.entity-item-card:hover {
+    background: linear-gradient(90deg, var(--pitch-elevated) 0%, var(--crimson-surface) 100%);
+    transform: translateX(3px);
+}
+
+/* --- JORNADAS, FIXTURE Y PARTIDOS (INTERIOR EN ROJO OSCURO) --- */
+.jornada-header-toggle {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
-    color: #2c3e50;
-}
-/* Pequeño estilo adicional para las cabeceras de las jornadas minimizables */
-.jornada-header-toggle {
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    background: #7ec770; 
-    padding: 10px 15px; 
-    border-radius: 6px; 
+    background: linear-gradient(90deg, var(--pitch-vibrant) 0%, var(--crimson-surface) 88%, var(--crimson-accent) 100%);
+    color: var(--white-pure);
+    padding: 9px 22px 9px 14px;
     cursor: pointer;
-    transition: background 0.2s;
-    margin-bottom: 10px;
+    transition: filter 0.2s;
+    margin-bottom: 6px;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 0.6px;
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
+
 .jornada-header-toggle:hover {
-    background: #dfe6e9;
+    filter: brightness(1.08);
 }
+
 .jornada-content {
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-bottom: 14px;
+    background: var(--crimson-darkest);
+    border: 1px solid var(--crimson-border);
+    border-radius: var(--radius-sm);
+    padding: 7px;
 }
-/* Estilos para el nuevo panel de Guardado Multi-Torneo */
-        .save-manager-panel {
-            background: #2c3e50; 
-            color: white; 
-            padding: 15px 20px; 
-            border-radius: 8px; 
-            margin-bottom: 25px; 
-            display: flex; 
-            gap: 20px; 
-            align-items: flex-end; 
-            flex-wrap: wrap;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .save-manager-section {
-            flex: 1;
-            min-width: 250px;
-        }
-        .save-manager-label {
-            display: block; 
-            font-size: 13px; 
-            margin-bottom: 8px; 
-            color: #bdc3c7;
-            font-weight: bold;
-        }
-        .save-manager-controls {
-            display: flex; 
-            gap: 8px;
-        }
-        .save-manager-input, .save-manager-select {
-            flex: 1; 
-            padding: 10px; 
-            border-radius: 4px; 
-            border: 1px solid #34495e;
-            background: #ecf0f1;
-            color: #2c3e50;
-            font-size: 14px;
-        }
-        .save-btn { background: #27ae60; margin: 0; padding: 10px 15px; white-space: nowrap; }
-        .save-btn:hover { background: #219653; }
-        .load-btn { background: #f39c12; margin: 0; padding: 10px 15px; white-space: nowrap; }
-        .load-btn:hover { background: #e67e22; }
-        .del-torneo-btn { background: #c0392b; margin: 0; padding: 10px 15px; }
-        .del-torneo-btn:hover { background: #a93226; }
-        .divider { width: 2px; background: #34495e; align-self: stretch; }
 
-/* PANTALLA DE AUTENTICACIÓN (LOGIN) */
-        .auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #2c3e50; z-index: 9999; display: flex;
-            justify-content: center; align-items: center; flex-direction: column;
-        }
-        .auth-box {
-            background: #fff; padding: 40px; border-radius: 10px;
-            width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-        .auth-box h2 { color: #2c3e50; margin-top: 0; margin-bottom: 25px; }
-        .auth-input {
-            width: 100%; padding: 12px; margin-bottom: 15px;
-            border: 2px solid #bdc3c7; border-radius: 6px; font-size: 16px; box-sizing: border-box;
-        }
-        .auth-btn-primary {
-            background: #2980b9; color: white; width: 100%; padding: 12px;
-            border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold;
-        }
-        .auth-btn-primary:hover { background: #1f618d; }
-        .auth-switch {
-            margin-top: 20px; font-size: 14px; color: #7f8c8d; cursor: pointer;
-        }
-        .auth-switch span { color: #2980b9; font-weight: bold; text-decoration: underline; }
-        .cloud-status { margin-top: 15px; font-size: 12px; color: #95a5a6; font-style: italic; }
+.match-row {
+    display: grid;
+    grid-template-columns: 1fr 42px 34px 42px 1fr 125px 80px 64px 28px;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    background: var(--pitch-card);
+    border-bottom: 1px solid var(--crimson-border);
+    min-width: 690px;
+    transition: background-color 0.15s;
+}
 
-        /* Encabezado del usuario logueado */
-        .user-header {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #fff; padding: 10px 20px; border-radius: 8px;
-            margin-bottom: 20px; border: 1px solid #ecf0f1;
-        }
-        .user-header .user-info { font-weight: bold; color: #2980b9; }
-        .logout-btn { background: #e74c3c; padding: 8px 15px; border-radius: 4px; color: white; border: none; cursor: pointer; }
-        .logout-btn:hover { background: #c0392b; }
+.match-row:nth-child(even) {
+    background-color: var(--crimson-dark);
+}
+
+.match-row:hover {
+    background-color: var(--pitch-surface);
+}
+
+.match-row:last-child {
+    border-bottom: none;
+}
+
+.match-row input[type="number"] {
+    width: 100%;
+    height: 25px;
+    text-align: center;
+    padding: 0 2px;
+    border: 1px solid var(--pitch-neon);
+    border-radius: 4px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--white-pure);
+    background-color: var(--crimson-abyss);
+}
+
+.match-row select.campo-select {
+    width: 100%;
+    height: 24px;
+    padding: 0 4px;
+    border-radius: 4px;
+    border: 1px solid var(--crimson-border);
+    background: var(--crimson-darkest);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--white-pure);
+}
+
+.match-row input[type="text"].time-select {
+    width: 100%;
+    height: 24px;
+    padding: 0 4px;
+    border-radius: 4px;
+    border: 1px solid var(--crimson-border);
+    background: var(--crimson-darkest);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--white-pure);
+    text-align: center;
+}
+
+.match-team {
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--white-pure);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+}
+
+.match-team.left {
+    justify-content: flex-end;
+    text-align: right;
+}
+
+.match-team.right {
+    justify-content: flex-start;
+    text-align: left;
+}
+
+/* FLECHA BIDIRECCIONAL PARA EL VS */
+.vs {
+    justify-self: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    color: var(--white-pure);
+    background-color: var(--crimson-accent);
+    padding: 2px 8px;
+    clip-path: polygon(18% 0, 82% 0, 100% 50%, 82% 100%, 18% 100%, 0 50%);
+    font-weight: 700;
+    letter-spacing: 0.4px;
+}
+
+.match-grid-btn {
+    justify-self: center;
+    width: 100%;
+    padding: 4px 0;
+    font-size: 10px;
+    border-radius: 4px;
+}
+
+.rest-team {
+    background-color: var(--crimson-dark);
+    padding: 7px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--white-pure);
+    font-weight: 700;
+    margin-top: 6px;
+    border: 1px dashed var(--pitch-neon);
+    border-left: 4px solid var(--crimson-accent);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 8px;
+    font-size: 11px;
+    min-width: 300px;
+}
+
+/* --- LOGOS DE EQUIPOS --- */
+.team-logo-mini {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    object-fit: cover;
+    vertical-align: middle;
+    margin: 0 6px;
+    border: 1px solid var(--pitch-neon);
+    background-color: var(--crimson-darkest);
+    flex-shrink: 0;
+}
+
+.team-logo-medium {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    vertical-align: middle;
+    margin-right: 8px;
+    border: 1px solid var(--pitch-neon);
+    background-color: var(--crimson-darkest);
+    flex-shrink: 0;
+}
+
+/* --- ROSTER Y FICHAS DE JUGADORES --- */
+.player-compact-row {
+    border: 1px solid var(--crimson-border);
+    border-left: 4px solid var(--pitch-neon);
+    background: linear-gradient(90deg, var(--pitch-surface) 0%, var(--crimson-dark) 100%);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    padding: 8px 12px;
+    box-shadow: var(--shadow-sm);
+    transition: background-color 0.15s, transform 0.15s;
+}
+
+.player-compact-row:hover {
+    background: linear-gradient(90deg, var(--pitch-elevated) 0%, var(--crimson-surface) 100%);
+    transform: translateX(2px);
+}
+
+.player-row-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}
+
+.player-identity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 360px;
+}
+
+.player-stats-totals {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    font-weight: 800;
+    justify-content: center;
+    width: 95px;
+    flex-shrink: 0;
+    color: var(--white-pure);
+    background: var(--crimson-darkest);
+    padding: 3px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--crimson-border);
+}
+
+.player-controls {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+    width: 118px;
+    flex-shrink: 0;
+}
+
+.badge-sancion {
+    background-color: var(--crimson-accent);
+    color: var(--white-pure);
+    padding: 2px 9px 2px 7px;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 0 100%);
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.player-stats-menu {
+    display: none;
+    margin-top: 8px;
+    padding: 10px;
+    background: var(--crimson-darkest);
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--pitch-neon);
+}
+
+.jornada-stat-box {
+    border: 1px solid var(--crimson-border);
+    background: var(--pitch-card);
+    border-radius: 4px;
+    padding: 4px;
+    text-align: center;
+    min-width: 46px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+    color: var(--white-pure);
+}
+
+.jor-title {
+    font-weight: 800;
+    font-size: 10px;
+    color: var(--text-gold);
+    border-bottom: 1px solid var(--crimson-border);
+    padding-bottom: 2px;
+    margin-bottom: 3px;
+}
+
+/* --- TABLAS DE CLASIFICACIÓN Y GOLEO (FILAS ALTERNAS ROJO OSCURO) --- */
+.standings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 6px;
+    font-size: 12px;
+    background-color: var(--pitch-darkest);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--crimson-border);
+}
+
+.standings-table th,
+.standings-table td {
+    border-bottom: 1px solid var(--crimson-border);
+    padding: 8px 6px;
+    text-align: center;
+    color: var(--white-pure);
+    font-weight: 600;
+}
+
+.standings-table th {
+    background: linear-gradient(180deg, var(--pitch-surface) 0%, var(--crimson-dark) 100%);
+    color: var(--white-pure);
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--pitch-neon);
+}
+
+.standings-table .team-name {
+    text-align: left;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    color: var(--white-pure);
+}
+
+.standings-table tr:nth-child(even) {
+    background-color: var(--crimson-darkest);
+}
+
+.standings-table tr:hover {
+    background-color: var(--pitch-surface);
+}
+
+/* --- LIBRO DE ACTAS Y EVIDENCIAS (COLUMNAS EN ROJO OSCURO) --- */
+.acta-column {
+    background: var(--crimson-darkest);
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--crimson-border);
+}
+
+.acta-column h3 {
+    margin-top: 0;
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 5px 8px;
+    background: var(--crimson-dark);
+    color: var(--white-pure);
+    clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 6px 100%, 0 50%);
+}
+
+.acta-card {
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--crimson-border);
+}
+
+.acta-card:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.acta-header {
+    font-size: 10px;
+    color: var(--text-gold);
+    font-weight: 700;
+    margin-bottom: 2px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.acta-text {
+    font-size: 11px;
+    color: var(--white-pure);
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+.evidencias-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.evidencia-item {
+    position: relative;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 2px solid var(--pitch-neon);
+    aspect-ratio: 1;
+    box-shadow: var(--shadow-sm);
+    background: var(--crimson-darkest);
+}
+
+.evidencia-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.evidencia-item img:hover {
+    transform: scale(1.05);
+}
+
+.evidencia-delete {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    background: rgba(198, 40, 40, 0.95);
+    color: var(--white-pure);
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 9px;
+    padding: 0;
+}
+
+/* --- SISTEMA DISCIPLINARIO --- */
+.btn-disciplina {
+    background: linear-gradient(135deg, var(--crimson-accent) 0%, var(--crimson-deep) 100%);
+    border-color: #ff6659;
+    color: var(--white-pure);
+}
+
+.btn-disciplina:hover {
+    background: #d32f2f;
+}
+
+.sancion-checkbox {
+    accent-color: var(--crimson-accent);
+    transform: scale(1.15);
+    cursor: pointer;
+}
+
+/* --- GALERÍA DE UNIFORMES --- */
+.uniform-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-top: 14px;
+}
+
+@media (max-width: 960px) {
+    .uniform-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 540px) {
+    .uniform-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.uniform-card {
+    background: linear-gradient(180deg, var(--pitch-surface) 0%, var(--crimson-dark) 100%);
+    border: 1px solid var(--crimson-border);
+    border-top: 4px solid var(--pitch-neon);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.uniform-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.uniform-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--white-pure);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.uniform-img-box {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: var(--crimson-darkest);
+    border: 2px dashed var(--crimson-border);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.uniform-img-box:hover {
+    border-color: var(--pitch-neon);
+}
+
+.uniform-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.25s;
+}
+
+.uniform-img-box:hover img {
+    transform: scale(1.04);
+}
+
+.uniform-placeholder {
+    color: var(--text-gold);
+    font-size: 11px;
+    font-weight: 800;
+    pointer-events: none;
+}
+
+.uniform-controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.uniform-btn {
+    flex: 1;
+    padding: 5px 0;
+    font-size: 10px;
+}
+
+/* --- PANTALLAS DE AUTENTICACIÓN, BLOQUEO Y MODALES --- */
+.auth-overlay,
+.banned-overlay,
+.modal-overlay,
+.pending-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: radial-gradient(circle at center, var(--crimson-dark) 0%, var(--pitch-abyss) 100%);
+    backdrop-filter: blur(5px);
+}
+
+.banned-overlay {
+    background: radial-gradient(circle at center, #5c1313 0%, #1a0505 100%);
+    display: none;
+}
+
+.pending-overlay {
+    display: none;
+}
+
+.modal-overlay {
+    background: rgba(34, 6, 9, 0.85);
+    backdrop-filter: blur(4px);
+}
+
+.auth-box,
+.modal-content {
+    background: linear-gradient(180deg, var(--pitch-card) 0%, var(--crimson-darkest) 100%);
+    color: var(--white-pure);
+    padding: 28px;
+    border-radius: var(--radius-lg);
+    width: 92%;
+    max-width: 375px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    border: 1px solid var(--crimson-border);
+    border-top: 4px solid var(--pitch-neon);
+}
+
+.modal-content {
+    max-width: 460px;
+    max-height: 90vh;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.auth-box h2 {
+    color: var(--white-pure);
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 20px;
+    justify-content: center;
+    background: var(--crimson-dark);
+    border: 1px solid var(--crimson-border);
+    border-radius: var(--radius-sm);
+    clip-path: none;
+}
+
+.auth-box h2::after {
+    display: none;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border: 1px solid var(--crimson-border);
+    border-radius: var(--radius-sm);
+    background: var(--crimson-darkest);
+    color: var(--white-pure);
+    font-size: 13px;
+    height: 38px;
+}
+
+.auth-btn-primary {
+    background: linear-gradient(135deg, var(--pitch-vibrant) 0%, #1f6b36 100%);
+    color: var(--white-pure);
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+    margin: 0;
+    height: 38px;
+}
+
+.auth-btn-primary:hover {
+    background: var(--pitch-neon);
+}
+
+.auth-switch {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--text-bright);
+    cursor: pointer;
+}
+
+.auth-switch span {
+    color: var(--text-gold);
+    font-weight: 800;
+    text-decoration: underline;
+}
+
+.cloud-status {
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--pitch-neon);
+    font-weight: 800;
+}
+
+/* --- TABLA DE ADMINISTRACIÓN --- */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 12px;
+    background: var(--crimson-darkest);
+    border: 1px solid var(--crimson-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--crimson-border);
+    text-align: left;
+    color: var(--white-pure);
+}
+
+.admin-table th {
+    background: linear-gradient(90deg, var(--pitch-surface) 0%, var(--crimson-surface) 100%);
+    color: var(--white-pure);
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--pitch-neon);
+}
+
+.admin-select {
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    height: 26px;
+}
+
+/* --- MODO ESPECTADOR / PRENSA --- */
+body.viewer-mode .hide-in-viewer {
+    display: none !important;
+}
+
+body.viewer-mode input:not(#searchPlayerInput),
+body.viewer-mode select:not(#selectCommunityTorneos):not(#filterTeamSelect):not(#filterMatchTeam):not(#filterMatchJornada),
+body.viewer-mode textarea,
+body.viewer-mode .sancion-checkbox {
+    pointer-events: none;
+    opacity: 0.85;
+    background-color: var(--crimson-abyss);
+    border-color: var(--crimson-border);
+}
+
+body.viewer-mode button:not(.tab-button):not(.logout-btn):not(.view-only-btn):not(.toggle-visibility-btn):not(.match-grid-btn):not(.uniform-zoom-btn) {
+    display: none !important;
+}
+
+/* --- TARJETAS DE SOLICITUDES PENDIENTES EN ADMIN --- */
+.pending-request-card {
+    background: linear-gradient(90deg, var(--crimson-dark) 0%, var(--pitch-surface) 100%);
+    border: 1px solid var(--crimson-border);
+    border-left: 4px solid var(--text-gold);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    box-shadow: var(--shadow-sm);
+}
+
+.pending-request-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.pending-request-email {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--white-pure);
+}
+
+.pending-request-meta {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-gold);
+}
+
+.pending-request-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.pending-badge-counter {
+    background-color: var(--crimson-accent);
+    color: var(--white-pure);
+    padding: 2px 9px 2px 7px;
+    font-size: 11px;
+    font-weight: 800;
+    margin-left: 6px;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 0 100%);
+}
